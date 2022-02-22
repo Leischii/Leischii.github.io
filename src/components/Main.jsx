@@ -13,14 +13,24 @@ import aatroxNew from "../splasharts/Aatrox_New.png";
 import aatroxOld from "../splasharts/Aatrox_Old.png";
 import akaliNew from "../splasharts/Akali_New.png";
 import akaliOld from "../splasharts/Akali_Old.png";
+import blitzcrankNew from "../splasharts/Blitzcrank_New.png";
+import blitzcrankOld from "../splasharts/Blitzcrank_Old.png";
 import gangplankNew from "../splasharts/Gangplank_New.png";
 import gangplankOld from "../splasharts/Gangplank_Old.png";
 import HeimerdingerNew from "../splasharts/Heimerdinger_New.png";
 import HeimerdingerOld from "../splasharts/Heimerdinger_Old.png";
+import katarinaNew from "../splasharts/Katarina_New.png";
+import katarinaOld from "../splasharts/Katarina_Old.png";
+import missFortuneNew from "../splasharts/MissFortune_New.png";
+import missFortuneOld from "../splasharts/MissFortune_Old.png";
 import poppyNew from "../splasharts/Poppy_New.png";
 import poppyOld from "../splasharts/Poppy_Old.png";
 import sonaNew from "../splasharts/Sona_New.png";
+import sionNew from "../splasharts/Sion_New.png";
+import sionOld from "../splasharts/Sion_Old.png";
 import seraphineNew from "../splasharts/Seraphine_New.png";
+import veigarNew from "../splasharts/Veigar_New.png";
+import veigarOld from "../splasharts/Veigar_Old.png";
 
 export default class Main extends Component {
   constructor(props) {
@@ -33,7 +43,7 @@ export default class Main extends Component {
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
-      randomIndex: Math.floor(Math.random() * 5)
+      randomIndex: null
     };
 
     this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
@@ -573,20 +583,36 @@ export default class Main extends Component {
       old: [
         aatroxOld,
         akaliOld,
+        blitzcrankOld,
         gangplankOld,
         HeimerdingerOld,
+        katarinaOld,
+        missFortuneOld,
         poppyOld,
-        sonaNew
+        sionOld,
+        sonaNew,
+        veigarOld
       ],
       new: [
         aatroxNew,
         akaliNew,
+        blitzcrankNew,
         gangplankNew,
         HeimerdingerNew,
+        katarinaNew,
+        missFortuneNew,
         poppyNew,
-        seraphineNew
+        sionNew,
+        seraphineNew,
+        veigarNew
       ]
     };
+
+    if (randomIndex === null) {
+      this.setState({
+        randomIndex: Math.floor(Math.random() * splasharts.old.length)
+      });
+    }
 
     return (
       <div className="m-5">

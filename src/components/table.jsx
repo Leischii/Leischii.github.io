@@ -343,14 +343,14 @@ const texture = {
 /* 
 Blueprint ValueEntry:
 ,
-        {   
-            troybinName: "",
-            troybinType: "",
-            binGroup: "",
-            binGroupType: "",
-            binPropertyName: "",
-            binPropertyType: ""
-        },
+    {   
+        troybinName: "",
+        troybinType: "",
+        binGroup: "",
+        binGroupType: "",
+        binPropertyName: "",
+        binPropertyType: ""
+    },
 */
 
 const Values = {
