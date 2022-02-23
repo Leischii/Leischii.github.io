@@ -547,22 +547,27 @@ export default class Main extends Component {
 
   async click(e) {
     e.preventDefault();
-    await this.getInputs();
+    try {
+      await this.getInputs();
 
-    const troybinStructure = this.readTroybin();
+      const troybinStructure = this.readTroybin();
 
-    const binStructure = this.createBin(troybinStructure);
+      const binStructure = this.createBin(troybinStructure);
 
-    const finalBin = this.writeBin(binStructure);
+      const finalBin = this.writeBin(binStructure);
 
-    const blob = new Blob([finalBin], { type: "text/plain" });
-    const downloadLink = URL.createObjectURL(blob);
+      const blob = new Blob([finalBin], { type: "text/plain" });
+      const downloadLink = URL.createObjectURL(blob);
 
-    this.setState({
-      convertedLink: downloadLink
-    });
+      this.setState({
+        convertedLink: downloadLink
+      });
 
-    this.setState({ clicked: true });
+      this.setState({ clicked: true });
+    } catch (error) {
+      this.setState({ progressStep: "Error!" });
+    }
+
     return 1;
   }
 

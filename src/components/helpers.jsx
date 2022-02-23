@@ -13,6 +13,7 @@ function writeConstantValue(
   let returnConst;
 
   members.forEach(member => {
+    console.log(member);
     let constValue = "";
 
     const isArray = Array.isArray(member.value);
