@@ -1,6 +1,6 @@
 {
-  "short_name": "Lol Troybin Converter",
-  "name": "A Converter For Troybin Files From League Of Legends Built With React",
+  "short_name": "Troygrade",
+  "name": "A League of Legends lol-pytools-troybin to bin converter built with React",
   "icons": [
     {
       "src": "fantome_detailed_leischii.ico",
