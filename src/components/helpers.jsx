@@ -86,6 +86,10 @@ function writeDynamics(
       `${getSpacing(spacingAmount + 1)}probabilityTables: list[pointer] = {\r\n`
     );
 
+    const canHaveA =
+      property.members[0].binGroup.members.findIndex(emit =>
+        emit.includes("probTableA")
+      ) !== -1;
     const canHaveY =
       property.members[0].binGroup.members.findIndex(emit =>
         emit.includes("probTableY")
@@ -219,6 +223,49 @@ function writeDynamics(
         `${getSpacing(spacingAmount + 2)}}\r\n`
       );
     } else if (canHaveZ && writeEmptyEntries) {
+      result.push(
+        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
+      );
+    }
+
+    if (probTableA.length) {
+      result.push(
+        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
+        `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = {\r\n`
+      );
+
+      probTableA.forEach(probTable => {
+        result.push(
+          `${getSpacing(spacingAmount + 4)}${probTable.value[0]}\r\n`
+        );
+      });
+
+      result.push(
+        `${getSpacing(spacingAmount + 3)}}\r\n`,
+        `${getSpacing(spacingAmount + 3)}keyValues: list[${
+          probTableA[0].binPropertyType
+        }] = {\r\n`
+      );
+
+      probTableA.forEach(probTable => {
+        let value = probTable.value[1];
+
+        if (probTable.value.length === 3) {
+          value = `{${value[1]}, ${value[2]}}`;
+        }
+
+        if (probTable.value.length === 4) {
+          value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
+        }
+
+        result.push(`${getSpacing(spacingAmount + 4)}${value}\r\n`);
+      });
+
+      result.push(
+        `${getSpacing(spacingAmount + 3)}}\r\n`,
+        `${getSpacing(spacingAmount + 2)}}\r\n`
+      );
+    } else if (canHaveA && writeEmptyEntries) {
       result.push(
         `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
       );
@@ -377,6 +424,15 @@ export function FormatValue(values, type, defaultAssetsPath) {
         formatedValue = 0;
       }
       break;
+    case "TWO_DOUBLE_TO_XYZ":
+      if (values.split(" ")[0] === "0") {
+        formatedValue = ["X", values.split(" ")[1]];
+      } else if (values.split(" ")[0] === "1") {
+        formatedValue = ["Y", values.split(" ")[1]];
+      } else {
+        formatedValue = ["Z", values.split(" ")[1]];
+      }
+      break;
     default:
       break;
   }
@@ -389,6 +445,7 @@ Returns array with property in bin format
 */
 export function WriteProperty(property, spacingAmount) {
   let constValueWritten;
+  const forceDynamics = property.name === "worldAcceleration";
   const formatedProperty = [];
 
   const constantValues = [];
@@ -423,6 +480,18 @@ export function WriteProperty(property, spacingAmount) {
   });
 
   switch (property.members[0].binGroup.structure) {
+    case "ColorTypeProperty":
+      formatedProperty.push(
+        `${getSpacing(spacingAmount)}${
+          property.members[0].binPropertyName !== ""
+            ? property.members[0].binPropertyName
+            : property.name
+        }${property.members[0].value[0]}: ${
+          property.members[0].binGroupType
+        } = ${property.members[0].value[1]}\r\n`
+      );
+
+      break;
     case "MultConstantValueProperty":
       formatedProperty.push(
         `${getSpacing(spacingAmount)}${property.name}: ${
@@ -440,14 +509,34 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "SimpleProperty":
+      if (Array.isArray(property.members[0].value)) {
+        const value1 = property.members[0].value[0].toString();
+        const value2 = property.members[0].value[1].toString();
+
+        constValueWritten = `{ ${value1}, ${value2} }`;
+
+        if (property.members[0].value.length === 3) {
+          const value3 = property.members[0].value[2].toString();
+
+          constValueWritten = `{ ${value1}, ${value2}, ${value3} }`;
+        }
+
+        if (property.members[0].value.length === 4) {
+          const value3 = property.members[0].value[2].toString();
+          const value4 = property.members[0].value[3].toString();
+
+          constValueWritten = `{ ${value1}, ${value2}, ${value3}, ${value4} }`;
+        }
+      } else {
+        constValueWritten = property.members[0].value;
+      }
+
       formatedProperty.push(
         `${getSpacing(spacingAmount)}${
           property.members[0].binPropertyName !== ""
             ? property.members[0].binPropertyName
             : property.name
-        }: ${property.members[0].binGroupType} = ${
-          property.members[0].value
-        }\r\n`
+        }: ${property.members[0].binGroupType} = ${constValueWritten}\r\n`
       );
 
       break;
@@ -494,7 +583,8 @@ export function WriteProperty(property, spacingAmount) {
         probTableY.length ||
         probTableZ.length ||
         probTableA.length ||
-        timesTable.length
+        timesTable.length ||
+        forceDynamics
       ) {
         writeDynamics(
           constValueWritten.constValue,

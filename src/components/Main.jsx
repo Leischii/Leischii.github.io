@@ -43,7 +43,7 @@ export default class Main extends Component {
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
-      randomIndex: null
+      randomIndex: Math.floor(Math.random() * 11)
     };
 
     this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
@@ -553,8 +553,6 @@ export default class Main extends Component {
 
     const binStructure = this.createBin(troybinStructure);
 
-    console.log("Bin: ", binStructure);
-
     const finalBin = this.writeBin(binStructure);
 
     const blob = new Blob([finalBin], { type: "text/plain" });
@@ -607,12 +605,6 @@ export default class Main extends Component {
         veigarNew
       ]
     };
-
-    if (randomIndex === null) {
-      this.setState({
-        randomIndex: Math.floor(Math.random() * splasharts.old.length)
-      });
-    }
 
     return (
       <div className="m-5">
