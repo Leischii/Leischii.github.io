@@ -472,7 +472,6 @@ export function WriteProperty(property, spacingAmount) {
   const probTableZ = [];
   const probTableA = [];
   const timesTable = [];
-  console.log(property);
 
   property.members.forEach(member => {
     const type = member.binPropertyName;
