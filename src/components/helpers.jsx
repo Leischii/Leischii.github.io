@@ -575,7 +575,7 @@ export function WriteProperty(property, spacingAmount) {
         formatedProperty.push(
           `${getSpacing(spacingAmount)}${property.name}: ${
             property.members[0].binGroupType
-          } {\r\n`
+          } = {\r\n`
         );
 
         constValueWritten.result.forEach(entry => {
