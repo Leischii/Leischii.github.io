@@ -87,6 +87,7 @@ export default class Main extends Component {
   readTroybin = () => {
     const { defaultAssetsPath, originalTroybin, outputFileName } = this.state;
     let system = [];
+    let unknown = [];
     const troybinEntries = [];
 
     this.setState({ progressStep: "Reading Troybin..." });
@@ -114,9 +115,15 @@ export default class Main extends Component {
         properties: entryProperties.splice(1, entryProperties.length)
       };
 
-      entry.name === "System" ? (system = entry) : troybinEntries.push(entry); // eslint-disable-line
+      if (entry.name === "System") {
+        system = entry;
+      } else if (entry.name === "UNKNOWN_HASHES") {
+        unknown = entry;
+      } else {
+        troybinEntries.push(entry);
+      }
     }
-    troybinEntries.push(system);
+    troybinEntries.push(system, unknown);
 
     const troybinData = {
       fileName: outputFileName.replace(".txt", ""),
@@ -127,6 +134,7 @@ export default class Main extends Component {
 
     troybinEntries.forEach(entry => {
       const isSystem = entry.name === "System";
+      const isUnknown = entry.name === "UNKNOWN_HASHES";
 
       const emitter = {
         name: entry.name,
@@ -144,120 +152,123 @@ export default class Main extends Component {
         const propertyName = stringParts[0];
         const propertyValuePart = stringParts[1];
 
-        if (isSystem) {
-          Values.systemValues.forEach(sValue => {
-            if (sValue.troybinName === "GroupPart") {
-              if (
-                propertyName.includes("GroupPart") &&
-                !propertyName.includes("Importance")
-              ) {
-                const emitterOrderValue = parseInt(
-                  propertyName.replace("GroupPart", ""),
-                  10
-                );
-
-                assignedProperty = sValue;
-                assignedProperty.order = emitterOrderValue;
-                entryFound = true;
-
-                emitterNameEntry = troybinData.emitters.findIndex(
-                  emit =>
-                    emit.name ===
-                    // eslint-disable-next-line
-                    propertyValuePart.replace("\"", "").replace("\"", "")
-                );
-
-                if (emitterNameEntry !== -1) {
-                  troybinData.emitters[
-                    emitterNameEntry
-                  ].order = emitterOrderValue;
-                }
-              }
-            } else if (sValue.troybinName === "GroupPartImportance") {
-              if (
-                propertyName.includes("GroupPart") &&
-                propertyName.includes("Importance")
-              ) {
-                const emitterValue = parseInt(
-                  propertyName
-                    .replace("GroupPart", "")
-                    .replace("Importance", ""),
-                  10
-                );
-                assignedProperty = sValue;
-                entryFound = true;
-
-                emitterNameEntry = troybinData.emitters.findIndex(
-                  emit => emit.order === emitterValue
-                );
-              }
-            } else if (sValue.troybinName === propertyName) {
-              assignedProperty = sValue;
-              entryFound = true;
-            }
-          });
-        } else if (propertyName[0] === "e") {
-          Values.eValues.forEach(eValue => {
-            if (eValue.troybinName === propertyName) {
-              assignedProperty = eValue;
-              entryFound = true;
-            }
-          });
-        } else if (propertyName[0] === "p") {
-          Values.pValues.forEach(pValue => {
-            if (pValue.troybinName === propertyName) {
-              if (pValue.simpleValue) {
-                let valueType = "";
-
-                switch (propertyValuePart.split(" ").length) {
-                  case 1:
-                    valueType = "ONE_DOUBLE";
-                    break;
-                  case 2:
-                    valueType = "TWO_DOUBLE";
-                    break;
-                  case 3:
-                    valueType = "THREE_DOUBLE";
-                    break;
-                  case 4:
-                    valueType = "FOUR_DOUBLE";
-                    break;
-                  case 5:
-                    valueType = "FIVE_DOUBLE";
-                    break;
-                  default:
-                    break;
-                }
-
+        if (!isUnknown) {
+          if (isSystem) {
+            Values.systemValues.forEach(sValue => {
+              if (sValue.troybinName === "GroupPart") {
                 if (
-                  pValue.troybinType !== valueType &&
-                  pValue.simpleValue[0] === valueType
+                  propertyName.includes("GroupPart") &&
+                  !propertyName.includes("Importance") &&
+                  !propertyName.includes("Type")
                 ) {
-                  assignedProperty = {
-                    troybinName: pValue.troybinName,
-                    troybinType: pValue.simpleValue[0],
-                    binGroup: pValue.simpleValue[3],
-                    binGroupType: pValue.simpleValue[1],
-                    binPropertyName: pValue.binPropertyName,
-                    binPropertyType: pValue.simpleValue[2]
-                  };
+                  const emitterOrderValue = parseInt(
+                    propertyName.replace("GroupPart", ""),
+                    10
+                  );
+
+                  assignedProperty = sValue;
+                  assignedProperty.order = emitterOrderValue;
+                  entryFound = true;
+
+                  emitterNameEntry = troybinData.emitters.findIndex(
+                    emit =>
+                      emit.name ===
+                      // eslint-disable-next-line
+                      propertyValuePart.replace("\"", "").replace("\"", "")
+                  );
+
+                  if (emitterNameEntry !== -1) {
+                    troybinData.emitters[
+                      emitterNameEntry
+                    ].order = emitterOrderValue;
+                  }
+                }
+              } else if (sValue.troybinName === "GroupPartImportance") {
+                if (
+                  propertyName.includes("GroupPart") &&
+                  propertyName.includes("Importance")
+                ) {
+                  const emitterValue = parseInt(
+                    propertyName
+                      .replace("GroupPart", "")
+                      .replace("Importance", ""),
+                    10
+                  );
+                  assignedProperty = sValue;
+                  entryFound = true;
+
+                  emitterNameEntry = troybinData.emitters.findIndex(
+                    emit => emit.order === emitterValue
+                  );
+                }
+              } else if (sValue.troybinName === propertyName) {
+                assignedProperty = sValue;
+                entryFound = true;
+              }
+            });
+          } else if (propertyName[0] === "e") {
+            Values.eValues.forEach(eValue => {
+              if (eValue.troybinName === propertyName) {
+                assignedProperty = eValue;
+                entryFound = true;
+              }
+            });
+          } else if (propertyName[0] === "p") {
+            Values.pValues.forEach(pValue => {
+              if (pValue.troybinName === propertyName) {
+                if (pValue.simpleValue) {
+                  let valueType = "";
+
+                  switch (propertyValuePart.split(" ").length) {
+                    case 1:
+                      valueType = "ONE_DOUBLE";
+                      break;
+                    case 2:
+                      valueType = "TWO_DOUBLE";
+                      break;
+                    case 3:
+                      valueType = "THREE_DOUBLE";
+                      break;
+                    case 4:
+                      valueType = "FOUR_DOUBLE";
+                      break;
+                    case 5:
+                      valueType = "FIVE_DOUBLE";
+                      break;
+                    default:
+                      break;
+                  }
+
+                  if (
+                    pValue.troybinType !== valueType &&
+                    pValue.simpleValue[0] === valueType
+                  ) {
+                    assignedProperty = {
+                      troybinName: pValue.troybinName,
+                      troybinType: pValue.simpleValue[0],
+                      binGroup: pValue.simpleValue[3],
+                      binGroupType: pValue.simpleValue[1],
+                      binPropertyName: pValue.binPropertyName,
+                      binPropertyType: pValue.simpleValue[2]
+                    };
+                  } else {
+                    assignedProperty = pValue;
+                  }
                 } else {
                   assignedProperty = pValue;
                 }
-              } else {
-                assignedProperty = pValue;
-              }
 
-              entryFound = true;
-            }
-          });
-        } else {
-          Values.others.forEach(other => {
-            if (other.troybinName === propertyName) {
-              assignedProperty = other;
-              entryFound = true;
-            }
-          });
+                entryFound = true;
+              }
+            });
+          } else {
+            Values.others.forEach(other => {
+              if (other.troybinName === propertyName) {
+                assignedProperty = other;
+                entryFound = true;
+              }
+            });
+          }
         }
 
         if (assignedProperty.binGroup === undefined) {

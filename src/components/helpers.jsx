@@ -429,6 +429,9 @@ export function FormatValue(values, type, defaultAssetsPath) {
     case "STRING_PATH":
       formatedValue = `\"${defaultAssetsPath}/${values.replace("\"", "")}`; // eslint-disable-line
       break;
+    case "STRING_NO_EXT":
+      formatedValue = values.replace(".troy", "");
+      break;
     case "STRING_NO_PATH":
       formatedValue = values;
       break;
@@ -496,6 +499,26 @@ export function WriteProperty(property, spacingAmount) {
   });
 
   switch (property.members[0].binGroup.structure) {
+    case "ChildParticleProperty":
+      constValueWritten = getValue(property.members[0]);
+
+      formatedProperty.push(
+        `${getSpacing(spacingAmount)}${property.members[0].binGroup.name}: ${
+          property.members[0].binGroupType
+        } {\r\n`,
+        `${getSpacing(
+          spacingAmount + 1
+        )}childrenIdentifiers: list[embed] = {\r\n`,
+        `${getSpacing(spacingAmount + 2)}VfxChildIdentifier {\r\n`,
+        `${getSpacing(spacingAmount + 3)}${
+          property.members[0].binPropertyName
+        }: ${property.members[0].binPropertyType} = ${constValueWritten}\r\n`,
+        `${getSpacing(spacingAmount + 2)}}\r\n`,
+        `${getSpacing(spacingAmount + 1)}}\r\n`,
+        `${getSpacing(spacingAmount)}}\r\n`
+      );
+
+      break;
     case "ColorTypeProperty":
       formatedProperty.push(
         `${getSpacing(spacingAmount)}${
@@ -539,12 +562,6 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "SimpleObjectProperty":
-      formatedProperty.push(
-        `${getSpacing(spacingAmount)}${property.name}: ${
-          property.members[0].binGroupType
-        } {\r\n`
-      );
-
       constValueWritten = writeConstantValue(
         property,
         spacingAmount + 1,
@@ -552,11 +569,19 @@ export function WriteProperty(property, spacingAmount) {
         true
       );
 
-      constValueWritten.result.forEach(entry => {
-        formatedProperty.push(entry);
-      });
+      if (property.members[0].value !== property.members[0].defaultValue) {
+        formatedProperty.push(
+          `${getSpacing(spacingAmount)}${property.name}: ${
+            property.members[0].binGroupType
+          } {\r\n`
+        );
 
-      formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
+        constValueWritten.result.forEach(entry => {
+          formatedProperty.push(entry);
+        });
+
+        formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
+      }
 
       break;
     case "SimpleObjectVariableProperty":

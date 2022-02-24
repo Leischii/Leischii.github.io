@@ -261,6 +261,13 @@ const blendMode = {
   order: 55
 };
 
+const childParticleSetDefinition = {
+  name: "childParticleSetDefinition",
+  members: [],
+  structure: "ChildParticleProperty",
+  order: 23
+};
+
 const color = {
   name: "color",
   members: createMembers([
@@ -519,6 +526,13 @@ const softParticleParams = {
   members: ["beginIn", "deltaIn"],
   structure: "MultConstantValueProperty",
   order: 75
+};
+
+const soundOnCreateDefault = {
+  name: "soundOnCreateDefault",
+  members: [],
+  structure: "SimpleProperty",
+  order: 311
 };
 
 const soundPersistentDefault = {
@@ -1869,7 +1883,7 @@ const Values = {
       binGroupType: "option[f32]",
       binPropertyName: "constantValue",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 0
     },
     {
       troybinName: "p-local-orient",
@@ -5274,6 +5288,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "SoundOnCreate",
+      troybinType: "STRING_NO_PATH",
+      binGroup: soundOnCreateDefault,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "SoundPersistent",
       troybinType: "STRING_NO_PATH",
       binGroup: soundPersistentDefault,
@@ -5291,6 +5314,15 @@ const Values = {
       binGroupType: "u8",
       binPropertyName: "",
       binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "ChildParticleName",
+      troybinType: "STRING_NO_EXT",
+      binGroup: childParticleSetDefinition,
+      binGroupType: "embed = VfxChildParticleSetDefinitionData",
+      binPropertyName: "effectKey",
+      binPropertyType: "hash",
       defaultValue: undefined
     },
     {
