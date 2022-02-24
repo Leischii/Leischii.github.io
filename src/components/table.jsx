@@ -2775,7 +2775,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-rotvelP1",
+      troybinName: "p-rotvel1",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2790,7 +2790,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP2",
+      troybinName: "p-rotvel2",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2805,7 +2805,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP3",
+      troybinName: "p-rotvel3",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2820,7 +2820,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP4",
+      troybinName: "p-rotvel4",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2835,7 +2835,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP5",
+      troybinName: "p-rotvel5",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2850,7 +2850,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP6",
+      troybinName: "p-rotvel6",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2865,7 +2865,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP7",
+      troybinName: "p-rotvel7",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2880,7 +2880,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP8",
+      troybinName: "p-rotvel8",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2895,7 +2895,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-rotvelP9",
+      troybinName: "p-rotvel9",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotationalVelocity0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",

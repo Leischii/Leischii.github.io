@@ -100,19 +100,29 @@ export default class Main extends Component {
     const structureData = GetStructureData(troybinArray);
 
     for (let i = 0; i < structureData.entryAmount; i += 1) {
+      const isUnknown =
+        structureData.unknownIndex !== -1 &&
+        structureData.unknownIndex === structureData.entryStartIndices[i];
+
       // eslint-disable-next-line
-      const entryName = troybinArray[0].replace(/[\[\]']+/g, "");
-      const entryProperties = troybinArray.splice(
-        0,
-        i === structureData.entryAmount - 1
-          ? troybinArray.length
-          : structureData.entryStartIndices[i + 1] -
-              structureData.entryStartIndices[i]
-      );
+      const entryName = isUnknown ? "UNKNOWN_HASHES" : troybinArray[0].replace(/[\[\]']+/g, "");
+      let entryProperties;
+      if (i === structureData.entryAmount - 1) {
+        entryProperties = troybinArray.splice(0, troybinArray.length);
+      } else {
+        entryProperties = troybinArray.splice(
+          0,
+          structureData.entryStartIndices[i + 1] -
+            structureData.entryStartIndices[i]
+        );
+      }
 
       const entry = {
         name: entryName,
-        properties: entryProperties.splice(1, entryProperties.length)
+        properties: entryProperties.splice(
+          isUnknown ? 0 : 1,
+          entryProperties.length
+        )
       };
 
       if (entry.name === "System") {
@@ -123,7 +133,7 @@ export default class Main extends Component {
         troybinEntries.push(entry);
       }
     }
-    troybinEntries.push(system, unknown);
+    troybinEntries.push(unknown.length ? (system, unknown) : system);
 
     const troybinData = {
       fileName: outputFileName.replace(".txt", ""),
@@ -522,7 +532,7 @@ export default class Main extends Component {
           property.name === "primitiveMesh" ||
           property.name === "primitiveTrail"
         ) {
-          if (property.structure === "primitiveTrail") {
+          if (property.name === "primitiveTrail") {
             finalBin.push(
               `${getSpacing(
                 spacing + 3
@@ -531,7 +541,7 @@ export default class Main extends Component {
                 spacing + 4
               )}mTrail: embed = VfxTrailDefinitionData {\r\n`
             );
-          } else if (property.structure === "primitiveMesh") {
+          } else if (property.name === "primitiveMesh") {
             finalBin.push(
               `${getSpacing(
                 spacing + 3

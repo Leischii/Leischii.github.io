@@ -279,9 +279,12 @@ function writeDynamics(
 
     result.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
   } else {
+    console.log(property);
     result.push(
       `${getSpacing(spacingAmount)}dynamics: ${
-        timesTable[0].binGroupType
+        timesTable[0] !== undefined
+          ? timesTable[0].binGroupType
+          : "pointer = VfxAnimatedVector3fVariableData"
       } {\r\n`
     );
   }
@@ -444,11 +447,11 @@ export function FormatValue(values, type, defaultAssetsPath) {
       break;
     case "TWO_DOUBLE_TO_XYZ":
       if (values.split(" ")[0] === "0") {
-        formatedValue = ["X", values.split(" ")[1]];
+        formatedValue = ["X", parseFloat(values.split(" ")[1])];
       } else if (values.split(" ")[0] === "1") {
-        formatedValue = ["Y", values.split(" ")[1]];
+        formatedValue = ["Y", parseFloat(values.split(" ")[1])];
       } else {
-        formatedValue = ["Z", values.split(" ")[1]];
+        formatedValue = ["Z", parseFloat(values.split(" ")[1])];
       }
       break;
     default:
@@ -728,7 +731,7 @@ export function GetStructureData(troybinArray) {
   const entryStartIndices = [];
   let entryAmount = 0;
   let systemIndex = 0;
-  let unknownIndex = 0;
+  let unknownIndex = -1;
 
   for (let i = 0; i < troybinArray.length; i += 1) {
     const row = troybinArray[i];
@@ -742,9 +745,12 @@ export function GetStructureData(troybinArray) {
       if (row === "[System]") {
         systemIndex = i;
       }
-
-      // Note down which one is the UNKNOWN_HASHES entry if it exists
-      if (row === "[UNKNOWN_HASHES]") {
+    }
+    // Note down which one is the UNKNOWN_HASHES entry if it exists
+    if (row === "[UNKNOWN_HASHES]" || row.includes("UNKNOWN_HASH")) {
+      if (unknownIndex === -1) {
+        entryStartIndices.push(i);
+        entryAmount += 1;
         unknownIndex = i;
       }
     }
