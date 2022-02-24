@@ -206,7 +206,48 @@ export default class Main extends Component {
         } else if (propertyName[0] === "p") {
           Values.pValues.forEach(pValue => {
             if (pValue.troybinName === propertyName) {
-              assignedProperty = pValue;
+              if (pValue.simpleValue) {
+                let valueType = "";
+
+                switch (propertyValuePart.split(" ").length) {
+                  case 1:
+                    valueType = "ONE_DOUBLE";
+                    break;
+                  case 2:
+                    valueType = "TWO_DOUBLE";
+                    break;
+                  case 3:
+                    valueType = "THREE_DOUBLE";
+                    break;
+                  case 4:
+                    valueType = "FOUR_DOUBLE";
+                    break;
+                  case 5:
+                    valueType = "FIVE_DOUBLE";
+                    break;
+                  default:
+                    break;
+                }
+
+                if (
+                  pValue.troybinType !== valueType &&
+                  pValue.simpleValue[0] === valueType
+                ) {
+                  assignedProperty = {
+                    troybinName: pValue.troybinName,
+                    troybinType: pValue.simpleValue[0],
+                    binGroup: pValue.simpleValue[3],
+                    binGroupType: pValue.simpleValue[1],
+                    binPropertyName: pValue.binPropertyName,
+                    binPropertyType: pValue.simpleValue[2]
+                  };
+                } else {
+                  assignedProperty = pValue;
+                }
+              } else {
+                assignedProperty = pValue;
+              }
+
               entryFound = true;
             }
           });

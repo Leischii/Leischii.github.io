@@ -2,6 +2,36 @@ function getSpacing(number) {
   return "    ".repeat(number);
 }
 
+function getValue(member) {
+  let constValue = "";
+
+  const isArray = Array.isArray(member.value);
+
+  if (isArray) {
+    const value1 = member.value[0].toString();
+    const value2 = member.value[1].toString();
+
+    constValue = `{ ${value1}, ${value2} }`;
+
+    if (member.value.length === 3) {
+      const value3 = member.value[2].toString();
+
+      constValue = `{ ${value1}, ${value2}, ${value3} }`;
+    }
+
+    if (member.value.length === 4) {
+      const value3 = member.value[2].toString();
+      const value4 = member.value[3].toString();
+
+      constValue = `{ ${value1}, ${value2}, ${value3}, ${value4} }`;
+    }
+  } else {
+    constValue = member.value;
+  }
+
+  return constValue;
+}
+
 function writeConstantValue(
   property,
   spacingAmount,
@@ -13,32 +43,7 @@ function writeConstantValue(
   let returnConst;
 
   members.forEach(member => {
-    console.log(member);
-    let constValue = "";
-
-    const isArray = Array.isArray(member.value);
-
-    if (isArray) {
-      const value1 = member.value[0].toString();
-      const value2 = member.value[1].toString();
-
-      constValue = `{ ${value1}, ${value2} }`;
-
-      if (member.value.length === 3) {
-        const value3 = member.value[2].toString();
-
-        constValue = `{ ${value1}, ${value2}, ${value3} }`;
-      }
-
-      if (member.value.length === 4) {
-        const value3 = member.value[2].toString();
-        const value4 = member.value[3].toString();
-
-        constValue = `{ ${value1}, ${value2}, ${value3}, ${value4} }`;
-      }
-    } else {
-      constValue = member.value;
-    }
+    const constValue = getValue(member);
 
     if (member === members[0]) {
       returnConst = constValue;
@@ -361,12 +366,6 @@ export function FormatNumber(values, amount) {
     formatedValue.push(parseFloat(value));
   });
 
-  if (formatedValue.length !== amount) {
-    console.log(
-      `Error! Expected ${amount} values, Got: ${formatedValue.length}`
-    );
-  }
-
   return formatedValue;
 }
 
@@ -510,27 +509,7 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "SimpleProperty":
-      if (Array.isArray(property.members[0].value)) {
-        const value1 = property.members[0].value[0].toString();
-        const value2 = property.members[0].value[1].toString();
-
-        constValueWritten = `{ ${value1}, ${value2} }`;
-
-        if (property.members[0].value.length === 3) {
-          const value3 = property.members[0].value[2].toString();
-
-          constValueWritten = `{ ${value1}, ${value2}, ${value3} }`;
-        }
-
-        if (property.members[0].value.length === 4) {
-          const value3 = property.members[0].value[2].toString();
-          const value4 = property.members[0].value[3].toString();
-
-          constValueWritten = `{ ${value1}, ${value2}, ${value3}, ${value4} }`;
-        }
-      } else {
-        constValueWritten = property.members[0].value;
-      }
+      constValueWritten = getValue(property.members[0]);
 
       formatedProperty.push(
         `${getSpacing(spacingAmount)}${
@@ -563,23 +542,14 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "SimpleObjectVariableProperty":
-      formatedProperty.push(
-        `${getSpacing(spacingAmount)}${property.name}: ${
-          property.members[0].binGroupType
-        } {\r\n`
-      );
-
       constValueWritten = writeConstantValue(
         constantValues,
         spacingAmount + 1,
         false
       );
 
-      constValueWritten.result.forEach(entry => {
-        formatedProperty.push(entry);
-      });
-
       if (
+        constValueWritten.result.length !== 0 ||
         probTableX.length ||
         probTableY.length ||
         probTableZ.length ||
@@ -587,21 +557,40 @@ export function WriteProperty(property, spacingAmount) {
         timesTable.length ||
         forceDynamics
       ) {
-        writeDynamics(
-          constValueWritten.constValue,
-          property,
-          probTableX,
-          probTableY,
-          probTableZ,
-          probTableA,
-          spacingAmount + 1,
-          timesTable
-        ).forEach(entry => {
+        formatedProperty.push(
+          `${getSpacing(spacingAmount)}${property.name}: ${
+            property.members[0].binGroupType
+          } {\r\n`
+        );
+
+        constValueWritten.result.forEach(entry => {
           formatedProperty.push(entry);
         });
-      }
 
-      formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
+        if (
+          probTableX.length ||
+          probTableY.length ||
+          probTableZ.length ||
+          probTableA.length ||
+          timesTable.length ||
+          forceDynamics
+        ) {
+          writeDynamics(
+            constValueWritten.constValue,
+            property,
+            probTableX,
+            probTableY,
+            probTableZ,
+            probTableA,
+            spacingAmount + 1,
+            timesTable
+          ).forEach(entry => {
+            formatedProperty.push(entry);
+          });
+        }
+
+        formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
+      }
 
       break;
     case "ShapeRotationAnglesProperty":
