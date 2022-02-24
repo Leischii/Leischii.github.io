@@ -359,7 +359,7 @@ export function FormatInput(originalTroybin) {
 /*
 Converts string value into array with floats
 */
-export function FormatNumber(values, amount) {
+export function FormatNumber(values) {
   const formatedValue = [];
 
   values.split(" ").forEach(value => {
@@ -390,6 +390,21 @@ export function FormatValue(values, type, defaultAssetsPath) {
       break;
     case "FIVE_DOUBLE":
       formatedValue = FormatNumber(values, 5);
+      break;
+    case "DOUBLE_TO_PRIMITIVE":
+      if (values === "0") {
+        formatedValue = -1;
+      } else if (values === "1") {
+        formatedValue = "VfxPrimitiveArbitraryQuad {}";
+      } else if (values === "2") {
+        formatedValue = -1;
+      } else if (values === "3") {
+        formatedValue = -1;
+      } else if (values === "4") {
+        formatedValue = -1;
+      } else {
+        formatedValue = -1;
+      }
       break;
     case "BOOLEAN/INT":
       if (values === "4") {
@@ -454,6 +469,7 @@ export function WriteProperty(property, spacingAmount) {
   const probTableZ = [];
   const probTableA = [];
   const timesTable = [];
+  console.log(property);
 
   property.members.forEach(member => {
     const type = member.binPropertyName;
@@ -511,13 +527,15 @@ export function WriteProperty(property, spacingAmount) {
     case "SimpleProperty":
       constValueWritten = getValue(property.members[0]);
 
-      formatedProperty.push(
-        `${getSpacing(spacingAmount)}${
-          property.members[0].binPropertyName !== ""
-            ? property.members[0].binPropertyName
-            : property.name
-        }: ${property.members[0].binGroupType} = ${constValueWritten}\r\n`
-      );
+      if (constValueWritten !== property.members[0].defaultValue) {
+        formatedProperty.push(
+          `${getSpacing(spacingAmount)}${
+            property.members[0].binPropertyName !== ""
+              ? property.members[0].binPropertyName
+              : property.name
+          }: ${property.members[0].binGroupType} = ${constValueWritten}\r\n`
+        );
+      }
 
       break;
     case "SimpleObjectProperty":

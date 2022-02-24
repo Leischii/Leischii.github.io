@@ -94,14 +94,14 @@ const shape = {
 };
 
 const primitiveMesh = {
-  name: "primitive",
+  name: "primitiveMesh",
   members: ["mMesh"],
   structure: "primitiveMesh",
   order: 52
 };
 
 const primitiveTrail = {
-  name: "primitive",
+  name: "primitiveTrail",
   members: ["mMode", "mBirthTilingSize"],
   structure: "primitiveTrail",
   order: 52
@@ -429,8 +429,7 @@ const numFrames = {
   name: "numFrames",
   members: [],
   structure: "SimpleProperty",
-  order: 210,
-  parent: primitiveTrail
+  order: 210
 };
 
 const orientation1 = {
@@ -473,6 +472,13 @@ const pass = {
   members: [],
   structure: "SimpleProperty",
   order: 73
+};
+
+const primitive = {
+  name: "primitive",
+  members: [],
+  structure: "SimpleProperty",
+  order: 52
 };
 
 const rate = {
@@ -1665,7 +1671,7 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "f32",
       defaultValue: "0",
-      simpleValue: "ONE_DOUBLE"
+      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", bindWeight]
     },
     {
       troybinName: "p-colortype",
@@ -2290,7 +2296,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-quadrot1",
+      troybinName: "p-quadrotP1",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2305,7 +2311,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot2",
+      troybinName: "p-quadrotP2",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2320,7 +2326,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot3",
+      troybinName: "p-quadrotP3",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2335,7 +2341,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot4",
+      troybinName: "p-quadrotP4",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2350,7 +2356,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot5",
+      troybinName: "p-quadrotP5",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2365,7 +2371,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot6",
+      troybinName: "p-quadrotP6",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2380,7 +2386,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot7",
+      troybinName: "p-quadrotP7",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2395,7 +2401,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot8",
+      troybinName: "p-quadrotP8",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -2410,7 +2416,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-quadrot9",
+      troybinName: "p-quadrotP9",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthRotation0,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3378,6 +3384,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-type",
+      troybinType: "DOUBLE_TO_PRIMITIVE",
+      binGroup: primitive,
+      binGroupType: "pointer",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: -1
+    },
+    {
       troybinName: "p-uvscroll-rgb",
       troybinType: "TWO_DOUBLE",
       binGroup: birthUvScrollRate,
@@ -3891,7 +3906,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP1",
+      troybinName: "p-vel1",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3900,7 +3915,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP2",
+      troybinName: "p-vel2",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3909,7 +3924,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP3",
+      troybinName: "p-vel3",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3918,7 +3933,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP4",
+      troybinName: "p-vel4",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3927,7 +3942,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP5",
+      troybinName: "p-vel5",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3936,7 +3951,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP6",
+      troybinName: "p-vel6",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3945,7 +3960,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP7",
+      troybinName: "p-vel7",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3954,7 +3969,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP8",
+      troybinName: "p-vel8",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -3963,7 +3978,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-velP9",
+      troybinName: "p-vel9",
       troybinType: "FOUR_DOUBLE",
       binGroup: birthVelocity,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",

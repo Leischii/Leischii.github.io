@@ -486,20 +486,31 @@ export default class Main extends Component {
         let entry;
 
         if (property.name === "shape") {
-          finalBin.push(
-            `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
-          );
+          const writenLines = [];
 
           property.members.forEach(member => {
             entry = WriteProperty(member, spacing + 4);
 
             entry.forEach(e => {
-              finalBin.push(e);
+              writenLines.push(e);
             });
           });
 
-          finalBin.push(`${getSpacing(spacing + 3)}}\r\n`);
-        } else if (property.name === "primitive") {
+          if (writenLines.length) {
+            finalBin.push(
+              `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
+            );
+
+            writenLines.forEach(line => {
+              finalBin.push(line);
+            });
+
+            finalBin.push(`${getSpacing(spacing + 3)}}\r\n`);
+          }
+        } else if (
+          property.name === "primitiveMesh" ||
+          property.name === "primitiveTrail"
+        ) {
           if (property.structure === "primitiveTrail") {
             finalBin.push(
               `${getSpacing(
@@ -509,7 +520,7 @@ export default class Main extends Component {
                 spacing + 4
               )}mTrail: embed = VfxTrailDefinitionData {\r\n`
             );
-          } else {
+          } else if (property.structure === "primitiveMesh") {
             finalBin.push(
               `${getSpacing(
                 spacing + 3
@@ -607,6 +618,7 @@ export default class Main extends Component {
       this.setState({ clicked: true });
     } catch (error) {
       this.setState({ progressStep: "Error!" });
+      console.log(error);
     }
 
     return 1;
