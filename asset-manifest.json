@@ -1,10 +1,11 @@
 {
   "files": {
     "main.css": "/static/css/main.3c946d37.css",
-    "main.js": "/static/js/main.b4ad2ca8.js",
+    "main.js": "/static/js/main.d2d8c199.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
     "static/media/Veigar_New.png": "/static/media/Veigar_New.4b73a32edd64ebea5627.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
+    "static/media/Ashe_Old.png": "/static/media/Ashe_Old.2bd2f3ade9f4e9ca7bdb.png",
     "static/media/Heimerdinger_Old.png": "/static/media/Heimerdinger_Old.8a08c55f27efdd2e4747.png",
     "static/media/Veigar_Old.png": "/static/media/Veigar_Old.581706eae6ca9e029947.png",
     "static/media/Poppy_Old.png": "/static/media/Poppy_Old.493a62e26def4c0b38cc.png",
@@ -24,14 +25,15 @@
     "static/media/Poppy_New.png": "/static/media/Poppy_New.dcd740a1f34e291f5411.png",
     "static/media/Sona_New.png": "/static/media/Sona_New.5494c209d26add227d48.png",
     "static/media/Cassiopeia_New.png": "/static/media/Cassiopeia_New.468d81ba9e6d0e44a162.png",
+    "static/media/Ashe_New.png": "/static/media/Ashe_New.865f3ecfd2b80a4cf953.png",
     "static/media/Sion_New.png": "/static/media/Sion_New.2b1f371ff43ee7f99c86.png",
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "index.html": "/index.html",
     "main.3c946d37.css.map": "/static/css/main.3c946d37.css.map",
-    "main.b4ad2ca8.js.map": "/static/js/main.b4ad2ca8.js.map"
+    "main.d2d8c199.js.map": "/static/js/main.d2d8c199.js.map"
   },
   "entrypoints": [
     "static/css/main.3c946d37.css",
-    "static/js/main.b4ad2ca8.js"
+    "static/js/main.d2d8c199.js"
   ]
 }
