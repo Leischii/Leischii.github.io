@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.3c946d37.css",
-    "main.js": "/static/js/main.d1de7db4.js",
+    "main.js": "/static/js/main.b4ad2ca8.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
     "static/media/Veigar_New.png": "/static/media/Veigar_New.4b73a32edd64ebea5627.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
@@ -9,6 +9,7 @@
     "static/media/Veigar_Old.png": "/static/media/Veigar_Old.581706eae6ca9e029947.png",
     "static/media/Poppy_Old.png": "/static/media/Poppy_Old.493a62e26def4c0b38cc.png",
     "static/media/Sion_Old.png": "/static/media/Sion_Old.1091c3407e7177eec8af.png",
+    "static/media/Cassiopeia_Old.png": "/static/media/Cassiopeia_Old.0545c0991759f27ea0ca.png",
     "static/media/Blitzcrank_Old.png": "/static/media/Blitzcrank_Old.ab4b8636d612d9a93daf.png",
     "static/media/Akali_Old.png": "/static/media/Akali_Old.6bc98a74b785104ead6c.png",
     "static/media/Seraphine_New.png": "/static/media/Seraphine_New.1b8c806c4c55e4535857.png",
@@ -22,14 +23,15 @@
     "static/media/Aatrox_New.png": "/static/media/Aatrox_New.ddb957d1f52485b64af5.png",
     "static/media/Poppy_New.png": "/static/media/Poppy_New.dcd740a1f34e291f5411.png",
     "static/media/Sona_New.png": "/static/media/Sona_New.5494c209d26add227d48.png",
+    "static/media/Cassiopeia_New.png": "/static/media/Cassiopeia_New.468d81ba9e6d0e44a162.png",
     "static/media/Sion_New.png": "/static/media/Sion_New.2b1f371ff43ee7f99c86.png",
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "index.html": "/index.html",
     "main.3c946d37.css.map": "/static/css/main.3c946d37.css.map",
-    "main.d1de7db4.js.map": "/static/js/main.d1de7db4.js.map"
+    "main.b4ad2ca8.js.map": "/static/js/main.b4ad2ca8.js.map"
   },
   "entrypoints": [
     "static/css/main.3c946d37.css",
-    "static/js/main.d1de7db4.js"
+    "static/js/main.b4ad2ca8.js"
   ]
 }
