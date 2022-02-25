@@ -13,6 +13,8 @@ import aatroxNew from "../splasharts/Aatrox_New.png";
 import aatroxOld from "../splasharts/Aatrox_Old.png";
 import akaliNew from "../splasharts/Akali_New.png";
 import akaliOld from "../splasharts/Akali_Old.png";
+import asheNew from "../splasharts/Ashe_New.png";
+import asheOld from "../splasharts/Ashe_Old.png";
 import blitzcrankNew from "../splasharts/Blitzcrank_New.png";
 import blitzcrankOld from "../splasharts/Blitzcrank_Old.png";
 import cassiopeiaNew from "../splasharts/Cassiopeia_New.png";
@@ -45,11 +47,15 @@ export default class Main extends Component {
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
-      randomIndex: Math.floor(Math.random() * 12)
+      randomIndex: Math.floor(Math.random() * 13),
+      updateFileTypes: true
     };
 
     this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
     this.handleChangeFilePath = this.handleChangeFilePath.bind(this);
+    this.handleChangeUpdateFileType = this.handleChangeUpdateFileType.bind(
+      this
+    );
   }
 
   handleChangeAssetsPath(event) {
@@ -58,6 +64,12 @@ export default class Main extends Component {
 
   handleChangeFilePath(event) {
     this.setState({ defaultFilePath: event.target.value });
+  }
+
+  handleChangeUpdateFileType() {
+    const updateFileTypes = this.state;
+
+    this.setState({ updateFileTypes: !updateFileTypes });
   }
 
   clearState = () => {
@@ -87,7 +99,12 @@ export default class Main extends Component {
   };
 
   readTroybin = () => {
-    const { defaultAssetsPath, originalTroybin, outputFileName } = this.state;
+    const {
+      defaultAssetsPath,
+      originalTroybin,
+      outputFileName,
+      updateFileTypes
+    } = this.state;
     let system = [];
     let unknown = [];
     const troybinEntries = [];
@@ -303,7 +320,8 @@ export default class Main extends Component {
           assignedProperty.value = FormatValue(
             propertyValuePart,
             assignedProperty.troybinType,
-            defaultAssetsPath
+            defaultAssetsPath,
+            updateFileTypes
           );
 
           const property = JSON.parse(JSON.stringify(assignedProperty));
@@ -654,7 +672,7 @@ export default class Main extends Component {
         convertedLink: downloadLink
       });
 
-      this.setState({ clicked: true });
+      this.setState({ clicked: true, progressStep: "" });
     } catch (error) {
       this.setState({ progressStep: "Error!" });
       console.log(error);
@@ -671,13 +689,15 @@ export default class Main extends Component {
       defaultFilePath,
       progressStep,
       outputFileName,
-      randomIndex
+      randomIndex,
+      updateFileTypes
     } = this.state;
 
     const splasharts = {
       old: [
         aatroxOld,
         akaliOld,
+        asheOld,
         blitzcrankOld,
         cassiopeiaOld,
         gangplankOld,
@@ -692,6 +712,7 @@ export default class Main extends Component {
       new: [
         aatroxNew,
         akaliNew,
+        asheNew,
         blitzcrankNew,
         cassiopeiaNew,
         gangplankNew,
@@ -722,7 +743,7 @@ export default class Main extends Component {
             </a>{" "}
             Troybin File
           </h3>
-          <h3>2. Click on Convert</h3>
+          <h3>2. Click On Convert</h3>
           <h3>3. Download Converted Bin</h3>
         </div>
 
@@ -761,6 +782,7 @@ export default class Main extends Component {
                 value={defaultAssetsPath}
                 onChange={this.handleChangeAssetsPath}
                 placeholder="ASSETS/Shared/Particles"
+                readOnly={clicked}
               />
             </div>
             <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
@@ -774,7 +796,20 @@ export default class Main extends Component {
                 value={defaultFilePath}
                 onChange={this.handleChangeFilePath}
                 placeholder="Shared/Particles"
+                readOnly={clicked}
               />
+            </div>
+            <div className="d-flex">
+              <input
+                name="UpdateFileType"
+                type="checkbox"
+                className="mt-2 text-light d-flex mr-2"
+                checked={updateFileTypes}
+                onChange={this.handleChangeUpdateFileType}
+              />
+              <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
+                Update File Typings (.tga --&gt; .dds)
+              </div>
             </div>
           </div>
           <div className="col-xl-2 col-lg-4 col-md-12 mb-5 mt-5 col-sm-12 d-flex justify-content-center align-items-baseline" />
@@ -788,34 +823,39 @@ export default class Main extends Component {
               src={splasharts.new[randomIndex]}
             />
             <div className="d-flex justify-content-center">
-              {outputFileName ? (
-                <button
-                  className="mt-2 btn btn-dark w-100"
-                  disabled={clicked}
-                  onClick={e => this.click(e)}
-                  type="button"
-                >
-                  Convert
-                </button>
-              ) : (
-                <></>
-              )}
+              <button
+                className="mt-2 btn btn-dark w-100"
+                disabled={!outputFileName || clicked}
+                onClick={e => this.click(e)}
+                type="button"
+              >
+                Convert
+              </button>
             </div>
             <div className="d-flex justify-content-center">
-              {clicked ? (
-                <a
-                  href={convertedLink}
-                  download={`${outputFileName.replace(
-                    ".txt",
-                    ""
-                  )}_converted.txt`}
-                  className="mt-2 btn btn-dark w-100"
-                >
-                  Download
-                </a>
-              ) : (
-                <h4 className="mt-2 text-light text-center">{progressStep}</h4>
-              )}
+              <button
+                className="mt-2 btn btn-dark w-100"
+                disabled={!clicked}
+                type="button"
+              >
+                {clicked ? (
+                  <a
+                    href={convertedLink}
+                    download={`${outputFileName.replace(
+                      ".txt",
+                      ""
+                    )}_converted.txt`}
+                    style={{ color: "#FFF" }}
+                  >
+                    Download
+                  </a>
+                ) : (
+                  <>Download</>
+                )}
+              </button>
+            </div>
+            <div className="d-flex justify-content-center">
+              <h4 className="mt-2 text-light text-center">{progressStep}</h4>
             </div>
           </div>
         </div>

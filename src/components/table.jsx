@@ -1772,7 +1772,7 @@ const Values = {
       binGroupType: "u8",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 0
     },
     {
       troybinName: "p-distortion-mode",

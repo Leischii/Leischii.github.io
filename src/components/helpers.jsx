@@ -375,7 +375,7 @@ export function FormatNumber(values) {
 /*
 Converts string value to their correct type
 */
-export function FormatValue(values, type, defaultAssetsPath) {
+export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
   let formatedValue;
 
   switch (type) {
@@ -431,6 +431,10 @@ export function FormatValue(values, type, defaultAssetsPath) {
       break;
     case "STRING_PATH":
       formatedValue = `\"${defaultAssetsPath}/${values.replace("\"", "")}`; // eslint-disable-line
+
+      if (updateFileTypes) {
+        formatedValue = formatedValue.replace(".tga", ".dds");
+      }
       break;
     case "STRING_NO_EXT":
       formatedValue = values.replace(".troy", "");
@@ -446,9 +450,9 @@ export function FormatValue(values, type, defaultAssetsPath) {
       }
       break;
     case "TWO_DOUBLE_TO_XYZ":
-      if (values.split(" ")[0] === "0") {
+      if (values.split(" ")[0] === "0.0") {
         formatedValue = ["X", parseFloat(values.split(" ")[1])];
-      } else if (values.split(" ")[0] === "1") {
+      } else if (values.split(" ")[0] === "1.0") {
         formatedValue = ["Y", parseFloat(values.split(" ")[1])];
       } else {
         formatedValue = ["Z", parseFloat(values.split(" ")[1])];
@@ -522,15 +526,17 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "ColorTypeProperty":
-      formatedProperty.push(
-        `${getSpacing(spacingAmount)}${
-          property.members[0].binPropertyName !== ""
-            ? property.members[0].binPropertyName
-            : property.name
-        }${property.members[0].value[0]}: ${
-          property.members[0].binGroupType
-        } = ${property.members[0].value[1]}\r\n`
-      );
+      if (property.members[0].value[1] !== property.members[0].defaultValue) {
+        formatedProperty.push(
+          `${getSpacing(spacingAmount)}${
+            property.members[0].binPropertyName !== ""
+              ? property.members[0].binPropertyName
+              : property.name
+          }${property.members[0].value[0]}: ${
+            property.members[0].binGroupType
+          } = ${property.members[0].value[1]}\r\n`
+        );
+      }
 
       break;
     case "MultConstantValueProperty":
