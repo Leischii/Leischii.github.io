@@ -80,6 +80,12 @@ function createMembers(arrays) {
 /* 
 Parent info necessary for generating bin entries
 */
+const distortionDefinition = {
+  name: "distortionDefinition",
+  members: ["distortion", "distortionMode", "normalMapTexture"],
+  structure: "",
+  order: 79
+};
 
 const shape = {
   name: "shape",
@@ -127,6 +133,7 @@ const alphaRef = {
 const bindWeight = {
   name: "bindWeight",
   members: [],
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 53
 };
@@ -134,6 +141,7 @@ const bindWeight = {
 const birthAcceleration = {
   name: "birthAcceleration",
   members: createMembers([xTableEntries, yTableEntries, zTableEntries]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 48
 };
@@ -147,6 +155,7 @@ const birthColor = {
     aTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueColor",
   structure: "SimpleObjectVariableProperty",
   order: 68
 };
@@ -154,6 +163,7 @@ const birthColor = {
 const birthDrag = {
   name: "birthDrag",
   members: [],
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 45
 };
@@ -166,6 +176,7 @@ const birthTranslation = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 50.1,
   parent: shape
@@ -179,6 +190,7 @@ const birthRotation0 = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 90
 };
@@ -186,6 +198,7 @@ const birthRotation0 = {
 const birthRotation1 = {
   name: "birthRotation1",
   members: createMembers([timesTableEntries]),
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 232
 };
@@ -198,6 +211,7 @@ const birthRotationalVelocity0 = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 92
 };
@@ -205,6 +219,7 @@ const birthRotationalVelocity0 = {
 const birthRotationalVelocity1 = {
   name: "birthRotationalVelocity1",
   members: createMembers([timesTableEntries]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 235
 };
@@ -217,6 +232,7 @@ const birthScale0 = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 150
 };
@@ -224,6 +240,7 @@ const birthScale0 = {
 const birthScale1 = {
   name: "birthScale1",
   members: createMembers([timesTableEntries]),
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 230
 };
@@ -231,6 +248,7 @@ const birthScale1 = {
 const birthUVOffset = {
   name: "birthUVOffset",
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
+  propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
   order: 225
 };
@@ -238,6 +256,7 @@ const birthUVOffset = {
 const birthUvScrollRate = {
   name: "birthUvScrollRate",
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
+  propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
   order: 220
 };
@@ -250,6 +269,7 @@ const birthVelocity = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 43
 };
@@ -277,6 +297,7 @@ const color = {
     aTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueColor",
   structure: "SimpleObjectVariableProperty",
   order: 70
 };
@@ -302,11 +323,34 @@ const disabled = {
   order: 27
 };
 
+const distortion = {
+  name: "distortion",
+  members: [],
+  structure: "SimpleProperty",
+  order: 79.1,
+  parent: distortionDefinition
+};
+
+const distortionMode = {
+  name: "distortionMode",
+  members: [],
+  structure: "SimpleProperty",
+  order: 79.2,
+  parent: distortionDefinition
+};
+
 const doesCastShadow = {
   name: "doesCastShadow",
   members: [],
   structure: "SimpleProperty",
   order: 88
+};
+
+const emitterLinger = {
+  name: "emitterLinger",
+  members: [],
+  structure: "SimpleObjectProperty",
+  order: 22
 };
 
 const emitterName = {
@@ -324,6 +368,7 @@ const emitOffset = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 50.2,
   parent: shape
@@ -404,16 +449,17 @@ const lifetime = {
 const mBirthTilingSize = {
   name: "mBirthTilingSize",
   members: [],
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 52.2,
   parent: primitiveTrail
 };
 
-const miscRenderFlags = { // eslint-disable-line
+const miscRenderFlags = {
   name: "miscRenderFlags",
   members: [],
   structure: "SimpleProperty",
-  order: 51
+  order: 81
 };
 
 const mMesh = {
@@ -430,6 +476,14 @@ const mMode = {
   structure: "SimpleProperty",
   order: 52.1,
   parent: primitiveTrail
+};
+
+const normalMapTexture = {
+  name: "normalMapTexture",
+  members: [],
+  structure: "SimpleProperty",
+  order: 79.3,
+  parent: distortionDefinition
 };
 
 const numFrames = {
@@ -463,6 +517,7 @@ const particleIsLocalOrientation = {
 const particleLifetime = {
   name: "particleLifetime",
   members: createMembers([xTableEntries, timesTableEntries]),
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 10
 };
@@ -491,6 +546,7 @@ const primitive = {
 const rate = {
   name: "rate",
   members: createMembers([xTableEntries, timesTableEntries]),
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 5
 };
@@ -498,6 +554,7 @@ const rate = {
 const rotation0 = {
   name: "rotation0",
   members: createMembers([timesTableEntries]),
+  propertyType: "IntegratedValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 93
 };
@@ -510,6 +567,7 @@ const scale0 = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 155
 };
@@ -517,6 +575,7 @@ const scale0 = {
 const scale1 = {
   name: "scale1",
   members: createMembers([timesTableEntries]),
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 231
 };
@@ -549,13 +608,6 @@ const spectatorPolicy = { // eslint-disable-line
   order: 32
 };
 
-const timeBeforeFirstEmission = { // eslint-disable-line
-  name: "timeBeforeFirstEmission",
-  members: [],
-  structure: "SimpleProperty",
-  order: 3
-};
-
 const texDiv = {
   name: "texDiv",
   members: [],
@@ -577,6 +629,13 @@ const textureMult = {
   order: 215
 };
 
+const timeBeforeFirstEmission = {
+  name: "timeBeforeFirstEmission",
+  members: [],
+  structure: "SimpleProperty",
+  order: 3
+};
+
 const worldAcceleration = {
   name: "worldAcceleration",
   members: createMembers([
@@ -585,6 +644,7 @@ const worldAcceleration = {
     zTableEntries,
     timesTableEntries
   ]),
+  propertyType: "IntegratedValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 47
 };
@@ -630,6 +690,15 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "",
       defaultValue: undefined
+    },
+    {
+      troybinName: "e-linger",
+      troybinType: "ONE_DOUBLE",
+      binGroup: emitterLinger,
+      binGroupType: "option[f32]",
+      binPropertyName: "constantValue",
+      binPropertyType: "",
+      defaultValue: 0
     },
     {
       troybinName: "e-local-orient",
@@ -1163,6 +1232,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "e-timeoffset",
+      troybinType: "ONE_DOUBLE",
+      binGroup: timeBeforeFirstEmission,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "e-uvoffset",
       troybinType: "TWO_DOUBLE",
       binGroup: birthUVOffset,
@@ -1684,7 +1762,7 @@ const Values = {
       binGroupType: "embed = ValueFloat",
       binPropertyName: "constantValue",
       binPropertyType: "f32",
-      defaultValue: "0",
+      defaultValue: 0,
       simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", bindWeight]
     },
     {
@@ -1692,6 +1770,24 @@ const Values = {
       troybinType: "TWO_DOUBLE_TO_XYZ",
       binGroup: colorLookUpType,
       binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-distortion-mode",
+      troybinType: "ONE_DOUBLE",
+      binGroup: distortionMode,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-distortion-power",
+      troybinType: "ONE_DOUBLE",
+      binGroup: distortion,
+      binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
@@ -1916,6 +2012,15 @@ const Values = {
       troybinName: "p-meshtex-mult",
       troybinType: "STRING_PATH",
       binGroup: textureMult,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-normal-map",
+      troybinType: "STRING_PATH",
+      binGroup: normalMapTexture,
       binGroupType: "string",
       binPropertyName: "",
       binPropertyType: "",
@@ -5323,6 +5428,15 @@ const Values = {
       binGroupType: "embed = VfxChildParticleSetDefinitionData",
       binPropertyName: "effectKey",
       binPropertyType: "hash",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "flag-disable-z",
+      troybinType: "ONE_DOUBLE",
+      binGroup: miscRenderFlags,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     },
     {

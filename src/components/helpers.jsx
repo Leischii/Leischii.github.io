@@ -603,8 +603,8 @@ export function WriteProperty(property, spacingAmount) {
         forceDynamics
       ) {
         formatedProperty.push(
-          `${getSpacing(spacingAmount)}${property.name}: ${
-            property.members[0].binGroupType
+          `${getSpacing(spacingAmount)}${property.name}: embed = ${
+            property.members[0].binGroup.propertyType
           } {\r\n`
         );
 

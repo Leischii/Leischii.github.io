@@ -15,6 +15,8 @@ import akaliNew from "../splasharts/Akali_New.png";
 import akaliOld from "../splasharts/Akali_Old.png";
 import blitzcrankNew from "../splasharts/Blitzcrank_New.png";
 import blitzcrankOld from "../splasharts/Blitzcrank_Old.png";
+import cassiopeiaNew from "../splasharts/Cassiopeia_New.png";
+import cassiopeiaOld from "../splasharts/Cassiopeia_Old.png";
 import gangplankNew from "../splasharts/Gangplank_New.png";
 import gangplankOld from "../splasharts/Gangplank_Old.png";
 import HeimerdingerNew from "../splasharts/Heimerdinger_New.png";
@@ -43,7 +45,7 @@ export default class Main extends Component {
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
-      randomIndex: Math.floor(Math.random() * 11)
+      randomIndex: Math.floor(Math.random() * 12)
     };
 
     this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
@@ -564,6 +566,22 @@ export default class Main extends Component {
             `${getSpacing(spacing + 4)}}\r\n`,
             `${getSpacing(spacing + 3)}}\r\n`
           );
+        } else if (property.name === "distortionDefinition") {
+          finalBin.push(
+            `${getSpacing(
+              spacing + 3
+            )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
+          );
+
+          property.members.forEach(member => {
+            entry = WriteProperty(member, spacing + 4);
+
+            entry.forEach(e => {
+              finalBin.push(e);
+            });
+          });
+
+          finalBin.push(`${getSpacing(spacing + 3)}}\r\n`);
         } else {
           entry = WriteProperty(property, spacing + 3);
 
@@ -661,6 +679,7 @@ export default class Main extends Component {
         aatroxOld,
         akaliOld,
         blitzcrankOld,
+        cassiopeiaOld,
         gangplankOld,
         HeimerdingerOld,
         katarinaOld,
@@ -674,6 +693,7 @@ export default class Main extends Component {
         aatroxNew,
         akaliNew,
         blitzcrankNew,
+        cassiopeiaNew,
         gangplankNew,
         HeimerdingerNew,
         katarinaNew,
