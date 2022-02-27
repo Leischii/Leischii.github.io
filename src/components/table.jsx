@@ -1159,7 +1159,7 @@ const Values = {
       troybinName: "e-rotation1-axis",
       troybinType: "THREE_DOUBLE",
       binGroup: emitRotationAxes,
-      binGroupType: "list[vec3] =",
+      binGroupType: "list[vec3]",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
@@ -1195,7 +1195,7 @@ const Values = {
       troybinName: "e-rotation2-axis",
       troybinType: "THREE_DOUBLE",
       binGroup: emitRotationAxes,
-      binGroupType: "list[vec3] =",
+      binGroupType: "list[vec3]",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined

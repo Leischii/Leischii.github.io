@@ -584,7 +584,9 @@ export function UpdateEmitters(data) {
                 binGroup: property.binGroup,
                 binGroupType: property.binGroupType,
                 binPropertyName: property.simpleValue[4],
-                binPropertyType: property.binPropertyType,
+                binPropertyType: property.simpleValue[4].includes("timesTable")
+                  ? property.binPropertyType
+                  : property.simpleValue[2],
                 value: correctValue
               };
 

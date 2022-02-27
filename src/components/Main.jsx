@@ -300,7 +300,7 @@ export default class Main extends Component {
           }
         }
 
-        if (assignedProperty.binGroup === undefined) {
+        if (assignedProperty.binGroup === undefined && !needsChanges) {
           if (
             troybinData.unknown.findIndex(emit => emit === propertyName) === -1
           ) {
@@ -627,7 +627,7 @@ export default class Main extends Component {
             entry = WriteProperty(member, spacing + 4);
 
             entry.forEach(e => {
-              finalBin.push(e);
+              propertiesWritten.push(e);
             });
           });
 
