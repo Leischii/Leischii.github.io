@@ -1,10 +1,9 @@
 {
   "files": {
     "main.css": "/static/css/main.3c946d37.css",
-    "main.js": "/static/js/main.f3d8da31.js",
+    "main.js": "/static/js/main.d8986f6a.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
     "static/media/Ezreal_Old.png": "/static/media/Ezreal_Old.024d106dec975c66d738.png",
-    "static/media/Veigar_New.png": "/static/media/Veigar_New.4b73a32edd64ebea5627.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
     "static/media/Viktor_Old.png": "/static/media/Viktor_Old.aec955d98d98c1cab7bd.png",
     "static/media/Sona_Old.png": "/static/media/Sona_Old.3e96d7986c8de8514bed.png",
@@ -19,7 +18,6 @@
     "static/media/Cassiopeia_Old.png": "/static/media/Cassiopeia_Old.0545c0991759f27ea0ca.png",
     "static/media/Blitzcrank_Old.png": "/static/media/Blitzcrank_Old.ab4b8636d612d9a93daf.png",
     "static/media/Akali_Old.png": "/static/media/Akali_Old.6bc98a74b785104ead6c.png",
-    "static/media/Seraphine_New.png": "/static/media/Seraphine_New.1b8c806c4c55e4535857.png",
     "static/media/Nasus_Old.png": "/static/media/Nasus_Old.d6993a31f0a7387b14c9.png",
     "static/media/Aatrox_Old.png": "/static/media/Aatrox_Old.521fe54208a0b3cc56a1.png",
     "static/media/Varus_Old.png": "/static/media/Varus_Old.bd4a40806c33dac22ce6.png",
@@ -33,6 +31,8 @@
     "static/media/Heimerdinger_New.png": "/static/media/Heimerdinger_New.54362707e1a8977ae593.png",
     "static/media/Viktor_New.png": "/static/media/Viktor_New.ee8aafc4823e86a36644.png",
     "static/media/Aatrox_New.png": "/static/media/Aatrox_New.ddb957d1f52485b64af5.png",
+    "static/media/Veigar_New.png": "/static/media/Veigar_New.f5a63973c211805ca466.png",
+    "static/media/Seraphine_New.png": "/static/media/Seraphine_New.e389061e0f1d6e7f7044.png",
     "static/media/Fiora_New.png": "/static/media/Fiora_New.7b0938d23249afe10fe7.png",
     "static/media/Nasus_New.png": "/static/media/Nasus_New.d956341d5259919431f2.png",
     "static/media/Trundle_New.png": "/static/media/Trundle_New.24ed94d9d9143fd9151c.png",
@@ -45,10 +45,10 @@
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "index.html": "/index.html",
     "main.3c946d37.css.map": "/static/css/main.3c946d37.css.map",
-    "main.f3d8da31.js.map": "/static/js/main.f3d8da31.js.map"
+    "main.d8986f6a.js.map": "/static/js/main.d8986f6a.js.map"
   },
   "entrypoints": [
     "static/css/main.3c946d37.css",
-    "static/js/main.f3d8da31.js"
+    "static/js/main.d8986f6a.js"
   ]
 }
