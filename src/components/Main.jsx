@@ -553,7 +553,7 @@ export default class Main extends Component {
     ];
 
     bin.emitters.forEach(emitter => {
-      finalBin.push(`${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`);
+      const propertiesWritten = [];
 
       emitter.forEach(property => {
         let entry;
@@ -570,22 +570,22 @@ export default class Main extends Component {
           });
 
           if (writenLines.length) {
-            finalBin.push(
+            propertiesWritten.push(
               `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
             );
 
             writenLines.forEach(line => {
-              finalBin.push(line);
+              propertiesWritten.push(line);
             });
 
-            finalBin.push(`${getSpacing(spacing + 3)}}\r\n`);
+            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
           }
         } else if (
           property.name === "primitiveMesh" ||
           property.name === "primitiveTrail"
         ) {
           if (property.name === "primitiveTrail") {
-            finalBin.push(
+            propertiesWritten.push(
               `${getSpacing(
                 spacing + 3
               )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
@@ -594,7 +594,7 @@ export default class Main extends Component {
               )}mTrail: embed = VfxTrailDefinitionData {\r\n`
             );
           } else if (property.name === "primitiveMesh") {
-            finalBin.push(
+            propertiesWritten.push(
               `${getSpacing(
                 spacing + 3
               )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
@@ -608,16 +608,16 @@ export default class Main extends Component {
             entry = WriteProperty(member, spacing + 5);
 
             entry.forEach(e => {
-              finalBin.push(e);
+              propertiesWritten.push(e);
             });
           });
 
-          finalBin.push(
+          propertiesWritten.push(
             `${getSpacing(spacing + 4)}}\r\n`,
             `${getSpacing(spacing + 3)}}\r\n`
           );
         } else if (property.name === "distortionDefinition") {
-          finalBin.push(
+          propertiesWritten.push(
             `${getSpacing(
               spacing + 3
             )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
@@ -631,17 +631,26 @@ export default class Main extends Component {
             });
           });
 
-          finalBin.push(`${getSpacing(spacing + 3)}}\r\n`);
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
         } else {
           entry = WriteProperty(property, spacing + 3);
 
           entry.forEach(e => {
-            finalBin.push(e);
+            propertiesWritten.push(e);
           });
         }
       });
 
-      finalBin.push(`${getSpacing(spacing + 2)}}\r\n`);
+      if (propertiesWritten.length) {
+        finalBin.push(
+          `${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`
+        );
+
+        propertiesWritten.forEach(emitterLine => {
+          finalBin.push(emitterLine);
+        });
+        finalBin.push(`${getSpacing(spacing + 2)}}\r\n`);
+      }
     });
 
     finalBin.push(`${getSpacing(spacing + 1)}}\r\n`);
