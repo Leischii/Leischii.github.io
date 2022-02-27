@@ -1,11 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.3c946d37.css",
-    "main.js": "/static/js/main.d2d8c199.js",
+    "main.js": "/static/js/main.f3d8da31.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
+    "static/media/Ezreal_Old.png": "/static/media/Ezreal_Old.024d106dec975c66d738.png",
     "static/media/Veigar_New.png": "/static/media/Veigar_New.4b73a32edd64ebea5627.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
+    "static/media/Viktor_Old.png": "/static/media/Viktor_Old.aec955d98d98c1cab7bd.png",
+    "static/media/Sona_Old.png": "/static/media/Sona_Old.3e96d7986c8de8514bed.png",
+    "static/media/Trundle_Old.png": "/static/media/Trundle_Old.1f385e98c9b73b13c4ba.png",
+    "static/media/Fiora_Old.png": "/static/media/Fiora_Old.d10ca21fba5870309e91.png",
     "static/media/Ashe_Old.png": "/static/media/Ashe_Old.2bd2f3ade9f4e9ca7bdb.png",
+    "static/media/Warwick_Old.png": "/static/media/Warwick_Old.0a8b0982a4ceff4105bc.png",
     "static/media/Heimerdinger_Old.png": "/static/media/Heimerdinger_Old.8a08c55f27efdd2e4747.png",
     "static/media/Veigar_Old.png": "/static/media/Veigar_Old.581706eae6ca9e029947.png",
     "static/media/Poppy_Old.png": "/static/media/Poppy_Old.493a62e26def4c0b38cc.png",
@@ -14,26 +20,35 @@
     "static/media/Blitzcrank_Old.png": "/static/media/Blitzcrank_Old.ab4b8636d612d9a93daf.png",
     "static/media/Akali_Old.png": "/static/media/Akali_Old.6bc98a74b785104ead6c.png",
     "static/media/Seraphine_New.png": "/static/media/Seraphine_New.1b8c806c4c55e4535857.png",
+    "static/media/Nasus_Old.png": "/static/media/Nasus_Old.d6993a31f0a7387b14c9.png",
     "static/media/Aatrox_Old.png": "/static/media/Aatrox_Old.521fe54208a0b3cc56a1.png",
+    "static/media/Varus_Old.png": "/static/media/Varus_Old.bd4a40806c33dac22ce6.png",
     "static/media/Gangplank_Old.png": "/static/media/Gangplank_Old.6c4a0a2c93c0eca0f17a.png",
     "static/media/MissFortune_Old.png": "/static/media/MissFortune_Old.069ca3642bc5b3ac2cc9.png",
     "static/media/MissFortune_New.png": "/static/media/MissFortune_New.da55d8f4081c8d17f3dc.png",
+    "static/media/Ezreal_New.png": "/static/media/Ezreal_New.3483c61e2b95afe2a6f9.png",
     "static/media/Katarina_New.png": "/static/media/Katarina_New.46084881792776688171.png",
     "static/media/Blitzcrank_New.png": "/static/media/Blitzcrank_New.0d9743240dab70d01795.png",
+    "static/media/Varus_New.png": "/static/media/Varus_New.10bcb1af6f7437c60c9e.png",
     "static/media/Heimerdinger_New.png": "/static/media/Heimerdinger_New.54362707e1a8977ae593.png",
+    "static/media/Viktor_New.png": "/static/media/Viktor_New.ee8aafc4823e86a36644.png",
     "static/media/Aatrox_New.png": "/static/media/Aatrox_New.ddb957d1f52485b64af5.png",
+    "static/media/Fiora_New.png": "/static/media/Fiora_New.7b0938d23249afe10fe7.png",
+    "static/media/Nasus_New.png": "/static/media/Nasus_New.d956341d5259919431f2.png",
+    "static/media/Trundle_New.png": "/static/media/Trundle_New.24ed94d9d9143fd9151c.png",
     "static/media/Poppy_New.png": "/static/media/Poppy_New.dcd740a1f34e291f5411.png",
     "static/media/Sona_New.png": "/static/media/Sona_New.5494c209d26add227d48.png",
+    "static/media/Warwick_New.png": "/static/media/Warwick_New.f0907d921e03373397fb.png",
     "static/media/Cassiopeia_New.png": "/static/media/Cassiopeia_New.468d81ba9e6d0e44a162.png",
     "static/media/Ashe_New.png": "/static/media/Ashe_New.865f3ecfd2b80a4cf953.png",
     "static/media/Sion_New.png": "/static/media/Sion_New.2b1f371ff43ee7f99c86.png",
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "index.html": "/index.html",
     "main.3c946d37.css.map": "/static/css/main.3c946d37.css.map",
-    "main.d2d8c199.js.map": "/static/js/main.d2d8c199.js.map"
+    "main.f3d8da31.js.map": "/static/js/main.f3d8da31.js.map"
   },
   "entrypoints": [
     "static/css/main.3c946d37.css",
-    "static/js/main.d2d8c199.js"
+    "static/js/main.f3d8da31.js"
   ]
 }
