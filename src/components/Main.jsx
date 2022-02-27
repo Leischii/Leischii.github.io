@@ -6,6 +6,7 @@ import {
   FormatInput,
   FormatValue,
   GetStructureData,
+  UpdateEmitters,
   WriteProperty
 } from "./helpers";
 
@@ -19,6 +20,10 @@ import blitzcrankNew from "../splasharts/Blitzcrank_New.png";
 import blitzcrankOld from "../splasharts/Blitzcrank_Old.png";
 import cassiopeiaNew from "../splasharts/Cassiopeia_New.png";
 import cassiopeiaOld from "../splasharts/Cassiopeia_Old.png";
+import ezrealNew from "../splasharts/Ezreal_New.png";
+import ezrealOld from "../splasharts/Ezreal_Old.png";
+import fioraNew from "../splasharts/Fiora_New.png";
+import fioraOld from "../splasharts/Fiora_Old.png";
 import gangplankNew from "../splasharts/Gangplank_New.png";
 import gangplankOld from "../splasharts/Gangplank_Old.png";
 import HeimerdingerNew from "../splasharts/Heimerdinger_New.png";
@@ -27,14 +32,25 @@ import katarinaNew from "../splasharts/Katarina_New.png";
 import katarinaOld from "../splasharts/Katarina_Old.png";
 import missFortuneNew from "../splasharts/MissFortune_New.png";
 import missFortuneOld from "../splasharts/MissFortune_Old.png";
+import nasusNew from "../splasharts/Nasus_New.png";
+import nasusOld from "../splasharts/Nasus_Old.png";
 import poppyNew from "../splasharts/Poppy_New.png";
 import poppyOld from "../splasharts/Poppy_Old.png";
 import sonaNew from "../splasharts/Sona_New.png";
+import sonaOld from "../splasharts/Sona_Old.png";
 import sionNew from "../splasharts/Sion_New.png";
 import sionOld from "../splasharts/Sion_Old.png";
 import seraphineNew from "../splasharts/Seraphine_New.png";
+import trundleNew from "../splasharts/Trundle_New.png";
+import trundleOld from "../splasharts/Trundle_Old.png";
+import varusNew from "../splasharts/Varus_New.png";
+import varusOld from "../splasharts/Varus_Old.png";
 import veigarNew from "../splasharts/Veigar_New.png";
 import veigarOld from "../splasharts/Veigar_Old.png";
+import viktorNew from "../splasharts/Viktor_New.png";
+import viktorOld from "../splasharts/Viktor_Old.png";
+import warwickNew from "../splasharts/Warwick_New.png";
+import warwickOld from "../splasharts/Warwick_Old.png";
 
 export default class Main extends Component {
   constructor(props) {
@@ -47,7 +63,7 @@ export default class Main extends Component {
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
-      randomIndex: Math.floor(Math.random() * 13),
+      randomIndex: Math.floor(Math.random() * 21),
       updateFileTypes: true
     };
 
@@ -152,6 +168,7 @@ export default class Main extends Component {
         troybinEntries.push(entry);
       }
     }
+
     troybinEntries.push(unknown.length ? (system, unknown) : system);
 
     const troybinData = {
@@ -162,13 +179,14 @@ export default class Main extends Component {
     };
 
     troybinEntries.forEach(entry => {
-      const isSystem = entry.name === "System";
-      const isUnknown = entry.name === "UNKNOWN_HASHES";
-
       const emitter = {
         name: entry.name,
         properties: []
       };
+      const isSystem = entry.name === "System";
+      const isUnknown = entry.name === "UNKNOWN_HASHES";
+
+      let needsChanges = false;
 
       entry.properties.forEach(prop => {
         let assignedProperty = {
@@ -178,7 +196,7 @@ export default class Main extends Component {
         let entryFound = false;
 
         const stringParts = prop.split("=");
-        const propertyName = stringParts[0];
+        const propertyName = stringParts[0].replace("'", "");
         const propertyValuePart = stringParts[1];
 
         if (!isUnknown) {
@@ -230,6 +248,25 @@ export default class Main extends Component {
                     emit => emit.order === emitterValue
                   );
                 }
+              } else if (sValue.troybinName === "GroupPartType") {
+                if (
+                  propertyName.includes("GroupPart") &&
+                  propertyName.includes("Type")
+                ) {
+                  if (propertyValuePart === "\"Simple\"") { // eslint-disable-line
+                    entryFound = true;
+                    needsChanges = true;
+
+                    const emitterValue = parseInt(
+                      propertyName.replace("GroupPart", "").replace("Type", ""),
+                      10
+                    );
+
+                    emitterNameEntry = troybinData.emitters.findIndex(
+                      emit => emit.order === emitterValue
+                    );
+                  }
+                }
               } else if (sValue.troybinName === propertyName) {
                 assignedProperty = sValue;
                 entryFound = true;
@@ -240,53 +277,16 @@ export default class Main extends Component {
               if (eValue.troybinName === propertyName) {
                 assignedProperty = eValue;
                 entryFound = true;
+
+                if (propertyName === "e-life" && propertyValuePart === "-1") {
+                  needsChanges = true;
+                }
               }
             });
           } else if (propertyName[0] === "p") {
             Values.pValues.forEach(pValue => {
               if (pValue.troybinName === propertyName) {
-                if (pValue.simpleValue) {
-                  let valueType = "";
-
-                  switch (propertyValuePart.split(" ").length) {
-                    case 1:
-                      valueType = "ONE_DOUBLE";
-                      break;
-                    case 2:
-                      valueType = "TWO_DOUBLE";
-                      break;
-                    case 3:
-                      valueType = "THREE_DOUBLE";
-                      break;
-                    case 4:
-                      valueType = "FOUR_DOUBLE";
-                      break;
-                    case 5:
-                      valueType = "FIVE_DOUBLE";
-                      break;
-                    default:
-                      break;
-                  }
-
-                  if (
-                    pValue.troybinType !== valueType &&
-                    pValue.simpleValue[0] === valueType
-                  ) {
-                    assignedProperty = {
-                      troybinName: pValue.troybinName,
-                      troybinType: pValue.simpleValue[0],
-                      binGroup: pValue.simpleValue[3],
-                      binGroupType: pValue.simpleValue[1],
-                      binPropertyName: pValue.binPropertyName,
-                      binPropertyType: pValue.simpleValue[2]
-                    };
-                  } else {
-                    assignedProperty = pValue;
-                  }
-                } else {
-                  assignedProperty = pValue;
-                }
-
+                assignedProperty = pValue;
                 entryFound = true;
               }
             });
@@ -316,23 +316,55 @@ export default class Main extends Component {
           }
         }
 
-        if (assignedProperty.troybinName) {
-          assignedProperty.value = FormatValue(
-            propertyValuePart,
-            assignedProperty.troybinType,
-            defaultAssetsPath,
-            updateFileTypes
-          );
+        let formatedValue;
 
-          const property = JSON.parse(JSON.stringify(assignedProperty));
+        if (assignedProperty.troybinName || needsChanges) {
+          if (assignedProperty.troybinName) {
+            formatedValue = JSON.parse(
+              JSON.stringify(
+                FormatValue(
+                  propertyValuePart,
+                  assignedProperty.troybinType,
+                  defaultAssetsPath,
+                  updateFileTypes
+                )
+              )
+            );
+          }
+
+          const property = JSON.parse(
+            JSON.stringify({
+              troybinName: assignedProperty.troybinName,
+              troybinType: assignedProperty.troybinType,
+              binGroup: assignedProperty.binGroup,
+              binGroupType: assignedProperty.binGroupType,
+              binPropertyName: assignedProperty.binPropertyName,
+              binPropertyType: assignedProperty.binPropertyType,
+              defaultValue: assignedProperty.defaultValue,
+              simpleValue: assignedProperty.simpleValue || undefined,
+              value: formatedValue
+            })
+          );
 
           if (isSystem) {
             if (emitterNameEntry !== -1) {
-              troybinData.emitters[emitterNameEntry].properties.push(property);
+              if (needsChanges) {
+                troybinData.emitters[emitterNameEntry].needsChanges = true;
+                troybinData.emitters[emitterNameEntry].isSimple = true;
+                needsChanges = false;
+              } else {
+                troybinData.emitters[emitterNameEntry].properties.push(
+                  JSON.parse(JSON.stringify(property))
+                );
+              }
             } else {
               troybinData.system.push(property);
             }
           } else {
+            if (needsChanges) {
+              emitter.needsChanges = true;
+              needsChanges = false;
+            }
             emitter.properties.push(property);
           }
         }
@@ -661,7 +693,9 @@ export default class Main extends Component {
 
       const troybinStructure = this.readTroybin();
 
-      const binStructure = this.createBin(troybinStructure);
+      const updatedTroybin = UpdateEmitters(troybinStructure);
+
+      const binStructure = this.createBin(updatedTroybin);
 
       const finalBin = this.writeBin(binStructure);
 
@@ -700,14 +734,22 @@ export default class Main extends Component {
         asheOld,
         blitzcrankOld,
         cassiopeiaOld,
+        ezrealOld,
+        fioraOld,
         gangplankOld,
         HeimerdingerOld,
         katarinaOld,
         missFortuneOld,
+        nasusOld,
         poppyOld,
         sionOld,
         sonaNew,
-        veigarOld
+        sonaOld,
+        trundleOld,
+        varusOld,
+        veigarOld,
+        viktorOld,
+        warwickOld
       ],
       new: [
         aatroxNew,
@@ -715,14 +757,22 @@ export default class Main extends Component {
         asheNew,
         blitzcrankNew,
         cassiopeiaNew,
+        ezrealNew,
+        fioraNew,
         gangplankNew,
         HeimerdingerNew,
         katarinaNew,
         missFortuneNew,
+        nasusNew,
         poppyNew,
         sionNew,
         seraphineNew,
-        veigarNew
+        sonaNew,
+        trundleNew,
+        varusNew,
+        veigarNew,
+        viktorNew,
+        warwickNew
       ]
     };
 
@@ -732,7 +782,7 @@ export default class Main extends Component {
           <h1>Troygrade - A League of Legends Troybin Converter</h1>
           <br />
           <h3>
-            1. Upload{" "}
+            1. Select A Troybin File Converted To .txt With{" "}
             <a
               href="https://github.com/moonshadow565/lolpytools"
               style={{ color: "#FFF" }}
@@ -740,11 +790,10 @@ export default class Main extends Component {
               rel="noreferrer"
             >
               <u>lol-pytools</u>
-            </a>{" "}
-            Troybin File
+            </a>
           </h3>
           <h3>2. Click On Convert</h3>
-          <h3>3. Download Converted Bin</h3>
+          <h3>3. Click On Download</h3>
         </div>
 
         <div className="row mt-5">
@@ -776,13 +825,13 @@ export default class Main extends Component {
             </h5>
             <div className="d-flex justify-content-center">
               <input
-                name="PathToAssets"
-                type="text"
                 className="w-100"
-                value={defaultAssetsPath}
+                disabled={clicked}
+                name="PathToAssets"
                 onChange={this.handleChangeAssetsPath}
                 placeholder="ASSETS/Shared/Particles"
-                readOnly={clicked}
+                type="text"
+                value={defaultAssetsPath}
               />
             </div>
             <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
@@ -790,22 +839,23 @@ export default class Main extends Component {
             </h5>
             <div className="d-flex justify-content-center">
               <input
-                name="PathToParticle"
-                type="text"
                 className="w-100"
-                value={defaultFilePath}
+                disabled={clicked}
+                name="PathToParticle"
                 onChange={this.handleChangeFilePath}
                 placeholder="Shared/Particles"
-                readOnly={clicked}
+                type="text"
+                value={defaultFilePath}
               />
             </div>
             <div className="d-flex">
               <input
-                name="UpdateFileType"
-                type="checkbox"
-                className="mt-2 text-light d-flex mr-2"
                 checked={updateFileTypes}
+                className="mt-2 text-light d-flex mr-2"
+                disabled={clicked}
+                name="UpdateFileType"
                 onChange={this.handleChangeUpdateFileType}
+                type="checkbox"
               />
               <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
                 Update File Typings (.tga --&gt; .dds)
@@ -833,26 +883,28 @@ export default class Main extends Component {
               </button>
             </div>
             <div className="d-flex justify-content-center">
-              <button
-                className="mt-2 btn btn-dark w-100"
-                disabled={!clicked}
-                type="button"
-              >
-                {clicked ? (
-                  <a
-                    href={convertedLink}
-                    download={`${outputFileName.replace(
-                      ".txt",
-                      ""
-                    )}_converted.txt`}
-                    style={{ color: "#FFF" }}
-                  >
-                    Download
-                  </a>
-                ) : (
-                  <>Download</>
-                )}
-              </button>
+              {clicked ? (
+                <a
+                  className="mt-2 btn btn-dark w-100"
+                  href={convertedLink}
+                  download={`${outputFileName.replace(
+                    ".txt",
+                    ""
+                  )}_converted.txt`}
+                  style={{ color: "#FFF" }}
+                >
+                  Download
+                </a>
+              ) : (
+                <button
+                  className="mt-2 btn btn-dark w-100"
+                  disabled
+                  type="button"
+                  style={{ color: "#FFF" }}
+                >
+                  Download
+                </button>
+              )}
             </div>
             <div className="d-flex justify-content-center">
               <h4 className="mt-2 text-light text-center">{progressStep}</h4>

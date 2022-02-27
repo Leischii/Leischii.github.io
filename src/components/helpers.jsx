@@ -279,7 +279,6 @@ function writeDynamics(
 
     result.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
   } else {
-    console.log(property);
     result.push(
       `${getSpacing(spacingAmount)}dynamics: ${
         timesTable[0] !== undefined
@@ -340,6 +339,32 @@ function writeDynamics(
 
   return result;
 }
+
+export function CheckValueType(value) {
+  let valueType = "";
+
+  switch (value.length) {
+    case 1:
+      valueType = "ONE_DOUBLE";
+      break;
+    case 2:
+      valueType = "TWO_DOUBLE";
+      break;
+    case 3:
+      valueType = "THREE_DOUBLE";
+      break;
+    case 4:
+      valueType = "FOUR_DOUBLE";
+      break;
+    case 5:
+      valueType = "FIVE_DOUBLE";
+      break;
+    default:
+      break;
+  }
+
+  return valueType;
+}
 /*
 Converts text into array with each entry representing a line of text
 Also removes backspaces
@@ -383,16 +408,16 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       formatedValue = parseFloat(values);
       break;
     case "TWO_DOUBLE":
-      formatedValue = FormatNumber(values, 2);
+      formatedValue = FormatNumber(values);
       break;
     case "THREE_DOUBLE":
-      formatedValue = FormatNumber(values, 3);
+      formatedValue = FormatNumber(values);
       break;
     case "FOUR_DOUBLE":
-      formatedValue = FormatNumber(values, 4);
+      formatedValue = FormatNumber(values);
       break;
     case "FIVE_DOUBLE":
-      formatedValue = FormatNumber(values, 5);
+      formatedValue = FormatNumber(values);
       break;
     case "DOUBLE_TO_PRIMITIVE":
       if (values === "0") {
@@ -404,6 +429,8 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       } else if (values === "3") {
         formatedValue = -1;
       } else if (values === "4") {
+        formatedValue = -1;
+      } else if (values === "5") {
         formatedValue = -1;
       } else {
         formatedValue = -1;
@@ -442,11 +469,16 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
     case "STRING_NO_PATH":
       formatedValue = values;
       break;
+    case "STRINGS_NO_PATH":
+      formatedValue = values.split(" ");
+      break;
     case "TWO_DOUBLE_TO_ONE":
       if (values.split(" ")[0] === "1.0" || values.split(" ")[1] === "1.0") {
         formatedValue = 1;
       } else {
-        formatedValue = 0;
+        const valueArray = values.split(" ");
+
+        formatedValue = parseFloat(valueArray[0]);
       }
       break;
     case "TWO_DOUBLE_TO_XYZ":
@@ -463,6 +495,149 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
   }
 
   return formatedValue;
+}
+
+/*
+Rewrites emitter to simple emitter and returns new properties array
+*/
+export function UpdateEmitters(data) {
+  const troybinData = JSON.parse(JSON.stringify(data));
+
+  const emitters = [];
+
+  troybinData.emitters.forEach(emit => {
+    const emitter = JSON.parse(JSON.stringify(emit));
+
+    if (emitter.needsChanges) {
+      const propertiesToAdd = [];
+      const propertiesToRemove = [];
+
+      const updatedEmitter = {
+        name: emitter.name,
+        properties: []
+      };
+
+      emitter.properties.forEach(prop => {
+        const property = JSON.parse(JSON.stringify(prop));
+
+        if (property.binGroup.name === "lifetime" && property.value === -1) {
+          propertiesToRemove.push("lifetime", "particleLifetime");
+        }
+
+        if (emitter.isSimple) {
+          // Todo: More rules
+          const isSimpleProperty = !!property.simpleValue;
+
+          let normalProperty;
+          let simpleProperty;
+
+          if (isSimpleProperty) {
+            if (property.binPropertyName === "constantValue") {
+              normalProperty = property;
+              simpleProperty = {
+                troybinName: property.troybinName,
+                troybinType: property.simpleValue[0],
+                binGroup: property.simpleValue[3],
+                binGroupType: property.simpleValue[1],
+                binPropertyName: property.binPropertyName,
+                binPropertyType: property.simpleValue[2]
+              };
+
+              const valueType = CheckValueType(property.value);
+
+              if (valueType === property.troybinType) {
+                normalProperty.value = property.value;
+                simpleProperty.value = property.value[0]; // eslint-disable-line
+              } else if (
+                normalProperty.binGroup.name === "birthRotationalVelocity0" ||
+                normalProperty.binGroup.name === "birthRotation0"
+              ) {
+                normalProperty.value = [property.value, 0, 0];
+                simpleProperty.value = property.value[0][0]; // eslint-disable-line
+              } else if (property.binGroup.name === "bindWeight") {
+                normalProperty.value = property.value;
+                simpleProperty.binPropertyName = "";
+                simpleProperty.value = [property.value, property.value];
+              } else {
+                normalProperty.value = [
+                  property.value,
+                  property.value,
+                  property.value
+                ];
+                simpleProperty.value = property.value[0][0]; // eslint-disable-line
+              }
+            } else {
+              const correctValue = property.simpleValue[4].includes(
+                "timesTable"
+              )
+                ? [
+                    property.value[0],
+                    property.value[1],
+                    property.value[1],
+                    property.value[1]
+                  ]
+                : property.value;
+
+              normalProperty = {
+                troybinName: property.troybinName,
+                troybinType: property.simpleValue[0],
+                binGroup: property.binGroup,
+                binGroupType: property.binGroupType,
+                binPropertyName: property.simpleValue[4],
+                binPropertyType: property.binPropertyType,
+                value: correctValue
+              };
+
+              if (property.binGroup.name !== property.simpleValue[3].name) {
+                simpleProperty = {
+                  troybinName: property.troybinName,
+                  troybinType: property.simpleValue[0],
+                  binGroup: property.simpleValue[3],
+                  binGroupType: property.simpleValue[1],
+                  binPropertyName: property.simpleValue[4],
+                  binPropertyType: property.simpleValue[2],
+                  value: property.value
+                };
+              } else {
+                simpleProperty = undefined;
+              }
+            }
+
+            if (simpleProperty !== undefined) {
+              propertiesToAdd.push(normalProperty, simpleProperty);
+            } else {
+              propertiesToAdd.push(normalProperty);
+            }
+
+            propertiesToRemove.push(normalProperty.troybinName);
+          }
+        }
+      });
+
+      emitter.properties.forEach(property => {
+        const keepEntry =
+          propertiesToRemove.find(
+            element => element === property.troybinName
+          ) === undefined;
+
+        if (keepEntry) {
+          updatedEmitter.properties.push(property);
+        }
+      });
+
+      propertiesToAdd.forEach(addProperty => {
+        updatedEmitter.properties.push(addProperty);
+      });
+
+      emitters.push(updatedEmitter);
+    } else {
+      emitters.push(emitter);
+    }
+  });
+
+  troybinData.emitters = emitters;
+
+  return troybinData;
 }
 
 /*
@@ -570,13 +745,6 @@ export function WriteProperty(property, spacingAmount) {
 
       break;
     case "SimpleObjectProperty":
-      constValueWritten = writeConstantValue(
-        property,
-        spacingAmount + 1,
-        true,
-        true
-      );
-
       if (property.members[0].value !== property.members[0].defaultValue) {
         formatedProperty.push(
           `${getSpacing(spacingAmount)}${property.name}: ${
@@ -584,9 +752,27 @@ export function WriteProperty(property, spacingAmount) {
           } = {\r\n`
         );
 
-        constValueWritten.result.forEach(entry => {
-          formatedProperty.push(entry);
-        });
+        const isStringArray =
+          property.members[0].troybinType === "STRINGS_NO_PATH";
+
+        if (isStringArray) {
+          property.members[0].value.forEach(valuePart => {
+            formatedProperty.push(
+              `${getSpacing(spacingAmount + 1)}${valuePart}\r\n`
+            );
+          });
+        } else {
+          constValueWritten = writeConstantValue(
+            property,
+            spacingAmount + 1,
+            true,
+            true
+          );
+
+          constValueWritten.result.forEach(entry => {
+            formatedProperty.push(entry);
+          });
+        }
 
         formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
       }
