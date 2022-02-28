@@ -302,6 +302,20 @@ const color = {
   order: 70
 };
 
+const colorLookUpOffsets = {
+  name: "colorLookUpOffsets",
+  members: [],
+  structure: "SimpleProperty",
+  order: 58
+};
+
+const colorLookUpScales = {
+  name: "colorLookUpScales",
+  members: [],
+  structure: "SimpleProperty",
+  order: 57
+};
+
 const colorLookUpType = {
   name: "colorLookUpType",
   members: [],
@@ -462,6 +476,13 @@ const mBirthTilingSize = {
   parent: primitiveTrail
 };
 
+const meshRenderFlags = {
+  name: "meshRenderFlags",
+  members: [],
+  structure: "SimpleProperty",
+  order: 56
+};
+
 const miscRenderFlags = {
   name: "miscRenderFlags",
   members: [],
@@ -592,6 +613,13 @@ const scale1 = {
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 231
+};
+
+const sliceTechniqueRange = {
+  name: "sliceTechniqueRange",
+  members: [],
+  structure: "SimpleProperty",
+  order: 59
 };
 
 const softParticleParams = {
@@ -1761,6 +1789,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-alphaslicerange",
+      troybinType: "ONE_DOUBLE",
+      binGroup: sliceTechniqueRange,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-backfaceon",
       troybinType: "INT/BOOLEAN",
       binGroup: disableBackfaceCull,
@@ -1778,6 +1815,24 @@ const Values = {
       binPropertyType: "f32",
       defaultValue: 0,
       simpleValue: ["TWO_DOUBLE", "vec2", "", particleBind]
+    },
+    {
+      troybinName: "p-coloroffset",
+      troybinType: "TWO_DOUBLE",
+      binGroup: colorLookUpOffsets,
+      binGroupType: "vec2",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: 0
+    },
+    {
+      troybinName: "p-colorscale",
+      troybinType: "TWO_DOUBLE",
+      binGroup: colorLookUpScales,
+      binGroupType: "vec2",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: 0
     },
     {
       troybinName: "p-colortype",
@@ -3573,10 +3628,10 @@ const Values = {
     {
       troybinName: "p-type",
       troybinType: "DOUBLE_TO_PRIMITIVE",
-      binGroup: primitive,
-      binGroupType: "pointer",
-      binPropertyName: "",
-      binPropertyType: "",
+      binGroup: [meshRenderFlags, primitive, null, null, null, null],
+      binGroupType: ["u8", "pointer", null, null, null, null],
+      binPropertyName: ["", "", "", "", "", ""],
+      binPropertyType: ["", "", "", "", "", ""],
       defaultValue: -1
     },
     {

@@ -421,7 +421,7 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       break;
     case "DOUBLE_TO_PRIMITIVE":
       if (values === "0") {
-        formatedValue = -1;
+        formatedValue = 0;
       } else if (values === "1") {
         formatedValue = "VfxPrimitiveArbitraryQuad {}";
       } else if (values === "2") {
@@ -482,13 +482,16 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       }
       break;
     case "TWO_DOUBLE_TO_XYZ":
-      if (values.split(" ")[0] === "0.0") {
+      if (values === "1") {
+        formatedValue = ["Y", parseFloat(values)];
+      } else if (values.split(" ")[0] === "0.0") {
         formatedValue = ["X", parseFloat(values.split(" ")[1])];
       } else if (values.split(" ")[0] === "1.0") {
         formatedValue = ["Y", parseFloat(values.split(" ")[1])];
       } else {
         formatedValue = ["Z", parseFloat(values.split(" ")[1])];
       }
+
       break;
     default:
       break;

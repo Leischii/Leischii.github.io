@@ -286,7 +286,25 @@ export default class Main extends Component {
           } else if (propertyName[0] === "p") {
             Values.pValues.forEach(pValue => {
               if (pValue.troybinName === propertyName) {
-                assignedProperty = pValue;
+                if (propertyName === "p-type") {
+                  const typeEntry = {
+                    troybinName: pValue.troybinName,
+                    troybinType: pValue.troybinType,
+                    binGroup: pValue.binGroup[parseInt(propertyValuePart, 10)],
+                    binGroupType:
+                      pValue.binGroupType[parseInt(propertyValuePart, 10)],
+                    binPropertyName:
+                      pValue.binPropertyName[parseInt(propertyValuePart, 10)],
+                    binPropertyType:
+                      pValue.binPropertyType[parseInt(propertyValuePart, 10)],
+                    defaultValue: pValue.defaultValue
+                  };
+
+                  assignedProperty = typeEntry;
+                } else {
+                  assignedProperty = pValue;
+                }
+
                 entryFound = true;
               }
             });
