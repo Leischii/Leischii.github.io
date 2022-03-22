@@ -60,6 +60,7 @@ export default class Main extends Component {
       convertedLink: "",
       defaultAssetsPath: "",
       defaultFilePath: "",
+      namesOnly: false,
       originalTroybin: "",
       outputFileName: "",
       progressStep: "",
@@ -69,6 +70,7 @@ export default class Main extends Component {
 
     this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
     this.handleChangeFilePath = this.handleChangeFilePath.bind(this);
+    this.handleChangeNamesOnly = this.handleChangeNamesOnly.bind(this);
     this.handleChangeUpdateFileType = this.handleChangeUpdateFileType.bind(
       this
     );
@@ -82,10 +84,14 @@ export default class Main extends Component {
     this.setState({ defaultFilePath: event.target.value });
   }
 
-  handleChangeUpdateFileType() {
-    const updateFileTypes = this.state;
+  handleChangeNamesOnly(e) {
+    this.setState({ namesOnly: e.target.checked });
+  }
 
-    this.setState({ updateFileTypes: !updateFileTypes });
+  handleChangeUpdateFileType(e) {
+    this.setState({
+      updateFileTypes: e.target.checked
+    });
   }
 
   clearState = () => {
@@ -117,6 +123,7 @@ export default class Main extends Component {
   readTroybin = () => {
     const {
       defaultAssetsPath,
+      namesOnly,
       originalTroybin,
       outputFileName,
       updateFileTypes
@@ -287,25 +294,28 @@ export default class Main extends Component {
             Values.pValues.forEach(pValue => {
               if (pValue.troybinName === propertyName) {
                 if (propertyName === "p-type") {
-                  const typeEntry = {
-                    troybinName: pValue.troybinName,
-                    troybinType: pValue.troybinType,
-                    binGroup: pValue.binGroup[parseInt(propertyValuePart, 10)],
-                    binGroupType:
-                      pValue.binGroupType[parseInt(propertyValuePart, 10)],
-                    binPropertyName:
-                      pValue.binPropertyName[parseInt(propertyValuePart, 10)],
-                    binPropertyType:
-                      pValue.binPropertyType[parseInt(propertyValuePart, 10)],
-                    defaultValue: pValue.defaultValue
-                  };
+                  if (parseFloat(propertyValuePart) < 2) {
+                    const typeEntry = {
+                      troybinName: pValue.troybinName,
+                      troybinType: pValue.troybinType,
+                      binGroup:
+                        pValue.binGroup[parseInt(propertyValuePart, 10)],
+                      binGroupType:
+                        pValue.binGroupType[parseInt(propertyValuePart, 10)],
+                      binPropertyName:
+                        pValue.binPropertyName[parseInt(propertyValuePart, 10)],
+                      binPropertyType:
+                        pValue.binPropertyType[parseInt(propertyValuePart, 10)],
+                      defaultValue: pValue.defaultValue
+                    };
 
-                  assignedProperty = typeEntry;
+                    assignedProperty = typeEntry;
+                    entryFound = true;
+                  }
                 } else {
                   assignedProperty = pValue;
+                  entryFound = true;
                 }
-
-                entryFound = true;
               }
             });
           } else {
@@ -319,18 +329,22 @@ export default class Main extends Component {
         }
 
         if (assignedProperty.binGroup === undefined && !needsChanges) {
-          if (
-            troybinData.unknown.findIndex(emit => emit === propertyName) === -1
-          ) {
-            troybinData.unknown.push(propertyName);
+          const text = namesOnly
+            ? `${propertyName}`
+            : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
+
+          if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
+            troybinData.unknown.push(text);
           }
         }
 
         if (!entryFound) {
-          if (
-            troybinData.unknown.findIndex(emit => emit === propertyName) === -1
-          ) {
-            troybinData.unknown.push(propertyName);
+          const text = namesOnly
+            ? `${propertyName}`
+            : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
+
+          if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
+            troybinData.unknown.push(text);
           }
         }
 
@@ -348,6 +362,22 @@ export default class Main extends Component {
                 )
               )
             );
+
+            if (
+              formatedValue === "INVALID_VALUE" &&
+              assignedProperty.simpleValue !== undefined
+            ) {
+              formatedValue = JSON.parse(
+                JSON.stringify(
+                  FormatValue(
+                    propertyValuePart,
+                    assignedProperty.simpleValue[0],
+                    defaultAssetsPath,
+                    updateFileTypes
+                  )
+                )
+              );
+            }
           }
 
           const property = JSON.parse(
@@ -364,26 +394,36 @@ export default class Main extends Component {
             })
           );
 
-          if (isSystem) {
-            if (emitterNameEntry !== -1) {
-              if (needsChanges) {
-                troybinData.emitters[emitterNameEntry].needsChanges = true;
-                troybinData.emitters[emitterNameEntry].isSimple = true;
-                needsChanges = false;
+          if (property.value !== "INVALID_VALUE") {
+            if (isSystem) {
+              if (emitterNameEntry !== -1) {
+                if (needsChanges) {
+                  troybinData.emitters[emitterNameEntry].needsChanges = true;
+                  troybinData.emitters[emitterNameEntry].isSimple = true;
+                  needsChanges = false;
+                } else {
+                  troybinData.emitters[emitterNameEntry].properties.push(
+                    JSON.parse(JSON.stringify(property))
+                  );
+                }
               } else {
-                troybinData.emitters[emitterNameEntry].properties.push(
-                  JSON.parse(JSON.stringify(property))
-                );
+                troybinData.system.push(property);
               }
             } else {
-              troybinData.system.push(property);
+              if (needsChanges) {
+                emitter.needsChanges = true;
+                needsChanges = false;
+              }
+              emitter.properties.push(property);
             }
           } else {
-            if (needsChanges) {
-              emitter.needsChanges = true;
-              needsChanges = false;
+            const text = namesOnly
+              ? `${propertyName} (unexpected amount of values)`
+              : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
+
+            if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
+              troybinData.unknown.push(text);
             }
-            emitter.properties.push(property);
           }
         }
       });
@@ -748,6 +788,7 @@ export default class Main extends Component {
       convertedLink,
       defaultAssetsPath,
       defaultFilePath,
+      namesOnly,
       progressStep,
       outputFileName,
       randomIndex,
@@ -806,7 +847,7 @@ export default class Main extends Component {
     return (
       <div className="m-5">
         <div className="text-light text-center">
-          <h1>Troygrade - A League of Legends Troybin Converter</h1>
+          <h1>Troygrade - A League of Legends Troybin Migration Tool</h1>
           <br />
           <h3>
             1. Select A Troybin File Converted To .txt With{" "}
@@ -877,15 +918,28 @@ export default class Main extends Component {
             </div>
             <div className="d-flex">
               <input
-                checked={updateFileTypes}
+                defaultChecked={updateFileTypes}
                 className="mt-2 text-light d-flex mr-2"
                 disabled={clicked}
                 name="UpdateFileType"
-                onChange={this.handleChangeUpdateFileType}
+                onChange={e => this.handleChangeUpdateFileType(e)}
                 type="checkbox"
               />
               <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
                 Update File Typings (.tga --&gt; .dds)
+              </div>
+            </div>
+            <div className="d-flex">
+              <input
+                defaultChecked={namesOnly}
+                className="mt-2 text-light d-flex mr-2"
+                disabled={clicked}
+                name="NamesOnly"
+                onChange={e => this.handleChangeNamesOnly(e)}
+                type="checkbox"
+              />
+              <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
+                Only Show Names Of Untranslated Properties
               </div>
             </div>
           </div>

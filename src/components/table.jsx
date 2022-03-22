@@ -278,7 +278,7 @@ const blendMode = {
   name: "blendMode",
   members: [],
   structure: "SimpleProperty",
-  order: 55
+  order: 56
 };
 
 const childParticleSetDefinition = {
@@ -306,21 +306,21 @@ const colorLookUpOffsets = {
   name: "colorLookUpOffsets",
   members: [],
   structure: "SimpleProperty",
-  order: 58
+  order: 60
 };
 
 const colorLookUpScales = {
   name: "colorLookUpScales",
   members: [],
   structure: "SimpleProperty",
-  order: 57
+  order: 59
 };
 
 const colorLookUpType = {
   name: "colorLookUpType",
   members: [],
   structure: "ColorTypeProperty",
-  order: 74
+  order: 58
 };
 
 const disableBackfaceCull = {
@@ -480,7 +480,7 @@ const meshRenderFlags = {
   name: "meshRenderFlags",
   members: [],
   structure: "SimpleProperty",
-  order: 56
+  order: 57
 };
 
 const miscRenderFlags = {
@@ -539,7 +539,7 @@ const particleColorTexture = {
   name: "particleColorTexture",
   members: [],
   structure: "SimpleProperty",
-  order: 54
+  order: 55
 };
 
 const particleIsLocalOrientation = {
@@ -615,11 +615,18 @@ const scale1 = {
   order: 231
 };
 
+const scaleEmitOffsetByBoundObjectSize = {
+  name: "scaleEmitOffsetByBoundObjectSize",
+  members: [],
+  structure: "SimpleProperty",
+  order: 54
+};
+
 const sliceTechniqueRange = {
   name: "sliceTechniqueRange",
   members: [],
   structure: "SimpleProperty",
-  order: 59
+  order: 61
 };
 
 const softParticleParams = {
@@ -634,6 +641,13 @@ const soundOnCreateDefault = {
   members: [],
   structure: "SimpleProperty",
   order: 311
+};
+
+const soundOnCreateName = {
+  name: "soundOnCreateName",
+  members: [],
+  structure: "SimpleProperty",
+  order: 2
 };
 
 const soundPersistentDefault = {
@@ -1871,6 +1885,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-flexoffset",
+      troybinType: "ONE_DOUBLE",
+      binGroup: scaleEmitOffsetByBoundObjectSize,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-life",
       troybinType: "ONE_DOUBLE",
       binGroup: particleLifetime,
@@ -2195,6 +2218,33 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-offsetXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-offsetYP1",
       troybinType: "TWO_DOUBLE",
       binGroup: emitOffset,
@@ -2213,6 +2263,33 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-offsetYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-offsetZP1",
       troybinType: "TWO_DOUBLE",
       binGroup: emitOffset,
@@ -2227,6 +2304,33 @@ const Values = {
       binGroup: emitOffset,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "probTableZ2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetZP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetZP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offsetZP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ5",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -3628,8 +3732,22 @@ const Values = {
     {
       troybinName: "p-type",
       troybinType: "DOUBLE_TO_PRIMITIVE",
-      binGroup: [meshRenderFlags, primitive, null, null, null, null],
-      binGroupType: ["u8", "pointer", null, null, null, null],
+      binGroup: [
+        meshRenderFlags,
+        primitive,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      ],
+      binGroupType: [
+        "u8",
+        "pointer",
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      ],
       binPropertyName: ["", "", "", "", "", ""],
       binPropertyType: ["", "", "", "", "", ""],
       defaultValue: -1
@@ -5561,7 +5679,7 @@ const Values = {
       binGroupType: "u8",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 0
     },
     {
       troybinName: "ChildParticleName",
@@ -5582,7 +5700,7 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "keywordsExcluded",
+      troybinName: "KeywordsExcluded",
       troybinType: "STRINGS_NO_PATH",
       binGroup: keywordsExcluded,
       binGroupType: "list[string]",
@@ -5595,6 +5713,15 @@ const Values = {
       troybinType: "INT/BOOLEAN",
       binGroup: isSingleParticle,
       binGroupType: "flag",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "SoundOnCreate",
+      troybinType: "STRING_NO_PATH",
+      binGroup: soundOnCreateName,
+      binGroupType: "string",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined

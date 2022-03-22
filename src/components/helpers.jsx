@@ -401,23 +401,49 @@ export function FormatNumber(values) {
 Converts string value to their correct type
 */
 export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
+  const invalidValue = "INVALID_VALUE";
   let formatedValue;
 
   switch (type) {
     case "ONE_DOUBLE":
       formatedValue = parseFloat(values);
+
+      if (typeof formatedValue !== "number" || Number.isNaN(formatedValue)) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "TWO_DOUBLE":
       formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 2) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "THREE_DOUBLE":
       formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 3) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "FOUR_DOUBLE":
       formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 4) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "FIVE_DOUBLE":
       formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 5) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "DOUBLE_TO_PRIMITIVE":
       if (values === "0") {
@@ -425,15 +451,15 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       } else if (values === "1") {
         formatedValue = "VfxPrimitiveArbitraryQuad {}";
       } else if (values === "2") {
-        formatedValue = -1;
+        formatedValue = invalidValue;
       } else if (values === "3") {
-        formatedValue = -1;
+        formatedValue = invalidValue;
       } else if (values === "4") {
-        formatedValue = -1;
+        formatedValue = invalidValue;
       } else if (values === "5") {
-        formatedValue = -1;
+        formatedValue = invalidValue;
       } else {
-        formatedValue = -1;
+        formatedValue = invalidValue;
       }
       break;
     case "BOOLEAN/INT":
@@ -445,15 +471,19 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = 2;
       } else if (values === "true" || values === "1") {
         formatedValue = 1;
-      } else {
+      } else if (values === "0") {
         formatedValue = 0;
+      } else {
+        formatedValue = invalidValue;
       }
       break;
     case "INT/BOOLEAN":
       if (values === "1" || values === "true") {
         formatedValue = true;
-      } else {
+      } else if (values === "0" || values === "false") {
         formatedValue = false;
+      } else {
+        formatedValue = invalidValue;
       }
       break;
     case "STRING_PATH":
@@ -480,6 +510,11 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
 
         formatedValue = parseFloat(valueArray[0]);
       }
+
+      if (values.split(" ").length !== 2) {
+        formatedValue = invalidValue;
+      }
+
       break;
     case "TWO_DOUBLE_TO_XYZ":
       if (values === "1") {
@@ -490,6 +525,10 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = ["Y", parseFloat(values.split(" ")[1])];
       } else {
         formatedValue = ["Z", parseFloat(values.split(" ")[1])];
+      }
+
+      if (values !== "1" && values.split(" ").length !== 2) {
+        formatedValue = invalidValue;
       }
 
       break;
@@ -504,11 +543,13 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
 Rewrites emitter to simple emitter and returns new properties array
 */
 export function UpdateEmitters(data) {
+  // Needed since values get lost for some reason otherwise
   const troybinData = JSON.parse(JSON.stringify(data));
 
   const emitters = [];
 
   troybinData.emitters.forEach(emit => {
+    // Needed since values get lost for some reason otherwise
     const emitter = JSON.parse(JSON.stringify(emit));
 
     if (emitter.needsChanges) {
@@ -521,6 +562,7 @@ export function UpdateEmitters(data) {
       };
 
       emitter.properties.forEach(prop => {
+        // Needed since values get lost for some reason otherwise
         const property = JSON.parse(JSON.stringify(prop));
 
         if (property.binGroup.name === "lifetime" && property.value === -1) {
@@ -536,39 +578,51 @@ export function UpdateEmitters(data) {
 
           if (isSimpleProperty) {
             if (property.binPropertyName === "constantValue") {
-              normalProperty = property;
+              let nValue;
+              let sValue;
+
+              const valueType = CheckValueType(property.value);
+
+              if (valueType === property.troybinType) {
+                // Case: Value is normal Property
+                nValue = property.value;
+                sValue = property.value[0]; // eslint-disable-line
+              } else if (
+                property.binGroup.name === "birthRotationalVelocity0" ||
+                property.binGroup.name === "birthRotation0"
+              ) {
+                nValue = [property.value, 0, 0];
+                sValue = property.value; // eslint-disable-line
+              } else if (property.binGroup.name === "bindWeight") {
+                nValue = property.value;
+                sValue = [property.value, property.value];
+              } else {
+                // Case: Value is simple Property
+                nValue = [property.value, property.value, property.value];
+                sValue = property.value;
+              }
+
+              normalProperty = {
+                troybinName: property.troybinName,
+                troybinType: property.troybinType,
+                binGroup: property.binGroup,
+                binGroupType: property.binGroupType,
+                binPropertyName: property.binPropertyName,
+                binPropertyType: property.binPropertyType,
+                value: nValue
+              };
               simpleProperty = {
                 troybinName: property.troybinName,
                 troybinType: property.simpleValue[0],
                 binGroup: property.simpleValue[3],
                 binGroupType: property.simpleValue[1],
-                binPropertyName: property.binPropertyName,
-                binPropertyType: property.simpleValue[2]
+                binPropertyName:
+                  property.binGroup.name === "bindWeight"
+                    ? ""
+                    : property.binPropertyName,
+                binPropertyType: property.simpleValue[2],
+                value: sValue
               };
-
-              const valueType = CheckValueType(property.value);
-
-              if (valueType === property.troybinType) {
-                normalProperty.value = property.value;
-                simpleProperty.value = property.value[0]; // eslint-disable-line
-              } else if (
-                normalProperty.binGroup.name === "birthRotationalVelocity0" ||
-                normalProperty.binGroup.name === "birthRotation0"
-              ) {
-                normalProperty.value = [property.value, 0, 0];
-                simpleProperty.value = property.value[0][0]; // eslint-disable-line
-              } else if (property.binGroup.name === "bindWeight") {
-                normalProperty.value = property.value;
-                simpleProperty.binPropertyName = "";
-                simpleProperty.value = [property.value, property.value];
-              } else {
-                normalProperty.value = [
-                  property.value,
-                  property.value,
-                  property.value
-                ];
-                simpleProperty.value = property.value[0][0]; // eslint-disable-line
-              }
             } else {
               const correctValue = property.simpleValue[4].includes(
                 "timesTable"
