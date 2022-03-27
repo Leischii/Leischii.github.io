@@ -65,6 +65,18 @@ const timesTableEntries = [
   "timesTable9",
   "timesTable10"
 ];
+const timesSimpleTableEntries = [
+  "timesSimpleTable1",
+  "timesSimpleTable2",
+  "timesSimpleTable3",
+  "timesSimpleTable4",
+  "timesSimpleTable5",
+  "timesSimpleTable6",
+  "timesSimpleTable7",
+  "timesSimpleTable8",
+  "timesSimpleTable9",
+  "timesSimpleTable10"
+];
 
 function createMembers(arrays) {
   const members = ["constantValue"];
@@ -87,6 +99,19 @@ const distortionDefinition = {
   order: 79
 };
 
+const fieldCollectionDefinition = {
+  name: "fieldCollectionDefinition",
+  members: [
+    "fieldAccelerationDefinitions",
+    "fieldAttractionDefinitions",
+    "fieldDragDefinitions",
+    "fieldNoiseDefinitions",
+    "fieldOrbitalDefinitions"
+  ],
+  structure: "",
+  order: 24
+};
+
 const shape = {
   name: "shape",
   members: [
@@ -99,6 +124,34 @@ const shape = {
   order: 50
 };
 
+const primitiveArbitraryQuad = { // eslint-disable-line
+  name: "primitiveArbitraryQuad",
+  members: [],
+  structure: "primitiveArbitraryQuad",
+  order: 52
+};
+
+const primitiveArbitraryTrail = {
+  name: "primitiveArbitraryTrail",
+  members: ["mMode", "mCutoff", "mBirthTilingSize", "mSmoothingMode"],
+  structure: "primitiveArbitraryTrail",
+  order: 52
+};
+
+const primitiveAttachedMesh = {
+  name: "primitiveAttachedMesh",
+  members: ["mMesh"],
+  structure: "primitiveAttachedMesh",
+  order: 52
+};
+
+const primitiveBeam = { // eslint-disable-line
+  name: "primitiveBeam",
+  members: ["mBeam"],
+  structure: "primitiveBeam",
+  order: 52
+};
+
 const primitiveMesh = {
   name: "primitiveMesh",
   members: ["mMesh"],
@@ -106,11 +159,75 @@ const primitiveMesh = {
   order: 52
 };
 
+const primitiveNone = { // eslint-disable-line
+  name: "primitiveNone",
+  members: [],
+  structure: "primitiveNone",
+  order: 52
+};
+
+const primitivePlanarProjection = { // eslint-disable-line
+  name: "primitivePlanarProjection",
+  members: ["mProjection"],
+  structure: "primitivePlanarProjection",
+  order: 52
+};
+
+const primitiveRay = { // eslint-disable-line
+  name: "primitiveRay",
+  members: [],
+  structure: "primitiveRay",
+  order: 52
+};
+
 const primitiveTrail = {
   name: "primitiveTrail",
-  members: ["mMode", "mBirthTilingSize"],
+  members: ["mMode", "mCutoff", "mBirthTilingSize", "mSmoothingMode"],
   structure: "primitiveTrail",
   order: 52
+};
+
+/*
+Field-Definitions
+*/
+const fieldAccelerationDefinitions = {
+  name: "fieldAccelerationDefinitions",
+  members: ["isLocalSpace", "acceleration"],
+  structure: "fieldAccelerationDefinitions",
+  order: 24.1,
+  parent: fieldCollectionDefinition
+};
+
+const fieldAttractionDefinitions = {
+  name: "fieldAttractionDefinitions",
+  members: ["isLocalSpace", "position", "radius", "acceleration"],
+  structure: "fieldAttractionDefinitions",
+  order: 24.2,
+  parent: fieldCollectionDefinition
+};
+
+const fieldDragDefinitions = {
+  name: "fieldDragDefinitions",
+  members: ["position", "radius", "strength"],
+  structure: "fieldDragDefinitions",
+  order: 24.3,
+  parent: fieldCollectionDefinition
+};
+
+const fieldNoiseDefinitions = {
+  name: "fieldNoiseDefinitions",
+  members: ["position", "radius", "frequency", "velocityDelta", "axisFraction"],
+  structure: "fieldNoiseDefinitions",
+  order: 24.4,
+  parent: fieldCollectionDefinition
+};
+
+const fieldOrbitalDefinitions = {
+  name: "fieldOrbitalDefinitions",
+  members: ["isLocalSpace", "direction"],
+  structure: "fieldOrbitalDefinitions",
+  order: 24.5,
+  parent: fieldCollectionDefinition
 };
 
 /* 
@@ -124,6 +241,15 @@ const  = {
   order: 
 };
 */
+const acceleration = {
+  name: "acceleration",
+  members: [],
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 24.2,
+  parent: [fieldAccelerationDefinitions, fieldAttractionDefinitions]
+};
+
 const alphaRef = {
   name: "alphaRef",
   members: [],
@@ -166,6 +292,14 @@ const birthDrag = {
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 45
+};
+
+const birthFrameRate = {
+  name: "birthFrameRate",
+  members: createMembers([xTableEntries, timesTableEntries]),
+  propertyType: "ValueFloat",
+  structure: "SimpleObjectVariableProperty",
+  order: 205
 };
 
 const birthTranslation = {
@@ -239,7 +373,7 @@ const birthScale0 = {
 
 const birthScale1 = {
   name: "birthScale1",
-  members: createMembers([timesTableEntries]),
+  members: createMembers([timesTableEntries, timesSimpleTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 230
@@ -323,6 +457,15 @@ const colorLookUpType = {
   order: 58
 };
 
+const direction = {
+  name: "direction",
+  members: [],
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 24.2,
+  parent: fieldOrbitalDefinitions
+};
+
 const disableBackfaceCull = {
   name: "disableBackfaceCull",
   members: [],
@@ -404,6 +547,48 @@ const emitterName = {
   order: 25
 };
 
+const fieldAccelName = {
+  name: "fieldAccelerationDefinitions",
+  members: [],
+  structure: "SimpleProperty",
+  order: 1000
+};
+
+const fieldAttractName = {
+  name: "fieldAttractionDefinitions",
+  members: [],
+  structure: "SimpleProperty",
+  order: 1003
+};
+
+const fieldDragName = {
+  name: "fieldDragDefinitions",
+  members: [],
+  structure: "SimpleProperty",
+  order: 1005
+};
+
+const fieldNoiseName = {
+  name: "fieldNoiseDefinitions",
+  members: [],
+  structure: "SimpleProperty",
+  order: 1007
+};
+
+const fieldOrbitName = {
+  name: "fieldOrbitalDefinitions",
+  members: [],
+  structure: "SimpleProperty",
+  order: 1010
+};
+
+const frameRate = { // eslint-disable-line
+  name: "frameRate",
+  members: [],
+  structure: "SimpleProperty",
+  order: 204
+};
+
 const importance = {
   name: "importance",
   members: [],
@@ -423,6 +608,14 @@ const isLocalOrientation = {
   members: [],
   structure: "SimpleProperty",
   order: 82
+};
+
+const isLocalSpace = {
+  name: "isLocalSpace",
+  members: [],
+  structure: "SimpleProperty",
+  order: 24.1,
+  parent: [fieldAccelerationDefinitions, fieldOrbitalDefinitions]
 };
 
 const isRandomStartFrame = {
@@ -460,6 +653,13 @@ const keywordsExcluded = {
   order: 40
 };
 
+const KeywordsRequired = {
+  name: "KeywordsRequired",
+  members: [],
+  structure: "SimpleObjectProperty",
+  order: 41
+};
+
 const lifetime = {
   name: "lifetime",
   members: [],
@@ -472,11 +672,19 @@ const mBirthTilingSize = {
   members: [],
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 52.2,
-  parent: primitiveTrail
+  order: 52.3,
+  parent: [primitiveArbitraryTrail, primitiveTrail]
 };
 
-const meshRenderFlags = {
+const mCutoff = {
+  name: "mCutoff",
+  members: [],
+  structure: "SimpleProperty",
+  order: 52.2,
+  parent: [primitiveArbitraryTrail, primitiveTrail]
+};
+
+const meshRenderFlags = { // eslint-disable-line
   name: "meshRenderFlags",
   members: [],
   structure: "SimpleProperty",
@@ -495,7 +703,7 @@ const mMesh = {
   members: [],
   structure: "SimpleProperty",
   order: 52.1,
-  parent: primitiveMesh
+  parent: [primitiveMesh, primitiveAttachedMesh]
 };
 
 const mMode = {
@@ -503,7 +711,15 @@ const mMode = {
   members: [],
   structure: "SimpleProperty",
   order: 52.1,
-  parent: primitiveTrail
+  parent: [primitiveArbitraryTrail, primitiveTrail]
+};
+
+const mSmoothingMode = { // eslint-disable-line
+  name: "mSmoothingMode",
+  members: [],
+  structure: "SimpleProperty",
+  order: 52.4,
+  parent: [primitiveArbitraryTrail, primitiveTrail]
 };
 
 const normalMapTexture = {
@@ -526,6 +742,13 @@ const orientation1 = {
   members: [],
   structure: "SimpleProperty",
   order: 240
+};
+
+const overrideScaleCap = {
+  name: "overrideScaleCap",
+  members: [],
+  structure: "SimpleObjectProperty",
+  order: 305
 };
 
 const particleBind = {
@@ -571,11 +794,37 @@ const pass = {
   order: 73
 };
 
+const position = {
+  name: "position",
+  members: [],
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 24.1,
+  parent: [
+    fieldAttractionDefinitions,
+    fieldDragDefinitions,
+    fieldNoiseDefinitions
+  ]
+};
+
 const primitive = {
   name: "primitive",
   members: [],
   structure: "SimpleProperty",
   order: 52
+};
+
+const radius = {
+  name: "radius",
+  members: [],
+  propertyType: "ValueFloat",
+  structure: "SimpleObjectVariableProperty",
+  order: 24.2,
+  parent: [
+    fieldAttractionDefinitions,
+    fieldDragDefinitions,
+    fieldNoiseDefinitions
+  ]
 };
 
 const rate = {
@@ -613,6 +862,13 @@ const scale1 = {
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 231
+};
+
+const scaleBirthScaleByBoundObjectSize = {
+  name: "scaleBirthScaleByBoundObjectSize",
+  members: [],
+  structure: "SimpleProperty",
+  order: 195
 };
 
 const scaleEmitOffsetByBoundObjectSize = {
@@ -664,6 +920,15 @@ const spectatorPolicy = { // eslint-disable-line
   order: 32
 };
 
+const strength = {
+  name: "strength",
+  members: [],
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 24.3,
+  parent: fieldDragDefinitions
+};
+
 const texDiv = {
   name: "texDiv",
   members: [],
@@ -690,6 +955,13 @@ const timeBeforeFirstEmission = {
   members: [],
   structure: "SimpleProperty",
   order: 3
+};
+
+const visibilityRadius = {
+  name: "visibilityRadius",
+  members: [],
+  structure: "SimpleProperty",
+  order: 301
 };
 
 const worldAcceleration = {
@@ -739,6 +1011,96 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "e-framerate",
+      troybinType: "ONE_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "embed = ValueFloat",
+      binPropertyName: "constantValue",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-framerateP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthFrameRate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "e-life",
       troybinType: "ONE_DOUBLE",
       binGroup: lifetime,
@@ -775,8 +1137,89 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "e-rateP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rateP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "e-rgba",
-      troybinType: "FOUR_DOUBLE",
+      troybinType: "COLOR_DOUBLE",
       binGroup: birthColor,
       binGroupType: "embed = ValueColor",
       binPropertyName: "constantValue",
@@ -1207,6 +1650,24 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "e-rotation11",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation12",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "e-rotation1P1",
       troybinType: "TWO_DOUBLE",
       binGroup: emitRotationAngles,
@@ -1261,6 +1722,24 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "e-rotation21",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation22",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "e-soft-in-depth",
       troybinType: "ONE_DOUBLE",
       binGroup: softParticleParams,
@@ -1283,7 +1762,7 @@ const Values = {
       troybinType: "THREE_DOUBLE",
       binGroup: mBirthTilingSize,
       binGroupType: "embed = ValueVector3",
-      binPropertyName: "mBirthTilingSize",
+      binPropertyName: "constantValue",
       binPropertyType: "vec3",
       defaultValue: undefined
     },
@@ -1291,6 +1770,15 @@ const Values = {
       troybinName: "e-timeoffset",
       troybinType: "ONE_DOUBLE",
       binGroup: timeBeforeFirstEmission,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-trail-cutoff",
+      troybinType: "ONE_DOUBLE",
+      binGroup: mCutoff,
       binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
@@ -1546,6 +2034,116 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector2fVariableData",
       binPropertyName: "timesTable9",
       binPropertyType: "vec2",
+      defaultValue: undefined
+    }
+  ],
+  fValues: [
+    {
+      troybinName: "f-accel",
+      troybinType: "THREE_DOUBLE",
+      binGroup: acceleration,
+      binGroupType: "embed = ValueFloat",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "f-direction",
+      troybinType: "THREE_DOUBLE",
+      binGroup: direction,
+      binGroupType: "embed = ValueVector3",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "f-drag",
+      troybinType: "ONE_DOUBLE",
+      binGroup: strength,
+      binGroupType: "embed = ValueFloat",
+      binPropertyName: "constantValue",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "f-localspace",
+      troybinType: "INT/BOOLEAN",
+      binGroup: isLocalSpace,
+      binGroupType: "bool",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "f-pos",
+      troybinType: "THREE_DOUBLE",
+      binGroup: position,
+      binGroupType: "embed = ValueVector3",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "f-radius",
+      troybinType: "ONE_DOUBLE",
+      binGroup: radius,
+      binGroupType: "embed = ValueFloat",
+      binPropertyName: "constantValue",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-accel-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAccelName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-attract-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAttractName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-drag-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldDragName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-noise-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldNoiseName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-orbit-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldOrbitName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "flag-disable-z",
+      troybinType: "ONE_DOUBLE",
+      binGroup: miscRenderFlags,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     }
   ],
@@ -1841,7 +2439,7 @@ const Values = {
     },
     {
       troybinName: "p-colorscale",
-      troybinType: "TWO_DOUBLE",
+      troybinType: "ENSURE_TWO_DOUBLE",
       binGroup: colorLookUpScales,
       binGroupType: "vec2",
       binPropertyName: "",
@@ -1888,6 +2486,15 @@ const Values = {
       troybinName: "p-flexoffset",
       troybinType: "ONE_DOUBLE",
       binGroup: scaleEmitOffsetByBoundObjectSize,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-flexscale",
+      troybinType: "ONE_DOUBLE",
+      binGroup: scaleBirthScaleByBoundObjectSize,
       binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
@@ -2640,6 +3247,38 @@ const Values = {
       binPropertyName: "probTableZ9",
       binPropertyType: "f32",
       defaultValue: undefined
+    },
+    {
+      troybinName: "p-quadrot1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthRotation0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthRotation1,
+        "probTableX1"
+      ]
+    },
+    {
+      troybinName: "p-quadrot2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthRotation0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthRotation1,
+        "probTableX2"
+      ]
     },
     {
       troybinName: "p-quadrotP1",
@@ -3684,6 +4323,24 @@ const Values = {
       ]
     },
     {
+      troybinName: "p-scale1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthScale1,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesSimpleTable1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-scale2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthScale1,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesSimpleTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-shadow",
       troybinType: "INT/BOOLEAN",
       binGroup: doesCastShadow,
@@ -3732,24 +4389,10 @@ const Values = {
     {
       troybinName: "p-type",
       troybinType: "DOUBLE_TO_PRIMITIVE",
-      binGroup: [
-        meshRenderFlags,
-        primitive,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      ],
-      binGroupType: [
-        "u8",
-        "pointer",
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      ],
-      binPropertyName: ["", "", "", "", "", ""],
-      binPropertyType: ["", "", "", "", "", ""],
+      binGroup: primitive,
+      binGroupType: "pointer",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: -1
     },
     {
@@ -4780,7 +5423,7 @@ const Values = {
     },
     {
       troybinName: "p-xrgba",
-      troybinType: "FOUR_DOUBLE",
+      troybinType: "COLOR_DOUBLE",
       binGroup: color,
       binGroupType: "embed = ValueColor",
       binPropertyName: "constantValue",
@@ -5617,6 +6260,24 @@ const Values = {
   ],
   systemValues: [
     {
+      troybinName: "group-scale-cap",
+      troybinType: "ONE_DOUBLE",
+      binGroup: overrideScaleCap,
+      binGroupType: "option[f32]",
+      binPropertyName: "constantValue",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "group-vis",
+      troybinType: "ONE_DOUBLE",
+      binGroup: visibilityRadius,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "GroupPart",
       troybinType: "STRING_NO_PATH",
       binGroup: emitterName,
@@ -5691,18 +6352,18 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "flag-disable-z",
-      troybinType: "ONE_DOUBLE",
-      binGroup: miscRenderFlags,
-      binGroupType: "u8",
+      troybinName: "KeywordsExcluded",
+      troybinType: "STRINGS_NO_PATH",
+      binGroup: keywordsExcluded,
+      binGroupType: "list[string]",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
     },
     {
-      troybinName: "KeywordsExcluded",
+      troybinName: "KeywordsRequired",
       troybinType: "STRINGS_NO_PATH",
-      binGroup: keywordsExcluded,
+      binGroup: KeywordsRequired,
       binGroupType: "list[string]",
       binPropertyName: "",
       binPropertyType: "",

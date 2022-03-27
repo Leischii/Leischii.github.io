@@ -167,6 +167,13 @@ export default class Main extends Component {
         )
       };
 
+      entry.properties = entry.properties.sort((a, b) => {
+        const formatedA = a.split("=")[0].replace("'", "");
+        const formatedB = b.split("=")[0].replace("'", "");
+
+        return formatedA.localeCompare(formatedB);
+      });
+
       if (entry.name === "System") {
         system = entry;
       } else if (entry.name === "UNKNOWN_HASHES") {
@@ -290,32 +297,28 @@ export default class Main extends Component {
                 }
               }
             });
+          } else if (propertyName[0] === "f") {
+            Values.fValues.forEach(fValue => {
+              if (fValue.troybinName === propertyName) {
+                assignedProperty = fValue;
+                entryFound = true;
+
+                if (
+                  propertyName.includes("field-accel-") ||
+                  propertyName.includes("field-attract-") ||
+                  propertyName.includes("field-drag-") ||
+                  propertyName.includes("field-noise-") ||
+                  propertyName.includes("field-orbit-")
+                ) {
+                  needsChanges = true;
+                }
+              }
+            });
           } else if (propertyName[0] === "p") {
             Values.pValues.forEach(pValue => {
               if (pValue.troybinName === propertyName) {
-                if (propertyName === "p-type") {
-                  if (parseFloat(propertyValuePart) < 2) {
-                    const typeEntry = {
-                      troybinName: pValue.troybinName,
-                      troybinType: pValue.troybinType,
-                      binGroup:
-                        pValue.binGroup[parseInt(propertyValuePart, 10)],
-                      binGroupType:
-                        pValue.binGroupType[parseInt(propertyValuePart, 10)],
-                      binPropertyName:
-                        pValue.binPropertyName[parseInt(propertyValuePart, 10)],
-                      binPropertyType:
-                        pValue.binPropertyType[parseInt(propertyValuePart, 10)],
-                      defaultValue: pValue.defaultValue
-                    };
-
-                    assignedProperty = typeEntry;
-                    entryFound = true;
-                  }
-                } else {
-                  assignedProperty = pValue;
-                  entryFound = true;
-                }
+                assignedProperty = pValue;
+                entryFound = true;
               }
             });
           } else {
@@ -472,44 +475,115 @@ export default class Main extends Component {
           let finalProperty = {};
 
           if (property.binGroup.parent !== undefined) {
-            if (property.binGroup.parent.members.length > 0) {
-              const parentPropertyParts = [];
+            const parentParent = property.binGroup.parent.parent;
 
-              property.binGroup.parent.members.forEach(parentMember => {
-                const members = emitter.properties.filter(
-                  props => props.binGroup.name === parentMember
+            if (
+              parentParent !== undefined &&
+              parentParent.name.includes("field")
+            ) {
+              const parentParentPropertyParts = [];
+
+              parentParent.members.forEach(parentMember => {
+                const parentMembers = emitter.properties.filter(
+                  props =>
+                    props.binGroup.parent !== undefined &&
+                    props.binGroup.parent.name === parentMember &&
+                    props.binGroup.parent.parent.name === parentParent.name
                 );
 
-                if (members.length) {
-                  members.forEach(member => {
+                if (parentMembers.length) {
+                  const troybinProperties = [];
+
+                  parentMembers.forEach(member => {
                     alreadyAdded.push(member.binGroup.name);
+
+                    const binProperty = {
+                      name: member.binGroup.name,
+                      members: [member],
+                      order: member.binGroup.order
+                    };
+
+                    troybinProperties.push(binProperty);
                   });
 
                   const parentPropertyPart = {
-                    name: members[0].binGroup.name,
-                    members,
-                    order: members[0].binGroup.order
+                    name: parentMembers[0].binGroup.parent.name,
+                    members: troybinProperties,
+                    order: parentMembers[0].binGroup.parent.order
                   };
 
-                  parentPropertyParts.push(parentPropertyPart);
+                  parentParentPropertyParts.push(parentPropertyPart);
                 }
               });
 
-              parentPropertyParts.sort(function compareNumbers(a, b) {
+              parentParentPropertyParts.sort(function compareNumbers(a, b) {
                 return a.order - b.order;
               });
 
               finalProperty = {
-                name: property.binGroup.parent.name,
-                members: parentPropertyParts,
-                order: property.binGroup.parent.order
+                name: parentParent.name,
+                members: parentParentPropertyParts,
+                order: parentParent.order
               };
             } else {
-              finalProperty = {
-                name: property.binGroup.parent.name,
-                members: propertyParts,
-                order: property.binGroup.parent.order
-              };
+              let parent;
+
+              // Is Part of multiple primitives
+              if (Array.isArray(property.binGroup.parent)) {
+                if (property.binGroup.parent[0].name.includes("primitive")) {
+                  const primitive = emitter.properties.filter(
+                    props => props.troybinName === "p-type"
+                  );
+
+                  const correctPrimitive = property.binGroup.parent.filter(
+                    props => props.name === primitive[0].value
+                  )[0];
+
+                  parent = correctPrimitive;
+                }
+              } else {
+                parent = property.binGroup.parent;
+              }
+
+              if (parent.members.length > 0) {
+                const parentPropertyParts = [];
+
+                parent.members.forEach(parentMember => {
+                  const members = emitter.properties.filter(
+                    props => props.binGroup.name === parentMember
+                  );
+
+                  if (members.length) {
+                    members.forEach(member => {
+                      alreadyAdded.push(member.binGroup.name);
+                    });
+
+                    const parentPropertyPart = {
+                      name: members[0].binGroup.name,
+                      members,
+                      order: members[0].binGroup.order
+                    };
+
+                    parentPropertyParts.push(parentPropertyPart);
+                  }
+                });
+
+                parentPropertyParts.sort(function compareNumbers(a, b) {
+                  return a.order - b.order;
+                });
+
+                finalProperty = {
+                  name: parent.name,
+                  members: parentPropertyParts,
+                  order: parent.order
+                };
+              } else {
+                finalProperty = {
+                  name: parent.name,
+                  members: propertyParts,
+                  order: parent.order
+                };
+              }
             }
 
             binEmitters.push(finalProperty);
@@ -638,42 +712,127 @@ export default class Main extends Component {
 
             propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
           }
-        } else if (
-          property.name === "primitiveMesh" ||
-          property.name === "primitiveTrail"
-        ) {
-          if (property.name === "primitiveTrail") {
-            propertiesWritten.push(
-              `${getSpacing(
-                spacing + 3
-              )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
-              `${getSpacing(
-                spacing + 4
-              )}mTrail: embed = VfxTrailDefinitionData {\r\n`
-            );
-          } else if (property.name === "primitiveMesh") {
-            propertiesWritten.push(
-              `${getSpacing(
-                spacing + 3
-              )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
-              `${getSpacing(
-                spacing + 4
-              )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-            );
+        } else if (property.name.includes("primitive")) {
+          if (
+            property.name !== "primitiveNone" &&
+            property.name !== "primitive"
+          ) {
+            let hasContent = false;
+
+            switch (property.name) {
+              // 1
+              case "primitiveArbitraryQuad":
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveArbitraryQuad = {}\r\n`
+                );
+                break;
+              // 2 ?
+              case "primitiveArbitraryTrail":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveArbitraryTrail = {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+                );
+                break;
+              // 3
+              case "primitiveMesh":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                );
+                break;
+              // 4 ?
+              case "primitiveAttachedMesh":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveAttachedMesh {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                );
+                break;
+              // 5
+              case "primitiveTrail":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+                );
+                break;
+              // 6
+              case "primitiveBeam":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveBeam {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mBeam: embed = VfxBeamDefinitionData {\r\n`
+                );
+                break;
+              // 7
+              case "primitivePlanarProjection":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitivePlanarProjection {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mProjection: embed = VfxProjectionDefinitionData {\r\n`
+                );
+                break;
+              // 8 ?
+              case "primitiveRay":
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveRay {}\r\n`
+                );
+                break;
+              default:
+                break;
+            }
+
+            if (hasContent && property.members.length) {
+              property.members.forEach(member => {
+                entry = WriteProperty(member, spacing + 5);
+
+                entry.forEach(e => {
+                  propertiesWritten.push(e);
+                });
+              });
+
+              propertiesWritten.push(
+                `${getSpacing(spacing + 4)}}\r\n`,
+                `${getSpacing(spacing + 3)}}\r\n`
+              );
+            }
           }
-
-          property.members.forEach(member => {
-            entry = WriteProperty(member, spacing + 5);
-
-            entry.forEach(e => {
-              propertiesWritten.push(e);
-            });
-          });
-
-          propertiesWritten.push(
-            `${getSpacing(spacing + 4)}}\r\n`,
-            `${getSpacing(spacing + 3)}}\r\n`
-          );
         } else if (property.name === "distortionDefinition") {
           propertiesWritten.push(
             `${getSpacing(
@@ -690,6 +849,68 @@ export default class Main extends Component {
           });
 
           propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        } else if (property.name === "fieldCollectionDefinition") {
+          const writenLines = [];
+
+          property.members.forEach(member => {
+            let fieldType;
+
+            switch (member.name) {
+              case "fieldAccelerationDefinitions":
+                fieldType = "Acceleration";
+                break;
+              case "fieldAttractionDefinitions":
+                fieldType = "Attraction";
+                break;
+              case "fieldDragDefinitions":
+                fieldType = "Drag";
+                break;
+              case "fieldNoiseDefinitions":
+                fieldType = "Noise";
+                break;
+              case "fieldOrbitalDefinitions":
+                fieldType = "Orbital";
+                break;
+              default:
+                break;
+            }
+
+            writenLines.push(
+              `${getSpacing(
+                spacing + 4
+              )}field${fieldType}Definitions: list[embed] = {\r\n`,
+              `${getSpacing(
+                spacing + 5
+              )}VfxField${fieldType}DefinitionData {\r\n`
+            );
+
+            member.members.forEach(memb => {
+              entry = WriteProperty(memb, spacing + 6);
+
+              entry.forEach(e => {
+                writenLines.push(e);
+              });
+            });
+
+            writenLines.push(
+              `${getSpacing(spacing + 5)}}\r\n`,
+              `${getSpacing(spacing + 4)}}\r\n`
+            );
+          });
+
+          if (writenLines.length) {
+            propertiesWritten.push(
+              `${getSpacing(
+                spacing + 3
+              )}fieldCollectionDefinition: pointer = VfxFieldCollectionDefinitionData {\r\n`
+            );
+
+            writenLines.forEach(line => {
+              propertiesWritten.push(line);
+            });
+
+            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+          }
         } else {
           entry = WriteProperty(property, spacing + 3);
 

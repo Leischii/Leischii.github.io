@@ -2,18 +2,17 @@
 
 ## Overview
 
-A converter for troybin to bin built with [react](https://reactjs.org/).
+A migration tool for troybin to bin built with [react](https://reactjs.org/).
 
 ## Functionalities
 
 - Convert file/files
 - Check output
-- Download bin as txt with formating
+- Download formated bin as txt
 
 ## Built With
 
 - ReactJS
-- React Bootstrap
 
 ## Development
 

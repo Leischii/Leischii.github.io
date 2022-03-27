@@ -74,6 +74,7 @@ function writeDynamics(
   probTableA,
   spacingAmount,
   timesTable,
+  timesSimpleTable,
   writeEmptyEntries = true
 ) {
   const result = [];
@@ -279,30 +280,35 @@ function writeDynamics(
 
     result.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
   } else {
+    const binGroupType =
+      timesSimpleTable[0] !== undefined
+        ? timesSimpleTable[0].binGroupType
+        : "pointer = VfxAnimatedVector3fVariableData";
+
     result.push(
       `${getSpacing(spacingAmount)}dynamics: ${
-        timesTable[0] !== undefined
-          ? timesTable[0].binGroupType
-          : "pointer = VfxAnimatedVector3fVariableData"
+        timesTable[0] !== undefined ? timesTable[0].binGroupType : binGroupType
       } {\r\n`
     );
   }
 
   result.push(`${getSpacing(spacingAmount + 1)}times: list[f32] = {\r\n`);
 
-  if (timesTable.length) {
-    timesTable.forEach(table => {
+  if (timesTable.length || timesSimpleTable.length) {
+    const timesTableEntries = timesTable.length ? timesTable : timesSimpleTable;
+
+    timesTableEntries.forEach(table => {
       result.push(`${getSpacing(spacingAmount + 2)}${table.value[0]}\r\n`);
     });
 
     result.push(
       `${getSpacing(spacingAmount + 1)}}\r\n`,
       `${getSpacing(spacingAmount + 1)}values: list[${
-        timesTable[0].binPropertyType
+        timesTableEntries[0].binPropertyType
       }] = {\r\n`
     );
 
-    timesTable.forEach(table => {
+    timesTableEntries.forEach(table => {
       let value = table.value[1];
 
       if (table.value.length === 3) {
@@ -445,19 +451,43 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       }
 
       break;
+    case "COLOR_DOUBLE":
+      formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 4) {
+        formatedValue = invalidValue;
+      }
+
+      if (formatedValue.find(value => value > 1) !== undefined) {
+        const correctValues = [];
+
+        formatedValue.forEach(value => {
+          correctValues.push(value / 255);
+        });
+
+        formatedValue = correctValues;
+      }
+
+      break;
     case "DOUBLE_TO_PRIMITIVE":
       if (values === "0") {
-        formatedValue = 0;
+        formatedValue = "primitiveNone";
       } else if (values === "1") {
-        formatedValue = "VfxPrimitiveArbitraryQuad {}";
+        formatedValue = "primitiveArbitraryQuad";
       } else if (values === "2") {
-        formatedValue = invalidValue;
+        formatedValue = "primitiveAttachedMesh";
       } else if (values === "3") {
-        formatedValue = invalidValue;
+        formatedValue = "primitiveMesh";
       } else if (values === "4") {
-        formatedValue = invalidValue;
+        formatedValue = "primitiveArbitraryTrail";
       } else if (values === "5") {
-        formatedValue = invalidValue;
+        formatedValue = "primitiveTrail";
+      } else if (values === "6") {
+        formatedValue = "primitiveBeam";
+      } else if (values === "7") {
+        formatedValue = "primitivePlanarProjection";
+      } else if (values === "8") {
+        formatedValue = "primitiveRay";
       } else {
         formatedValue = invalidValue;
       }
@@ -473,6 +503,11 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = 1;
       } else if (values === "0") {
         formatedValue = 0;
+      } else if (
+        typeof parseInt(values, 10) === "number" ||
+        !Number.isNaN(parseInt(values, 10))
+      ) {
+        formatedValue = parseInt(values, 10);
       } else {
         formatedValue = invalidValue;
       }
@@ -503,15 +538,22 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       formatedValue = values.split(" ");
       break;
     case "TWO_DOUBLE_TO_ONE":
-      if (values.split(" ")[0] === "1.0" || values.split(" ")[1] === "1.0") {
+      if (
+        values === "1" ||
+        values === "1.0" ||
+        values.split(" ")[0] === "1.0" ||
+        values.split(" ")[1] === "1.0"
+      ) {
         formatedValue = 1;
+      } else if (values === "0") {
+        formatedValue = 0;
       } else {
         const valueArray = values.split(" ");
 
         formatedValue = parseFloat(valueArray[0]);
       }
 
-      if (values.split(" ").length !== 2) {
+      if (values.split(" ").length !== 2 && values !== "1" && values !== "0") {
         formatedValue = invalidValue;
       }
 
@@ -532,7 +574,23 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       }
 
       break;
+    case "ENSURE_TWO_DOUBLE":
+      formatedValue = FormatNumber(values);
+
+      if (formatedValue.length !== 2) {
+        if (formatedValue.length === 1) {
+          formatedValue = [
+            parseFloat(formatedValue[0]),
+            parseFloat(formatedValue[0])
+          ];
+        } else {
+          formatedValue = invalidValue;
+        }
+      }
+
+      break;
     default:
+      formatedValue = invalidValue;
       break;
   }
 
@@ -540,13 +598,14 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
 }
 
 /*
-Rewrites emitter to simple emitter and returns new properties array
+Rewrites emitter and returns new properties array
 */
 export function UpdateEmitters(data) {
   // Needed since values get lost for some reason otherwise
   const troybinData = JSON.parse(JSON.stringify(data));
 
   const emitters = [];
+  const emittersToRemove = [];
 
   troybinData.emitters.forEach(emit => {
     // Needed since values get lost for some reason otherwise
@@ -567,6 +626,40 @@ export function UpdateEmitters(data) {
 
         if (property.binGroup.name === "lifetime" && property.value === -1) {
           propertiesToRemove.push("lifetime", "particleLifetime");
+        }
+
+        if (property.binGroup.name.includes("field")) {
+          const fieldEmitterIndex = troybinData.emitters.findIndex(
+            selectedEmit => `"${selectedEmit.name}"` === property.value
+          );
+          const fieldEmitter = troybinData.emitters[fieldEmitterIndex];
+
+          fieldEmitter.properties.forEach(fieldProp => {
+            const fieldProperty = fieldProp;
+
+            if (
+              fieldProp.binGroup.parent &&
+              Array.isArray(fieldProp.binGroup.parent)
+            ) {
+              const correctParent = fieldProp.binGroup.parent.filter(
+                parentEntry => parentEntry.name === property.binGroup.name
+              )[0];
+
+              fieldProperty.binGroup.parent = correctParent;
+            }
+
+            propertiesToAdd.push(fieldProperty);
+          });
+
+          propertiesToRemove.push(property.troybinName);
+
+          if (
+            emittersToRemove.findIndex(
+              emitterToRemove => emitterToRemove === fieldEmitter.name
+            ) === -1
+          ) {
+            emittersToRemove.push(fieldEmitter.name);
+          }
         }
 
         if (emitter.isSimple) {
@@ -694,7 +787,18 @@ export function UpdateEmitters(data) {
     }
   });
 
-  troybinData.emitters = emitters;
+  const emittersNoField = [];
+
+  emitters.forEach(emitter => {
+    const keepEmitter =
+      emittersToRemove.find(element => element === emitter.name) === undefined;
+
+    if (keepEmitter) {
+      emittersNoField.push(emitter);
+    }
+  });
+
+  troybinData.emitters = emittersNoField;
 
   return troybinData;
 }
@@ -713,6 +817,7 @@ export function WriteProperty(property, spacingAmount) {
   const probTableZ = [];
   const probTableA = [];
   const timesTable = [];
+  const timesSimpleTable = [];
 
   property.members.forEach(member => {
     const type = member.binPropertyName;
@@ -735,6 +840,10 @@ export function WriteProperty(property, spacingAmount) {
 
     if (type.includes("timesTable")) {
       timesTable.push(member);
+    }
+
+    if (type.includes("timesSimpleTable")) {
+      timesSimpleTable.push(member);
     }
   });
 
@@ -851,6 +960,7 @@ export function WriteProperty(property, spacingAmount) {
         probTableZ.length ||
         probTableA.length ||
         timesTable.length ||
+        timesSimpleTable.length ||
         forceDynamics
       ) {
         formatedProperty.push(
@@ -869,6 +979,7 @@ export function WriteProperty(property, spacingAmount) {
           probTableZ.length ||
           probTableA.length ||
           timesTable.length ||
+          timesSimpleTable.length ||
           forceDynamics
         ) {
           writeDynamics(
@@ -879,7 +990,8 @@ export function WriteProperty(property, spacingAmount) {
             probTableZ,
             probTableA,
             spacingAmount + 1,
-            timesTable
+            timesTable,
+            timesSimpleTable
           ).forEach(entry => {
             formatedProperty.push(entry);
           });
@@ -901,8 +1013,12 @@ export function WriteProperty(property, spacingAmount) {
           `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
         );
 
+        const constantX = constantValues.filter(
+          constant => constant.troybinName === "e-rotation1"
+        )[0];
+
         constValueWritten = writeConstantValue(
-          [constantValues[0]],
+          [constantX],
           spacingAmount + 2,
           false
         );
@@ -920,6 +1036,7 @@ export function WriteProperty(property, spacingAmount) {
           probTableA,
           spacingAmount + 2,
           timesTable,
+          timesSimpleTable,
           false
         ).forEach(entry => {
           formatedProperty.push(entry);
@@ -937,8 +1054,12 @@ export function WriteProperty(property, spacingAmount) {
           `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
         );
 
+        const constantY = constantValues.filter(
+          constant => constant.troybinName === "e-rotation2"
+        )[0];
+
         constValueWritten = writeConstantValue(
-          [constantValues[1]],
+          [constantY],
           spacingAmount + 2,
           false
         );
@@ -956,6 +1077,7 @@ export function WriteProperty(property, spacingAmount) {
           probTableA,
           spacingAmount + 2,
           timesTable,
+          timesSimpleTable,
           false
         ).forEach(entry => {
           formatedProperty.push(entry);
