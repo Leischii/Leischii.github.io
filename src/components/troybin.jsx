@@ -48,7 +48,6 @@ function aIhash(sections, names) {
       }
     }
   }
-  console.log(result);
 
   return result;
 }
