@@ -6,7 +6,7 @@ A migration tool for troybin to bin built with [react](https://reactjs.org/).
 
 ## Functionalities
 
-- Convert file/files
+- Convert file
 - Check output
 - Download formated bin as txt
 

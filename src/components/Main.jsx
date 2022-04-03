@@ -9,6 +9,7 @@ import {
   UpdateEmitters,
   WriteProperty
 } from "./helpers";
+import readTroybinBinary from "./troybin";
 
 import aatroxNew from "../splasharts/Aatrox_New.png";
 import aatroxOld from "../splasharts/Aatrox_Old.png";
@@ -60,6 +61,7 @@ export default class Main extends Component {
       convertedLink: "",
       defaultAssetsPath: "",
       defaultFilePath: "",
+      inputType: "",
       namesOnly: false,
       originalTroybin: "",
       outputFileName: "",
@@ -98,6 +100,7 @@ export default class Main extends Component {
     this.setState({
       clicked: false,
       convertedLink: "",
+      inputType: "",
       originalTroybin: "",
       outputFileName: "",
       progressStep: ""
@@ -123,6 +126,7 @@ export default class Main extends Component {
   readTroybin = () => {
     const {
       defaultAssetsPath,
+      inputType,
       namesOnly,
       originalTroybin,
       outputFileName,
@@ -132,11 +136,20 @@ export default class Main extends Component {
     let unknown = [];
     const troybinEntries = [];
 
+    let fileContent;
+
+    if (inputType !== "text/plain") {
+      this.setState({ progressStep: "Converting Troybin..." });
+      fileContent = readTroybinBinary(originalTroybin);
+    } else {
+      fileContent = originalTroybin;
+    }
+
     this.setState({ progressStep: "Reading Troybin..." });
 
     // Creates an array with each row being an entry
     // Also removes unwanted characters
-    const troybinArray = FormatInput(originalTroybin);
+    const troybinArray = FormatInput(fileContent);
 
     // Collect info about troybin structure
     const structureData = GetStructureData(troybinArray);
@@ -964,14 +977,29 @@ export default class Main extends Component {
 
     const input = event.target.files[0];
     const reader = new FileReader();
-    reader.onload = async e => {
-      const text = e.target.result;
-      this.setState({
-        originalTroybin: text,
-        outputFileName: input.name
-      });
-    };
-    reader.readAsText(event.target.files[0]);
+
+    if (input.type === "text/plain") {
+      reader.onload = async e => {
+        const text = e.target.result;
+        this.setState({
+          originalTroybin: text,
+          outputFileName: input.name,
+          inputType: input.type
+        });
+      };
+      reader.readAsText(event.target.files[0]);
+    } else {
+      reader.onload = async e => {
+        const text = e.target.result;
+
+        this.setState({
+          originalTroybin: text,
+          outputFileName: input.name,
+          inputType: input.type
+        });
+      };
+      reader.readAsArrayBuffer(event.target.files[0]);
+    }
   };
 
   async click(e) {
@@ -1098,7 +1126,7 @@ export default class Main extends Component {
             <div className="d-flex">
               <input
                 type="file"
-                accept=".txt"
+                accept=".txt, .troybin"
                 className="mt-2 btn btn-dark w-100"
                 onChange={e => this.loadFile(e)}
                 style={{ textAlign: "left" }}
@@ -1211,6 +1239,47 @@ export default class Main extends Component {
             <div className="d-flex justify-content-center">
               <h4 className="mt-2 text-light text-center">{progressStep}</h4>
             </div>
+            {/* <br />
+            <h4 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
+              <u>Hash Generator:</u>
+            </h4>
+            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
+              Emitter:
+            </h5>
+            <div className="d-flex justify-content-center">
+              <input
+                className="w-100"
+                disabled={clicked}
+                name="PathToAssets"
+                onChange={this.handleChangeAssetsPath}
+                placeholder="ASSETS/Shared/Particles"
+                type="text"
+                value={defaultAssetsPath}
+              />
+            </div>
+            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
+              Property:
+            </h5>
+            <div className="d-flex justify-content-center">
+              <input
+                className="w-100"
+                disabled={clicked}
+                name="PathToParticle"
+                onChange={this.handleChangeFilePath}
+                placeholder="Shared/Particles"
+                type="text"
+                value={defaultFilePath}
+              />
+            </div>
+            <div className="d-flex justify-content-center">
+              <button
+                className="mt-2 btn btn-dark w-50"
+                type="button"
+                style={{ color: "#FFF" }}
+              >
+                Generate Hash
+              </button>
+            </div> */}
           </div>
         </div>
       </div>
