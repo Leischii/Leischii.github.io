@@ -42,7 +42,7 @@ const zTableEntries = [
   "probTableZ8",
   "probTableZ9"
 ];
-const aTableEntries = [ // eslint-disable-line
+const aTableEntries = [
   "probTableA1",
   "probTableA2",
   "probTableA3",
@@ -258,7 +258,7 @@ const alphaRef = {
 };
 const bindWeight = {
   name: "bindWeight",
-  members: [],
+  members: createMembers([timesTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 53
@@ -288,10 +288,10 @@ const birthColor = {
 
 const birthDrag = {
   name: "birthDrag",
-  members: [],
+  members: createMembers([xTableEntries, yTableEntries, zTableEntries]),
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 45
+  order: 44
 };
 
 const birthFrameRate = {
@@ -300,6 +300,19 @@ const birthFrameRate = {
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 205
+};
+
+const birthOrbitalVelocity = {
+  name: "birthOrbitalVelocity",
+  members: createMembers([
+    xTableEntries,
+    yTableEntries,
+    zTableEntries,
+    timesTableEntries
+  ]),
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 38
 };
 
 const birthTranslation = {
@@ -384,7 +397,15 @@ const birthUVOffset = {
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
-  order: 225
+  order: 220
+};
+
+const birthUVOffsetMult = {
+  name: "birthUVOffsetMult",
+  members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
+  propertyType: "ValueVector2",
+  structure: "SimpleObjectVariableProperty",
+  order: 226
 };
 
 const birthUvScrollRate = {
@@ -392,7 +413,15 @@ const birthUvScrollRate = {
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
-  order: 220
+  order: 216
+};
+
+const birthUvScrollRateMult = {
+  name: "birthUvScrollRateMult",
+  members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
+  propertyType: "ValueVector2",
+  structure: "SimpleObjectVariableProperty",
+  order: 225
 };
 
 const birthVelocity = {
@@ -414,6 +443,13 @@ const blendMode = {
   structure: "SimpleProperty",
   order: 56
 };
+
+const buildUpTime = {
+  name: "buildUpTime",
+  members: [],
+  structure: "SimpleProperty",
+  order: 302
+}
 
 const childParticleSetDefinition = {
   name: "childParticleSetDefinition",
@@ -501,6 +537,28 @@ const doesCastShadow = {
   members: [],
   structure: "SimpleProperty",
   order: 88
+};
+
+const drag = {
+  name: "drag",
+  members: createMembers([timesTableEntries]),
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 46
+};
+
+const emissionMeshName = {
+  name: "emissionMeshName",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.2
+};
+
+const emissionMeshScale = {
+  name: "emissionMeshScale",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.1
 };
 
 const emitterLinger = {
@@ -814,6 +872,14 @@ const primitive = {
   order: 52
 };
 
+// TODO: Rename when translation is found
+const property_0x4ffce322 = { // eslint-disable-line
+  name: "0x4ffce322",
+  members: ["scaleEmitOffsetByBoundObjectSize"],
+  structure: "MultConstantValueProperty",
+  order: 54
+};
+
 const radius = {
   name: "radius",
   members: [],
@@ -871,13 +937,6 @@ const scaleBirthScaleByBoundObjectSize = {
   order: 195
 };
 
-const scaleEmitOffsetByBoundObjectSize = {
-  name: "scaleEmitOffsetByBoundObjectSize",
-  members: [],
-  structure: "SimpleProperty",
-  order: 54
-};
-
 const sliceTechniqueRange = {
   name: "sliceTechniqueRange",
   members: [],
@@ -929,11 +988,32 @@ const strength = {
   parent: fieldDragDefinitions
 };
 
+const texAddressModeBase = {
+  name: "texAddressModeBase",
+  members: [],
+  structure: "SimpleProperty",
+  order: 212
+};
+
+const texAddressModeMult = {
+  name: "texAddressModeMult",
+  members: [],
+  structure: "SimpleProperty",
+  order: 229
+};
+
 const texDiv = {
   name: "texDiv",
   members: [],
   structure: "SimpleProperty",
   order: 213
+};
+
+const texDivMult = {
+  name: "texDivMult",
+  members: [],
+  structure: "SimpleProperty",
+  order: 230
 };
 
 const texture = {
@@ -947,7 +1027,7 @@ const textureMult = {
   name: "textureMult",
   members: [],
   structure: "SimpleProperty",
-  order: 215
+  order: 223
 };
 
 const timeBeforeFirstEmission = {
@@ -955,6 +1035,28 @@ const timeBeforeFirstEmission = {
   members: [],
   structure: "SimpleProperty",
   order: 3
+};
+
+const uvScrollClamp = {
+  name: "uvScrollClamp",
+  members: [],
+  structure: "SimpleProperty",
+  order: 147
+};
+
+const uvScrollClampMult = {
+  name: "uvScrollClampMult",
+  members: [],
+  structure: "SimpleProperty",
+  order: 148
+};
+
+const velocity = {
+  name: "velocity",
+  members: createMembers([timesTableEntries]),
+  propertyType: "ValueVector3",
+  structure: "SimpleObjectVariableProperty",
+  order: 45
 };
 
 const visibilityRadius = {
@@ -1141,7 +1243,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable1",
+      binPropertyName: "probTableX1",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1150,7 +1252,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable2",
+      binPropertyName: "probTableX2",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1159,7 +1261,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable3",
+      binPropertyName: "probTableX3",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1168,7 +1270,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable4",
+      binPropertyName: "probTableX4",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1177,7 +1279,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable5",
+      binPropertyName: "probTableX5",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1186,7 +1288,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable6",
+      binPropertyName: "probTableX6",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1195,7 +1297,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable7",
+      binPropertyName: "probTableX7",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1204,12 +1306,93 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesTable8",
+      binPropertyName: "probTableX8",
       binPropertyType: "f32",
       defaultValue: undefined
     },
     {
       troybinName: "e-rateP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: rate,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rate9",
       troybinType: "TWO_DOUBLE",
       binGroup: rate,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -1654,7 +1837,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: emitRotationAngles,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX1",
+      binPropertyName: "timesTable1",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1663,7 +1846,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: emitRotationAngles,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX2",
+      binPropertyName: "timesTable2",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1726,7 +1909,7 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: emitRotationAngles,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableY1",
+      binPropertyName: "timesTable1",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -1735,8 +1918,26 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: emitRotationAngles,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableY2",
+      binPropertyName: "timesTable2",
       binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-shape-name",
+      troybinType: "STRING_PATH",
+      binGroup: emissionMeshName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-shape-scale",
+      troybinType: "ONE_DOUBLE",
+      binGroup: emissionMeshScale,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     },
     {
@@ -1950,6 +2151,177 @@ const Values = {
       troybinName: "e-uvoffsetYP9",
       troybinType: "TWO_DOUBLE",
       binGroup: birthUVOffset,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-mult",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "embed = ValueVector2",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec2",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multXP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-uvoffset-multYP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUVOffsetMult,
       binGroupType: "pointer = VfxAnimatedVector2fVariableData",
       binPropertyName: "probTableY9",
       binPropertyType: "f32",
@@ -2429,6 +2801,87 @@ const Values = {
       simpleValue: ["TWO_DOUBLE", "vec2", "", particleBind]
     },
     {
+      troybinName: "p-bindtoemitter1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-bindtoemitter9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: bindWeight,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-coloroffset",
       troybinType: "TWO_DOUBLE",
       binGroup: colorLookUpOffsets,
@@ -2483,12 +2936,255 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-dragXP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragXP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragYP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-dragZP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthDrag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-flexoffset",
       troybinType: "ONE_DOUBLE",
-      binGroup: scaleEmitOffsetByBoundObjectSize,
-      binGroupType: "f32",
-      binPropertyName: "",
-      binPropertyType: "",
+      binGroup: property_0x4ffce322, // eslint-disable-line
+      binGroupType: "pointer = 0xb13097f0",
+      binPropertyName: "scaleEmitOffsetByBoundObjectSize",
+      binPropertyType: "f32",
       defaultValue: undefined
     },
     {
@@ -2514,87 +3210,6 @@ const Values = {
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX1",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life2",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX2",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life3",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX3",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life4",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX4",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life5",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX5",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life6",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX6",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life7",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX7",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life8",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX8",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-life9",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "probTableX9",
-      binPropertyType: "f32",
-      defaultValue: undefined
-    },
-    {
-      troybinName: "p-lifeP1",
-      troybinType: "TWO_DOUBLE",
-      binGroup: particleLifetime,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
       binPropertyName: "timesTable1",
       binPropertyType: "f32",
       defaultValue: undefined,
@@ -2607,7 +3222,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP2",
+      troybinName: "p-life2",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2623,7 +3238,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP3",
+      troybinName: "p-life3",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2639,7 +3254,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP4",
+      troybinName: "p-life4",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2655,7 +3270,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP5",
+      troybinName: "p-life5",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2671,7 +3286,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP6",
+      troybinName: "p-life6",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2687,7 +3302,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP7",
+      troybinName: "p-life7",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2703,7 +3318,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP8",
+      troybinName: "p-life8",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2719,7 +3334,7 @@ const Values = {
       ]
     },
     {
-      troybinName: "p-lifeP9",
+      troybinName: "p-life9",
       troybinType: "TWO_DOUBLE",
       binGroup: particleLifetime,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
@@ -2732,6 +3347,150 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX9"
+      ]
+    },
+    {
+      troybinName: "p-lifeP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable1"
+      ]
+    },
+    {
+      troybinName: "p-lifeP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable2"
+      ]
+    },
+    {
+      troybinName: "p-lifeP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable3"
+      ]
+    },
+    {
+      troybinName: "p-lifeP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable4"
+      ]
+    },
+    {
+      troybinName: "p-lifeP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable5"
+      ]
+    },
+    {
+      troybinName: "p-lifeP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable6"
+      ]
+    },
+    {
+      troybinName: "p-lifeP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable7"
+      ]
+    },
+    {
+      troybinName: "p-lifeP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable8"
+      ]
+    },
+    {
+      troybinName: "p-lifeP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: particleLifetime,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        particleLifetime,
+        "timesTable9"
       ]
     },
     {
@@ -2987,6 +3746,375 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-offset6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offset7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offset8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-offset9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: emitOffset,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel",
+      troybinType: "THREE_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "embed = ValueVector3",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: "{ 0, 0, 0 }"
+    },
+    {
+      troybinName: "p-orbitvelXP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelXP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelYP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvelZP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-orbitvel9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthOrbitalVelocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-postoffset",
       troybinType: "THREE_DOUBLE",
       binGroup: birthTranslation,
@@ -2994,6 +4122,249 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "vec3",
       defaultValue: "{ 0, 0, 0 }"
+    },
+    {
+      troybinName: "p-postoffsetXP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetXP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetYP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableY9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffsetZP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "probTableZ9",
+      binPropertyType: "f32",
+      defaultValue: undefined
     },
     {
       troybinName: "p-quadrot",
@@ -4324,21 +5695,147 @@ const Values = {
     },
     {
       troybinName: "p-scale1",
-      troybinType: "TWO_DOUBLE",
-      binGroup: birthScale1,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesSimpleTable1",
-      binPropertyType: "f32",
-      defaultValue: undefined
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable1"
+      ]
     },
     {
       troybinName: "p-scale2",
-      troybinType: "TWO_DOUBLE",
-      binGroup: birthScale1,
-      binGroupType: "pointer = VfxAnimatedFloatVariableData",
-      binPropertyName: "timesSimpleTable2",
-      binPropertyType: "f32",
-      defaultValue: undefined
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable2"
+      ]
+    },
+    {
+      troybinName: "p-scale3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable3"
+      ]
+    },
+    {
+      troybinName: "p-scale4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable4"
+      ]
+    },
+    {
+      troybinName: "p-scale5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable5"
+      ]
+    },
+    {
+      troybinName: "p-scale6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable6"
+      ]
+    },
+    {
+      troybinName: "p-scale7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable7"
+      ]
+    },
+    {
+      troybinName: "p-scale8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable8"
+      ]
+    },
+    {
+      troybinName: "p-scale9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthScale0,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "pointer = VfxAnimatedFloatVariableData",
+        "f32",
+        birthScale1,
+        "timesTable9"
+      ]
     },
     {
       troybinName: "p-shadow",
@@ -4369,9 +5866,45 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-texdiv-mult",
+      troybinType: "TWO_DOUBLE",
+      binGroup: texDivMult,
+      binGroupType: "vec2",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-texture",
       troybinType: "STRING_PATH",
       binGroup: texture,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-texture-mode",
+      troybinType: "BOOLEAN/INT",
+      binGroup: texAddressModeBase,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-texture-mode-mult",
+      troybinType: "BOOLEAN/INT",
+      binGroup: texAddressModeMult,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-texture-mult",
+      troybinType: "STRING_PATH",
+      binGroup: textureMult,
       binGroupType: "string",
       binPropertyName: "",
       binPropertyType: "",
@@ -4399,9 +5932,18 @@ const Values = {
       troybinName: "p-uvscroll-rgb",
       troybinType: "TWO_DOUBLE",
       binGroup: birthUvScrollRate,
-      binGroupType: "embed ValueVector2",
+      binGroupType: "embed = ValueVector2",
       binPropertyName: "constantValue",
       binPropertyType: "vec2",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-clamp",
+      troybinType: "INT/BOOLEAN",
+      binGroup: uvScrollClamp,
+      binGroupType: "flag",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     },
     {
@@ -4645,6 +6187,186 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector2fVariableData",
       binPropertyName: "timesTable9",
       binPropertyType: "vec2",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-mult",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "embed = ValueVector2",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec2",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-clamp-mult",
+      troybinType: "INT/BOOLEAN",
+      binGroup: uvScrollClampMult,
+      binGroupType: "flag",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multXP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableX9",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP3",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY3",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP4",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY4",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP5",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY5",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP6",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY6",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP7",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY7",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP8",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY8",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-multYP9",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "pointer = VfxAnimatedVector2fVariableData",
+      binPropertyName: "probTableY9",
+      binPropertyType: "f32",
       defaultValue: undefined
     },
     {
@@ -5315,6 +7037,87 @@ const Values = {
     },
     {
       troybinName: "p-worldaccelP9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: worldAcceleration,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-worldaccel9",
       troybinType: "FOUR_DOUBLE",
       binGroup: worldAcceleration,
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
@@ -6249,6 +8052,186 @@ const Values = {
       ]
     },
     {
+      troybinName: "Particle-Drag",
+      troybinType: "THREE_DOUBLE",
+      binGroup: drag,
+      binGroupType: "embed = ValueVector3",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Drag9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: drag,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity",
+      troybinType: "THREE_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "embed = ValueVector3",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "Particle-Velocity9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: velocity,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
       troybinName: "pass",
       troybinType: "ONE_DOUBLE",
       binGroup: pass,
@@ -6259,6 +8242,15 @@ const Values = {
     }
   ],
   systemValues: [
+    {
+      troybinName: "build-up-time",
+      troybinType: "ONE_DOUBLE",
+      binGroup: buildUpTime,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
     {
       troybinName: "group-scale-cap",
       troybinType: "ONE_DOUBLE",
@@ -6334,15 +8326,6 @@ const Values = {
   ],
   others: [
     {
-      troybinName: "rendermode",
-      troybinType: "BOOLEAN/INT",
-      binGroup: blendMode,
-      binGroupType: "u8",
-      binPropertyName: "",
-      binPropertyType: "",
-      defaultValue: 0
-    },
-    {
       troybinName: "ChildParticleName",
       troybinType: "STRING_NO_EXT",
       binGroup: childParticleSetDefinition,
@@ -6368,6 +8351,15 @@ const Values = {
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
+    },
+    {
+      troybinName: "rendermode",
+      troybinType: "BOOLEAN/INT",
+      binGroup: blendMode,
+      binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: 0
     },
     {
       troybinName: "single-particle",

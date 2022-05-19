@@ -306,7 +306,7 @@ const fluidNames = [
   "f-jetpos%PLACEHOLDER%",
   "f-jetspeed%PLACEHOLDER%"
 ];
-const fieldNames = ["f-axisfrac", "f-localspace"];
+const fieldNames = ["f-localspace", "f-axisfrac"];
 
 function generateList(arrayEntry, startEntry, endEntry) {
   const result = [];
@@ -341,7 +341,7 @@ function generateList(arrayEntry, startEntry, endEntry) {
   return result;
 }
 
-export default function getNamesList(nameArray) {
+export default function getDictionaryEntries(nameArray) {
   let result = [];
 
   switch (nameArray) {
@@ -455,11 +455,13 @@ export default function getNamesList(nameArray) {
           randFloat([
             "f-accel",
             "f-drag",
+            "f-freq",
+            "f-frequency",
             "f-period",
             "f-radius",
             "f-veldelta"
           ]),
-          randVec3(["f-accel", "f-direction", "f-pos"])
+          randVec3(["f-accel", "f-direction", "f-pos", "f-axisfrac"])
         ],
         [undefined, undefined, undefined],
         [undefined, undefined, undefined]

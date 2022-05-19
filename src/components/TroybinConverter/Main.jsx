@@ -1,6 +1,6 @@
 import struct from "@aksel/structjs";
 
-import getNamesList from "./troybin_properties";
+import getDictionaryEntries from "./dictionary";
 
 let buffer;
 
@@ -365,18 +365,30 @@ function getFixdict(troybin) {
     tbin.unknownHashes = [];
   }
 
-  const groups = getValues(tbin, ["System"], getNamesList("partGroupNames"));
-  const fields = getValues(tbin, groups, getNamesList("partFieldNames"));
-  const fluids = getValues(tbin, groups, getNamesList("partFluidNames"));
+  const groups = getValues(
+    tbin,
+    ["System"],
+    getDictionaryEntries("partGroupNames")
+  );
+  const fields = getValues(
+    tbin,
+    groups,
+    getDictionaryEntries("partFieldNames")
+  );
+  const fluids = getValues(
+    tbin,
+    groups,
+    getDictionaryEntries("partFluidNames")
+  );
 
   const result = [];
   let resultIndex = result.length;
 
   const dictonary = [
-    { sections: groups, names: getNamesList("groupNames") },
-    { sections: fields, names: getNamesList("fieldNames") },
-    { sections: fluids, names: getNamesList("fluidNames") },
-    { sections: ["System"], names: getNamesList("systemNames") }
+    { sections: groups, names: getDictionaryEntries("groupNames") },
+    { sections: fields, names: getDictionaryEntries("fieldNames") },
+    { sections: fluids, names: getDictionaryEntries("fluidNames") },
+    { sections: ["System"], names: getDictionaryEntries("systemNames") }
   ];
 
   for (let i = 0; i < dictonary.length; i += 1) {
@@ -520,7 +532,7 @@ function writeini(troybinParam) {
   return output;
 }
 
-export default function readTroybinBinary(troybin) {
+export default function TroybinConverter(troybin) {
   let result = []; // eslint-disable-line
   buffer = troybin;
 

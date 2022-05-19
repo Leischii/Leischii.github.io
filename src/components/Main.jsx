@@ -1,1288 +1,591 @@
-import React, { Component } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Dropzone from "react-dropzone";
+import styled from "styled-components";
 
-import Card from "react-bootstrap/Card";
-import Values from "./table";
-import {
-  FormatInput,
-  FormatValue,
-  GetStructureData,
-  UpdateEmitters,
-  WriteProperty
-} from "./helpers";
-import readTroybinBinary from "./troybin";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-import aatroxNew from "../splasharts/Aatrox_New.png";
-import aatroxOld from "../splasharts/Aatrox_Old.png";
-import akaliNew from "../splasharts/Akali_New.png";
-import akaliOld from "../splasharts/Akali_Old.png";
-import asheNew from "../splasharts/Ashe_New.png";
-import asheOld from "../splasharts/Ashe_Old.png";
-import blitzcrankNew from "../splasharts/Blitzcrank_New.png";
-import blitzcrankOld from "../splasharts/Blitzcrank_Old.png";
-import cassiopeiaNew from "../splasharts/Cassiopeia_New.png";
-import cassiopeiaOld from "../splasharts/Cassiopeia_Old.png";
-import ezrealNew from "../splasharts/Ezreal_New.png";
-import ezrealOld from "../splasharts/Ezreal_Old.png";
-import fioraNew from "../splasharts/Fiora_New.png";
-import fioraOld from "../splasharts/Fiora_Old.png";
-import gangplankNew from "../splasharts/Gangplank_New.png";
-import gangplankOld from "../splasharts/Gangplank_Old.png";
-import HeimerdingerNew from "../splasharts/Heimerdinger_New.png";
-import HeimerdingerOld from "../splasharts/Heimerdinger_Old.png";
-import katarinaNew from "../splasharts/Katarina_New.png";
-import katarinaOld from "../splasharts/Katarina_Old.png";
-import missFortuneNew from "../splasharts/MissFortune_New.png";
-import missFortuneOld from "../splasharts/MissFortune_Old.png";
-import nasusNew from "../splasharts/Nasus_New.png";
-import nasusOld from "../splasharts/Nasus_Old.png";
-import poppyNew from "../splasharts/Poppy_New.png";
-import poppyOld from "../splasharts/Poppy_Old.png";
-import sonaNew from "../splasharts/Sona_New.png";
-import sonaOld from "../splasharts/Sona_Old.png";
-import sionNew from "../splasharts/Sion_New.png";
-import sionOld from "../splasharts/Sion_Old.png";
-import seraphineNew from "../splasharts/Seraphine_New.png";
-import trundleNew from "../splasharts/Trundle_New.png";
-import trundleOld from "../splasharts/Trundle_Old.png";
-import varusNew from "../splasharts/Varus_New.png";
-import varusOld from "../splasharts/Varus_Old.png";
-import veigarNew from "../splasharts/Veigar_New.png";
-import veigarOld from "../splasharts/Veigar_Old.png";
-import viktorNew from "../splasharts/Viktor_New.png";
-import viktorOld from "../splasharts/Viktor_Old.png";
-import warwickNew from "../splasharts/Warwick_New.png";
-import warwickOld from "../splasharts/Warwick_Old.png";
+import GetTheme from "./UI/components/Theme";
+import MainPage from "./UI/MainPage";
 
+const StyledButton = styled.button`
+  height: 100%;
+  width: 100%;
+
+  font-weight: bold;
+  border: 3px solid ${props => (props.active ? "#FFF" : "grey")};
+  color: ${props => (props.active ? "#FFF" : "#b0b0b0")};
+  background-color: ${props => (props.active ? "#363636" : "#4a4a4a")};
+
+  :hover {
+    background-color: ${props => (props.active ? "#292828" : "#4a4a4a")};
+  }
+`;
+
+const StyledButtonArea = styled.div`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StyledMainContainer = styled.div`
+  height: 100vh;
+
+  display: flex;
+  flex-direction: row;
+`;
+
+const StyledCheckbox = styled.input`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  
+  transform: translate(-50%, -50%);
+`;
+
+const StyledContent = styled.div`
+  height: 100%;
+  width: 100%;
+`;
+
+const StyledDownloadButton = styled.a`
+  height: 100%;
+  width: 100%;
+
+  font-weight: bold;
+  border: 3px solid grey;
+  color: ${props => (props.active ? "#FFF" : "#b0b0b0")};
+  background-color: ${props => (props.active ? "#363636" : "#4a4a4a")};
+`;
+
+const StyledDropzone = styled(Dropzone)`
+  height: 100%;
+  width: 100%;
+
+  border-top: outset;
+  border-bottom: outset;
+  border-color: grey;
+  border-width: 4px;
+  border-top: 0px;
+`;
+
+const StyledDropzoneArea = styled.div`
+  height: 100%;
+  width: 100%;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+`;
+
+const StyledElement = styled.div`
+  border-style: outset;
+  border-color: grey;
+  border-width: 1px;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  :hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+`;
+
+const StyledGradient = styled.div.attrs(({ angle, backGroundColorValue }) => ({
+  style: {
+    background:
+      "linear-gradient(" +
+      (angle || "290") +
+      "deg, hsl(" +
+      backGroundColorValue +
+      ", 60%, 55%), hsl(" +
+      (backGroundColorValue - 305) +
+      ", 64%, 50%))"
+  }
+}))`
+`;
+
+const StyledGrid = styled.div`
+  height: 100%;
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: ${props => props.template.layoutCol};
+  grid-template-rows: ${props => props.template.layoutRow};
+`;
+
+const StyledGridChild = styled.div`
+  height: 100%;
+  width: 100%;
+
+  grid-column-start: ${props => props.grid.column[0]};
+  grid-column-end: ${props => props.grid.column[1]};
+  grid-row-start: ${props => props.grid.row[0]};
+  grid-row-end: ${props => props.grid.row[1]};
+`;
+
+const StyledHalfRight = styled.div`
+  flex: 4;
+
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledBasicContainer = styled.div`
+  height: 100%;
+  width: 100%;
+`;
+
+const StyledFileList = styled.div`
+  height: 100%;
+  width: 100%;
+
+  overflow-y: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const StyledFileListItem = styled.div`
+  height: 6%;
+  width: 100%;
+  border-style: outset;
+  border-color: grey;
+  border-width: 1px;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  :hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+`;
+
+const StyledNavigation = styled.div`
+  border-right: outset;
+  border-color: grey;
+  border-width: 4px;
+
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledRow = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const StyledTextStrong = styled.strong`
+  heigth: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #fff;
+  font-size: ${props => props.fontSize || "2vh"};
+  margin: ${props => props.marginValue || "4%"};
+
+  ${props => props.center && `
+    position: absolute;
+    top: 50%;
+    left: 2%;
+    
+    transform: translate(2%, -50%);
+    width: 116%;
+  `
+  }
+`;
+
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
+const Main = () => {
+  const [backGroundColorValue, setBackGroundColorValue] = useState(200);
+  const [backGroundColorDirection, setBackGroundColorDirection] = useState("UP");
+  const [lightMode, setLightMode] = useState(false);
+
+  const theme = GetTheme({ backGroundColorValue, lightMode });
+
+  useInterval(() => {
+    setBackgroundColor();  
+  }, 500);
+
+  const handleChangeTheme = useCallback(() => {
+    setLightMode(!lightMode);
+  }, [lightMode]);
+
+  const setBackgroundColor = () => {
+    let colorValue = backGroundColorValue;
+    let numberDirection = backGroundColorDirection;
+
+    if ( colorValue === 0) numberDirection = "UP";
+    if ( colorValue === 360) numberDirection = "DOWN";
+
+    const value = numberDirection === "UP" ? colorValue + 1 : colorValue - 1;
+
+    setBackGroundColorValue(value);
+    setBackGroundColorDirection(numberDirection);
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline/>
+      <MainPage
+        lightMode={lightMode}
+        handleChangeTheme={handleChangeTheme}
+      />
+    </ThemeProvider>
+  );
+};
+
+export default Main;
+
+{/*
 export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      clicked: false,
-      convertedLink: "",
-      defaultAssetsPath: "",
-      defaultFilePath: "",
-      inputType: "",
-      namesOnly: false,
-      originalTroybin: "",
-      outputFileName: "",
-      progressStep: "",
-      randomIndex: Math.floor(Math.random() * 21),
-      updateFileTypes: true
+      backGroundColorValue: { value: 200, direction: "UP" },
+      lightMode: false
     };
+  
+    this.handleChangeTheme = this.handleChangeTheme.bind(this);
+  }
 
-    this.handleChangeAssetsPath = this.handleChangeAssetsPath.bind(this);
-    this.handleChangeFilePath = this.handleChangeFilePath.bind(this);
-    this.handleChangeNamesOnly = this.handleChangeNamesOnly.bind(this);
-    this.handleChangeUpdateFileType = this.handleChangeUpdateFileType.bind(
-      this
+  componentDidMount() {
+    this.interval = setInterval(() => this.setBackgroundColor(), 500);
+  }
+
+  componentWillUnmount(){
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+  
+  handleChangeTheme() {
+    const { lightMode } = this.state;
+
+    this.setState({ lightMode: !lightMode });
+  }
+
+  setBackgroundColor() {
+    const { backGroundColorValue } = this.state;
+
+    let colorValue = backGroundColorValue.value;
+    let numberDirection = backGroundColorValue.direction;
+
+    if ( colorValue === 0) numberDirection = "UP";
+    if ( colorValue === 360) numberDirection = "DOWN";
+
+    this.setState({
+      backGroundColorValue: {
+        value: numberDirection === "UP"
+          ? colorValue + 1
+          : colorValue - 1,
+        direction: numberDirection
+      }
+    })
+  }
+
+  renderHeader(elements) {
+    const { activeTab } = this.state;
+
+    return (
+      <>
+        {elements.map((element, index) => (
+          <div  key={index} style={{ float: "left" }}>
+            <StyledElement>
+              <StyledTextStrong>{element.name}</StyledTextStrong>
+            </StyledElement>
+          </div>
+        ))}
+      </>
     );
   }
 
-  handleChangeAssetsPath(event) {
-    this.setState({ defaultAssetsPath: event.target.value });
-  }
-
-  handleChangeFilePath(event) {
-    this.setState({ defaultFilePath: event.target.value });
-  }
-
-  handleChangeNamesOnly(e) {
-    this.setState({ namesOnly: e.target.checked });
-  }
-
-  handleChangeUpdateFileType(e) {
-    this.setState({
-      updateFileTypes: e.target.checked
-    });
-  }
-
-  clearState = () => {
-    this.setState({
-      clicked: false,
-      convertedLink: "",
-      inputType: "",
-      originalTroybin: "",
-      outputFileName: "",
-      progressStep: ""
-    });
-  };
-
-  getInputs = () => {
-    const { defaultAssetsPath, defaultFilePath } = this.state;
-
-    if (!defaultAssetsPath.length) {
-      this.setState({
-        defaultAssetsPath: "ASSETS/Shared/Particles"
-      });
-    }
-
-    if (!defaultFilePath.length) {
-      this.setState({
-        defaultFilePath: "Shared/Particles"
-      });
-    }
-  };
-
-  readTroybin = () => {
-    const {
-      defaultAssetsPath,
-      inputType,
-      namesOnly,
-      originalTroybin,
-      outputFileName,
-      updateFileTypes
-    } = this.state;
-    let system = [];
-    let unknown = [];
-    const troybinEntries = [];
-
-    let fileContent;
-
-    if (inputType !== "text/plain") {
-      this.setState({ progressStep: "Converting Troybin..." });
-      fileContent = readTroybinBinary(originalTroybin);
-    } else {
-      fileContent = originalTroybin;
-    }
-
-    this.setState({ progressStep: "Reading Troybin..." });
-
-    // Creates an array with each row being an entry
-    // Also removes unwanted characters
-    const troybinArray = FormatInput(fileContent);
-
-    // Collect info about troybin structure
-    const structureData = GetStructureData(troybinArray);
-
-    for (let i = 0; i < structureData.entryAmount; i += 1) {
-      const isUnknown =
-        structureData.unknownIndex !== -1 &&
-        structureData.unknownIndex === structureData.entryStartIndices[i];
-
-      // eslint-disable-next-line
-      const entryName = isUnknown ? "UNKNOWN_HASHES" : troybinArray[0].replace(/[\[\]']+/g, "");
-      let entryProperties;
-      if (i === structureData.entryAmount - 1) {
-        entryProperties = troybinArray.splice(0, troybinArray.length);
-      } else {
-        entryProperties = troybinArray.splice(
-          0,
-          structureData.entryStartIndices[i + 1] -
-            structureData.entryStartIndices[i]
-        );
-      }
-
-      const entry = {
-        name: entryName,
-        properties: entryProperties.splice(
-          isUnknown ? 0 : 1,
-          entryProperties.length
-        )
-      };
-
-      entry.properties = entry.properties.sort((a, b) => {
-        const formatedA = a.split("=")[0].replace("'", "");
-        const formatedB = b.split("=")[0].replace("'", "");
-
-        return formatedA.localeCompare(formatedB);
-      });
-
-      if (entry.name === "System") {
-        system = entry;
-      } else if (entry.name === "UNKNOWN_HASHES") {
-        unknown = entry;
-      } else {
-        troybinEntries.push(entry);
-      }
-    }
-
-    troybinEntries.push(unknown.length ? (system, unknown) : system);
-
-    const troybinData = {
-      fileName: outputFileName.replace(".txt", ""),
-      emitters: [],
-      system: [],
-      unknown: []
-    };
-
-    troybinEntries.forEach(entry => {
-      const emitter = {
-        name: entry.name,
-        properties: []
-      };
-      const isSystem = entry.name === "System";
-      const isUnknown = entry.name === "UNKNOWN_HASHES";
-
-      let needsChanges = false;
-
-      entry.properties.forEach(prop => {
-        let assignedProperty = {
-          value: undefined
-        };
-        let emitterNameEntry = -1;
-        let entryFound = false;
-
-        const stringParts = prop.split("=");
-        const propertyName = stringParts[0].replace("'", "");
-        const propertyValuePart = stringParts[1];
-
-        if (!isUnknown) {
-          if (isSystem) {
-            Values.systemValues.forEach(sValue => {
-              if (sValue.troybinName === "GroupPart") {
-                if (
-                  propertyName.includes("GroupPart") &&
-                  !propertyName.includes("Importance") &&
-                  !propertyName.includes("Type")
-                ) {
-                  const emitterOrderValue = parseInt(
-                    propertyName.replace("GroupPart", ""),
-                    10
-                  );
-
-                  assignedProperty = sValue;
-                  assignedProperty.order = emitterOrderValue;
-                  entryFound = true;
-
-                  emitterNameEntry = troybinData.emitters.findIndex(
-                    emit =>
-                      emit.name ===
-                      // eslint-disable-next-line
-                      propertyValuePart.replace("\"", "").replace("\"", "")
-                  );
-
-                  if (emitterNameEntry !== -1) {
-                    troybinData.emitters[
-                      emitterNameEntry
-                    ].order = emitterOrderValue;
-                  }
-                }
-              } else if (sValue.troybinName === "GroupPartImportance") {
-                if (
-                  propertyName.includes("GroupPart") &&
-                  propertyName.includes("Importance")
-                ) {
-                  const emitterValue = parseInt(
-                    propertyName
-                      .replace("GroupPart", "")
-                      .replace("Importance", ""),
-                    10
-                  );
-                  assignedProperty = sValue;
-                  entryFound = true;
-
-                  emitterNameEntry = troybinData.emitters.findIndex(
-                    emit => emit.order === emitterValue
-                  );
-                }
-              } else if (sValue.troybinName === "GroupPartType") {
-                if (
-                  propertyName.includes("GroupPart") &&
-                  propertyName.includes("Type")
-                ) {
-                  if (propertyValuePart === "\"Simple\"") { // eslint-disable-line
-                    entryFound = true;
-                    needsChanges = true;
-
-                    const emitterValue = parseInt(
-                      propertyName.replace("GroupPart", "").replace("Type", ""),
-                      10
-                    );
-
-                    emitterNameEntry = troybinData.emitters.findIndex(
-                      emit => emit.order === emitterValue
-                    );
-                  }
-                }
-              } else if (sValue.troybinName === propertyName) {
-                assignedProperty = sValue;
-                entryFound = true;
-              }
-            });
-          } else if (propertyName[0] === "e") {
-            Values.eValues.forEach(eValue => {
-              if (eValue.troybinName === propertyName) {
-                assignedProperty = eValue;
-                entryFound = true;
-
-                if (propertyName === "e-life" && propertyValuePart === "-1") {
-                  needsChanges = true;
-                }
-              }
-            });
-          } else if (propertyName[0] === "f") {
-            Values.fValues.forEach(fValue => {
-              if (fValue.troybinName === propertyName) {
-                assignedProperty = fValue;
-                entryFound = true;
-
-                if (
-                  propertyName.includes("field-accel-") ||
-                  propertyName.includes("field-attract-") ||
-                  propertyName.includes("field-drag-") ||
-                  propertyName.includes("field-noise-") ||
-                  propertyName.includes("field-orbit-")
-                ) {
-                  needsChanges = true;
-                }
-              }
-            });
-          } else if (propertyName[0] === "p") {
-            Values.pValues.forEach(pValue => {
-              if (pValue.troybinName === propertyName) {
-                assignedProperty = pValue;
-                entryFound = true;
-              }
-            });
-          } else {
-            Values.others.forEach(other => {
-              if (other.troybinName === propertyName) {
-                assignedProperty = other;
-                entryFound = true;
-              }
-            });
-          }
-        }
-
-        if (assignedProperty.binGroup === undefined && !needsChanges) {
-          const text = namesOnly
-            ? `${propertyName}`
-            : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
-
-          if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
-            troybinData.unknown.push(text);
-          }
-        }
-
-        if (!entryFound) {
-          const text = namesOnly
-            ? `${propertyName}`
-            : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
-
-          if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
-            troybinData.unknown.push(text);
-          }
-        }
-
-        let formatedValue;
-
-        if (assignedProperty.troybinName || needsChanges) {
-          if (assignedProperty.troybinName) {
-            formatedValue = JSON.parse(
-              JSON.stringify(
-                FormatValue(
-                  propertyValuePart,
-                  assignedProperty.troybinType,
-                  defaultAssetsPath,
-                  updateFileTypes
-                )
-              )
-            );
-
-            if (
-              formatedValue === "INVALID_VALUE" &&
-              assignedProperty.simpleValue !== undefined
-            ) {
-              formatedValue = JSON.parse(
-                JSON.stringify(
-                  FormatValue(
-                    propertyValuePart,
-                    assignedProperty.simpleValue[0],
-                    defaultAssetsPath,
-                    updateFileTypes
-                  )
-                )
-              );
-            }
-          }
-
-          const property = JSON.parse(
-            JSON.stringify({
-              troybinName: assignedProperty.troybinName,
-              troybinType: assignedProperty.troybinType,
-              binGroup: assignedProperty.binGroup,
-              binGroupType: assignedProperty.binGroupType,
-              binPropertyName: assignedProperty.binPropertyName,
-              binPropertyType: assignedProperty.binPropertyType,
-              defaultValue: assignedProperty.defaultValue,
-              simpleValue: assignedProperty.simpleValue || undefined,
-              value: formatedValue
-            })
-          );
-
-          if (property.value !== "INVALID_VALUE") {
-            if (isSystem) {
-              if (emitterNameEntry !== -1) {
-                if (needsChanges) {
-                  troybinData.emitters[emitterNameEntry].needsChanges = true;
-                  troybinData.emitters[emitterNameEntry].isSimple = true;
-                  needsChanges = false;
-                } else {
-                  troybinData.emitters[emitterNameEntry].properties.push(
-                    JSON.parse(JSON.stringify(property))
-                  );
-                }
-              } else {
-                troybinData.system.push(property);
-              }
-            } else {
-              if (needsChanges) {
-                emitter.needsChanges = true;
-                needsChanges = false;
-              }
-              emitter.properties.push(property);
-            }
-          } else {
-            const text = namesOnly
-              ? `${propertyName} (unexpected amount of values)`
-              : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
-
-            if (troybinData.unknown.findIndex(emit => emit === text) === -1) {
-              troybinData.unknown.push(text);
-            }
-          }
-        }
-      });
-
-      if (!isSystem) {
-        troybinData.emitters.push(emitter);
-      }
-    });
-
-    return troybinData;
-  };
-
-  createBin = troybin => {
-    const { defaultFilePath } = this.state;
-    const binName = troybin.fileName;
-
-    this.setState({ progressStep: "Generating Bin..." });
-
-    const bin = {
-      name: binName,
-      emitters: [],
-      system: [],
-      unknowns: troybin.unknown
-    };
-
-    troybin.emitters.forEach(emitter => {
-      const alreadyAdded = [];
-      const binEmitters = [];
-
-      emitter.properties.forEach(property => {
-        if (
-          alreadyAdded.filter(entry => entry === property.binGroup.name)
-            .length === 0
-        ) {
-          const propertyGroup = property.binGroup.name;
-          let propertyParts = [];
-
-          if (property.binGroup.members.length > 0) {
-            propertyParts = emitter.properties.filter(
-              props => props.binGroup.name === propertyGroup
-            );
-          } else {
-            propertyParts.push(property);
-          }
-
-          let finalProperty = {};
-
-          if (property.binGroup.parent !== undefined) {
-            const parentParent = property.binGroup.parent.parent;
-
-            if (
-              parentParent !== undefined &&
-              parentParent.name.includes("field")
-            ) {
-              const parentParentPropertyParts = [];
-
-              parentParent.members.forEach(parentMember => {
-                const parentMembers = emitter.properties.filter(
-                  props =>
-                    props.binGroup.parent !== undefined &&
-                    props.binGroup.parent.name === parentMember &&
-                    props.binGroup.parent.parent.name === parentParent.name
-                );
-
-                if (parentMembers.length) {
-                  const troybinProperties = [];
-
-                  parentMembers.forEach(member => {
-                    alreadyAdded.push(member.binGroup.name);
-
-                    const binProperty = {
-                      name: member.binGroup.name,
-                      members: [member],
-                      order: member.binGroup.order
-                    };
-
-                    troybinProperties.push(binProperty);
-                  });
-
-                  const parentPropertyPart = {
-                    name: parentMembers[0].binGroup.parent.name,
-                    members: troybinProperties,
-                    order: parentMembers[0].binGroup.parent.order
-                  };
-
-                  parentParentPropertyParts.push(parentPropertyPart);
-                }
-              });
-
-              parentParentPropertyParts.sort(function compareNumbers(a, b) {
-                return a.order - b.order;
-              });
-
-              finalProperty = {
-                name: parentParent.name,
-                members: parentParentPropertyParts,
-                order: parentParent.order
-              };
-            } else {
-              let parent;
-
-              // Is Part of multiple primitives
-              if (Array.isArray(property.binGroup.parent)) {
-                if (property.binGroup.parent[0].name.includes("primitive")) {
-                  const primitive = emitter.properties.filter(
-                    props => props.troybinName === "p-type"
-                  );
-
-                  const correctPrimitive = property.binGroup.parent.filter(
-                    props => props.name === primitive[0].value
-                  )[0];
-
-                  parent = correctPrimitive;
-                }
-              } else {
-                parent = property.binGroup.parent;
-              }
-
-              if (parent.members.length > 0) {
-                const parentPropertyParts = [];
-
-                parent.members.forEach(parentMember => {
-                  const members = emitter.properties.filter(
-                    props => props.binGroup.name === parentMember
-                  );
-
-                  if (members.length) {
-                    members.forEach(member => {
-                      alreadyAdded.push(member.binGroup.name);
-                    });
-
-                    const parentPropertyPart = {
-                      name: members[0].binGroup.name,
-                      members,
-                      order: members[0].binGroup.order
-                    };
-
-                    parentPropertyParts.push(parentPropertyPart);
-                  }
-                });
-
-                parentPropertyParts.sort(function compareNumbers(a, b) {
-                  return a.order - b.order;
-                });
-
-                finalProperty = {
-                  name: parent.name,
-                  members: parentPropertyParts,
-                  order: parent.order
-                };
-              } else {
-                finalProperty = {
-                  name: parent.name,
-                  members: propertyParts,
-                  order: parent.order
-                };
-              }
-            }
-
-            binEmitters.push(finalProperty);
-          } else {
-            finalProperty = {
-              name: propertyGroup,
-              members: propertyParts,
-              order: property.binGroup.order
-            };
-
-            binEmitters.push(finalProperty);
-
-            alreadyAdded.push(propertyGroup);
-          }
-        }
-      });
-
-      binEmitters.sort(function compareNumbers(a, b) {
-        return a.order - b.order;
-      });
-
-      bin.emitters.push(binEmitters);
-    });
-
-    const binSystemProperties = [
-      {
-        name: "particleName",
-        members: [
-          {
-            troybinName: "",
-            troybinType: "STRING_NO_PATH",
-            binGroup: {
-              name: "particleName",
-              members: [],
-              structure: "SimpleProperty",
-              order: 302
-            },
-            binGroupType: "string",
-            binPropertyName: "",
-            binPropertyType: "",
-            value: `\"${binName}\"` // eslint-disable-line
-          }
-        ]
-      },
-      {
-        name: "particlePath",
-        members: [
-          {
-            troybinName: "",
-            troybinType: "STRING_PATH",
-            binGroup: {
-              name: "particlePath",
-              members: [],
-              structure: "SimpleProperty",
-              order: 303
-            },
-            binGroupType: "string",
-            binPropertyName: "",
-            binPropertyType: "",
-            value: `\"${defaultFilePath}/${binName}\"` // eslint-disable-line
-          }
-        ]
-      }
-    ];
-
-    troybin.system.forEach(property => {
-      if (property.binGroup) {
-        const finalProperty = {
-          name: property.binGroup.name,
-          members: [property]
-        };
-
-        binSystemProperties.push(finalProperty);
-      }
-    });
-
-    bin.system = binSystemProperties;
-
-    return bin;
-  };
-
-  writeBin = bin => {
-    const { defaultFilePath } = this.state;
-    const spacing = 0;
-
-    function getSpacing(number) {
-      return "    ".repeat(number);
-    }
-
-    this.setState({ progressStep: "Writing Bin..." });
-
-    const finalBin = [
-      `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
-        bin.name
-      }\" = VfxSystemDefinitionData {\r\n`, // eslint-disable-line
-      `${getSpacing(
-        spacing + 1
-      )}complexEmitterDefinitionData: list[pointer] = {\r\n`
-    ];
-
-    bin.emitters.forEach(emitter => {
-      const propertiesWritten = [];
-
-      emitter.forEach(property => {
-        let entry;
-
-        if (property.name === "shape") {
-          const writenLines = [];
-
-          property.members.forEach(member => {
-            entry = WriteProperty(member, spacing + 4);
-
-            entry.forEach(e => {
-              writenLines.push(e);
-            });
-          });
-
-          if (writenLines.length) {
-            propertiesWritten.push(
-              `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
-            );
-
-            writenLines.forEach(line => {
-              propertiesWritten.push(line);
-            });
-
-            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-          }
-        } else if (property.name.includes("primitive")) {
-          if (
-            property.name !== "primitiveNone" &&
-            property.name !== "primitive"
-          ) {
-            let hasContent = false;
-
-            switch (property.name) {
-              // 1
-              case "primitiveArbitraryQuad":
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveArbitraryQuad = {}\r\n`
-                );
-                break;
-              // 2 ?
-              case "primitiveArbitraryTrail":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveArbitraryTrail = {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
-                );
-                break;
-              // 3
-              case "primitiveMesh":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-                );
-                break;
-              // 4 ?
-              case "primitiveAttachedMesh":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveAttachedMesh {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-                );
-                break;
-              // 5
-              case "primitiveTrail":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
-                );
-                break;
-              // 6
-              case "primitiveBeam":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveBeam {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mBeam: embed = VfxBeamDefinitionData {\r\n`
-                );
-                break;
-              // 7
-              case "primitivePlanarProjection":
-                hasContent = true;
-
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitivePlanarProjection {\r\n`,
-                  `${getSpacing(
-                    spacing + 4
-                  )}mProjection: embed = VfxProjectionDefinitionData {\r\n`
-                );
-                break;
-              // 8 ?
-              case "primitiveRay":
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 3
-                  )}primitive: pointer = VfxPrimitiveRay {}\r\n`
-                );
-                break;
-              default:
-                break;
-            }
-
-            if (hasContent && property.members.length) {
-              property.members.forEach(member => {
-                entry = WriteProperty(member, spacing + 5);
-
-                entry.forEach(e => {
-                  propertiesWritten.push(e);
-                });
-              });
-
-              propertiesWritten.push(
-                `${getSpacing(spacing + 4)}}\r\n`,
-                `${getSpacing(spacing + 3)}}\r\n`
-              );
-            }
-          }
-        } else if (property.name === "distortionDefinition") {
-          propertiesWritten.push(
-            `${getSpacing(
-              spacing + 3
-            )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
-          );
-
-          property.members.forEach(member => {
-            entry = WriteProperty(member, spacing + 4);
-
-            entry.forEach(e => {
-              propertiesWritten.push(e);
-            });
-          });
-
-          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-        } else if (property.name === "fieldCollectionDefinition") {
-          const writenLines = [];
-
-          property.members.forEach(member => {
-            let fieldType;
-
-            switch (member.name) {
-              case "fieldAccelerationDefinitions":
-                fieldType = "Acceleration";
-                break;
-              case "fieldAttractionDefinitions":
-                fieldType = "Attraction";
-                break;
-              case "fieldDragDefinitions":
-                fieldType = "Drag";
-                break;
-              case "fieldNoiseDefinitions":
-                fieldType = "Noise";
-                break;
-              case "fieldOrbitalDefinitions":
-                fieldType = "Orbital";
-                break;
-              default:
-                break;
-            }
-
-            writenLines.push(
-              `${getSpacing(
-                spacing + 4
-              )}field${fieldType}Definitions: list[embed] = {\r\n`,
-              `${getSpacing(
-                spacing + 5
-              )}VfxField${fieldType}DefinitionData {\r\n`
-            );
-
-            member.members.forEach(memb => {
-              entry = WriteProperty(memb, spacing + 6);
-
-              entry.forEach(e => {
-                writenLines.push(e);
-              });
-            });
-
-            writenLines.push(
-              `${getSpacing(spacing + 5)}}\r\n`,
-              `${getSpacing(spacing + 4)}}\r\n`
-            );
-          });
-
-          if (writenLines.length) {
-            propertiesWritten.push(
-              `${getSpacing(
-                spacing + 3
-              )}fieldCollectionDefinition: pointer = VfxFieldCollectionDefinitionData {\r\n`
-            );
-
-            writenLines.forEach(line => {
-              propertiesWritten.push(line);
-            });
-
-            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-          }
-        } else {
-          entry = WriteProperty(property, spacing + 3);
-
-          entry.forEach(e => {
-            propertiesWritten.push(e);
-          });
-        }
-      });
-
-      if (propertiesWritten.length) {
-        finalBin.push(
-          `${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`
-        );
-
-        propertiesWritten.forEach(emitterLine => {
-          finalBin.push(emitterLine);
-        });
-        finalBin.push(`${getSpacing(spacing + 2)}}\r\n`);
-      }
-    });
-
-    finalBin.push(`${getSpacing(spacing + 1)}}\r\n`);
-
-    bin.system.forEach(systemProperty => {
-      const systemEntry = WriteProperty(systemProperty, spacing + 1);
-
-      systemEntry.forEach(s => {
-        finalBin.push(s);
-      });
-    });
-
-    finalBin.push(`${getSpacing(spacing)}}\r\n`);
-
-    if (bin.unknowns.length) {
-      finalBin.push(
-        `\r\n`,
-        `Troygrade was unable to translate the following values: \r\n`
-      );
-
-      bin.unknowns.forEach(unknown => {
-        finalBin.push(`${unknown}\r\n`);
-      });
-    }
-
-    return finalBin.join("");
-  };
-
-  loadFile = async event => {
-    event.preventDefault();
-    this.clearState();
-
-    const input = event.target.files[0];
-    const reader = new FileReader();
-
-    if (input.type === "text/plain") {
-      reader.onload = async e => {
-        const text = e.target.result;
-        this.setState({
-          originalTroybin: text,
-          outputFileName: input.name,
-          inputType: input.type
-        });
-      };
-      reader.readAsText(event.target.files[0]);
-    } else {
-      reader.onload = async e => {
-        const text = e.target.result;
-
-        this.setState({
-          originalTroybin: text,
-          outputFileName: input.name,
-          inputType: input.type
-        });
-      };
-      reader.readAsArrayBuffer(event.target.files[0]);
-    }
-  };
-
-  async click(e) {
-    e.preventDefault();
-    try {
-      await this.getInputs();
-
-      const troybinStructure = this.readTroybin();
-
-      const updatedTroybin = UpdateEmitters(troybinStructure);
-
-      const binStructure = this.createBin(updatedTroybin);
-
-      const finalBin = this.writeBin(binStructure);
-
-      const blob = new Blob([finalBin], { type: "text/plain" });
-      const downloadLink = URL.createObjectURL(blob);
-
-      this.setState({
-        convertedLink: downloadLink
-      });
-
-      this.setState({ clicked: true, progressStep: "" });
-    } catch (error) {
-      this.setState({ progressStep: "Error!" });
-      console.log(error);
-    }
-
-    return 1;
+  renderFileList() {
+    const { files } = this.state;
+      
+    return (
+      <StyledFileList>
+      <div style={{ height: "100%", width: "97%" }}>
+        {files.map((file, index) => (
+          <StyledFileListItem key={index}>
+            <StyledGrid template={{
+              layoutRow: "[row1] 20% [row2] 80% [row3]",
+              layoutCol: "[line1] 12% [line2] 73% [line3] 15% [line4]"
+            }}>
+              <StyledGridChild
+                grid={{
+                  column: ["line1", "line2"],
+                  row: ["row1", "row3"]
+                }}
+                name="checkbox"
+                style={{ position: "relative", borderRight: "2px outset grey" }}
+              >
+                <StyledCheckbox type="checkbox" />
+              </StyledGridChild>
+              <StyledGridChild
+                grid={{
+                  column: ["line2", "line3"],
+                  row: ["row2", "row3"]
+                }}
+                name="Filename"
+                style={{ position: "relative"}}
+              >
+                <StyledTextStrong center marginValue={"0%"}>{file.fileName}</StyledTextStrong>
+              </StyledGridChild>
+              <StyledGridChild
+                grid={{
+                  column: ["line3", "line4"],
+                  row: ["row1", "row2"]
+                }}
+                name="FileType"
+                style={{ position: "relative"}}
+              >
+                <StyledTextStrong center fontSize="1vh" marginValue={"1%"}>{file.type}</StyledTextStrong>
+              </StyledGridChild>
+            </StyledGrid>
+          </StyledFileListItem>
+        ))}
+        <StyledFileListItem>
+          <StyledDropzone onDrop={acceptedFiles => this.loadFile(acceptedFiles)}>
+            {({getRootProps, getInputProps}) => (
+              <StyledDropzoneArea className="container" {...getRootProps()}>
+                <input {...getInputProps()} />
+                <StyledTextStrong fontSize={"1.5vh"} marginValue={"0%"}>+ Add More Files</StyledTextStrong>
+              </StyledDropzoneArea>
+            )}
+          </StyledDropzone>
+        </StyledFileListItem>
+        </div>
+      </StyledFileList>
+    );
   }
 
   render() {
     const {
-      clicked,
-      convertedLink,
-      defaultAssetsPath,
-      defaultFilePath,
-      namesOnly,
-      progressStep,
-      outputFileName,
-      randomIndex,
-      updateFileTypes
+      backGroundColorValue,
+      lightMode
     } = this.state;
 
-    const splasharts = {
-      old: [
-        aatroxOld,
-        akaliOld,
-        asheOld,
-        blitzcrankOld,
-        cassiopeiaOld,
-        ezrealOld,
-        fioraOld,
-        gangplankOld,
-        HeimerdingerOld,
-        katarinaOld,
-        missFortuneOld,
-        nasusOld,
-        poppyOld,
-        sionOld,
-        sonaNew,
-        sonaOld,
-        trundleOld,
-        varusOld,
-        veigarOld,
-        viktorOld,
-        warwickOld
-      ],
-      new: [
-        aatroxNew,
-        akaliNew,
-        asheNew,
-        blitzcrankNew,
-        cassiopeiaNew,
-        ezrealNew,
-        fioraNew,
-        gangplankNew,
-        HeimerdingerNew,
-        katarinaNew,
-        missFortuneNew,
-        nasusNew,
-        poppyNew,
-        sionNew,
-        seraphineNew,
-        sonaNew,
-        trundleNew,
-        varusNew,
-        veigarNew,
-        viktorNew,
-        warwickNew
-      ]
-    };
+    const theme = GetTheme({ backGroundColorValue, lightMode });
 
     return (
-      <div className="m-5">
-        <div className="text-light text-center">
-          <h1>Troygrade - A League of Legends Troybin Migration Tool</h1>
-          <br />
-          <h3>
-            1. Select A Troybin File Converted To .txt With{" "}
-            <a
-              href="https://github.com/moonshadow565/lolpytools"
-              style={{ color: "#FFF" }}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <u>lol-pytools</u>
-            </a>
-          </h3>
-          <h3>2. Click On Convert</h3>
-          <h3>3. Click On Download</h3>
-        </div>
-
-        <div className="row mt-5">
-          <div
-            className="col-xl-5 col-lg-4 col-md-12 col-sm-12"
-            style={{ flex: 1.3344 }}
-          >
-            <Card.Img
-              className="ht"
-              variant="top"
-              src={splasharts.old[randomIndex]}
-            />
-            <div className="d-flex">
-              <input
-                type="file"
-                accept=".txt, .troybin"
-                className="mt-2 btn btn-dark w-100"
-                onChange={e => this.loadFile(e)}
-                style={{ textAlign: "left" }}
-              />
-            </div>
-            <br />
-            <br />
-            <h4 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              <u>Optional:</u>
-            </h4>
-            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              Assets Path:
-            </h5>
-            <div className="d-flex justify-content-center">
-              <input
-                className="w-100"
-                disabled={clicked}
-                name="PathToAssets"
-                onChange={this.handleChangeAssetsPath}
-                placeholder="ASSETS/Shared/Particles"
-                type="text"
-                value={defaultAssetsPath}
-              />
-            </div>
-            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              Particle Path:
-            </h5>
-            <div className="d-flex justify-content-center">
-              <input
-                className="w-100"
-                disabled={clicked}
-                name="PathToParticle"
-                onChange={this.handleChangeFilePath}
-                placeholder="Shared/Particles"
-                type="text"
-                value={defaultFilePath}
-              />
-            </div>
-            <div className="d-flex">
-              <input
-                defaultChecked={updateFileTypes}
-                className="mt-2 text-light d-flex mr-2"
-                disabled={clicked}
-                name="UpdateFileType"
-                onChange={e => this.handleChangeUpdateFileType(e)}
-                type="checkbox"
-              />
-              <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-                Update File Typings (.tga --&gt; .dds)
-              </div>
-            </div>
-            <div className="d-flex">
-              <input
-                defaultChecked={namesOnly}
-                className="mt-2 text-light d-flex mr-2"
-                disabled={clicked}
-                name="NamesOnly"
-                onChange={e => this.handleChangeNamesOnly(e)}
-                type="checkbox"
-              />
-              <div className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-                Only Show Names Of Untranslated Properties
-              </div>
-            </div>
-          </div>
-          <div className="col-xl-2 col-lg-4 col-md-12 mb-5 mt-5 col-sm-12 d-flex justify-content-center align-items-baseline" />
-          <div
-            className="col-xl-5 col-lg-4 col-md-12 col-sm-12"
-            style={{ flex: 1.3344 }}
-          >
-            <Card.Img
-              className="ht"
-              variant="top"
-              src={splasharts.new[randomIndex]}
-            />
-            <div className="d-flex justify-content-center">
-              <button
-                className="mt-2 btn btn-dark w-100"
-                disabled={!outputFileName || clicked}
-                onClick={e => this.click(e)}
-                type="button"
-              >
-                Convert
-              </button>
-            </div>
-            <div className="d-flex justify-content-center">
-              {clicked ? (
-                <a
-                  className="mt-2 btn btn-dark w-100"
-                  href={convertedLink}
-                  download={`${outputFileName.replace(
-                    ".txt",
-                    ""
-                  )}_converted.txt`}
-                  style={{ color: "#FFF" }}
+      <>
+        <StyledMainContainer>
+          <StyledNavigation>
+            <StyledGradient backGroundColorValue={backGroundColorValue.value}>
+              <StyledGrid template={{
+                layoutRow: "[row1] 5% [row2] 3% [row3] 5% [row4] 72% [row5] 15% [row6]",
+                layoutCol: "[line1] 22% [line2] 78% [line3]"
+              }}>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line2"],
+                    row: ["row1", "row3"]
+                  }}
                 >
-                  Download
-                </a>
-              ) : (
-                <button
-                  className="mt-2 btn btn-dark w-100"
-                  disabled
-                  type="button"
-                  style={{ color: "#FFF" }}
+                  <StyledBasicContainer>
+                    <img
+                      src="heimerdinger_passive.png"
+                      alt="heimerdinger_passive"
+                      width="100%"
+                      height="100%"
+                      style={{ border: "4px outset grey"}}
+                    />
+                  </StyledBasicContainer>                
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line2", "line3"],
+                    row: ["row1", "row3"]
+                  }}
+                  style={{
+                    border: "4px outset grey",
+                    backgroundColor: "rgba(0, 0, 0, 0.2)"
+                  }}
+                />
+                <StyledGridChild
+                  grid={{
+                    column: ["line2", "line3"],
+                    row: ["row1", "row2"]
+                  }}
                 >
-                  Download
-                </button>
-              )}
-            </div>
-            <div className="d-flex justify-content-center">
-              <h4 className="mt-2 text-light text-center">{progressStep}</h4>
-            </div>
-            {/* <br />
-            <h4 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              <u>Hash Generator:</u>
-            </h4>
-            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              Emitter:
-            </h5>
-            <div className="d-flex justify-content-center">
-              <input
-                className="w-100"
-                disabled={clicked}
-                name="PathToAssets"
-                onChange={this.handleChangeAssetsPath}
-                placeholder="ASSETS/Shared/Particles"
-                type="text"
-                value={defaultAssetsPath}
-              />
-            </div>
-            <h5 className="mt-2 text-light d-flex" style={{ color: "#FFF" }}>
-              Property:
-            </h5>
-            <div className="d-flex justify-content-center">
-              <input
-                className="w-100"
-                disabled={clicked}
-                name="PathToParticle"
-                onChange={this.handleChangeFilePath}
-                placeholder="Shared/Particles"
-                type="text"
-                value={defaultFilePath}
-              />
-            </div>
-            <div className="d-flex justify-content-center">
-              <button
-                className="mt-2 btn btn-dark w-50"
-                type="button"
-                style={{ color: "#FFF" }}
-              >
-                Generate Hash
-              </button>
-            </div> */}
-          </div>
-        </div>
-      </div>
+                  <StyledTextStrong fontSize={"3vh"}>
+                    <u>Troygrade</u>
+                  </StyledTextStrong>
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line2", "line3"],
+                    row: ["row2", "row3"]
+                  }}
+                >
+                  <StyledTextStrong fontSize={"1.5vh"}>
+                    A WIP Troybin Tool Collection
+                  </StyledTextStrong>
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line3"],
+                    row: ["row3", "row4"]
+                  }}
+                  style={{ backgroundColor: "grey", border: "4px outset grey"}}
+                >
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line3"],
+                    row: ["row4", "row5"]
+                  }}
+                >
+                  {files.length > 0 ? (
+                    this.renderFileList()
+                  ) : (
+                    <StyledDropzone onDrop={acceptedFiles => this.loadFile(acceptedFiles)}>
+                      {({getRootProps, getInputProps}) => (
+                        <StyledDropzoneArea className="container" {...getRootProps()}>
+                          <input {...getInputProps()} />
+                          <StyledTextStrong fontSize={"1.5vh"} marginValue={"0%"}>Add Files By Clicking Or Drag &amp; Drop</StyledTextStrong>
+                        </StyledDropzoneArea>
+                      )}
+                    </StyledDropzone>
+                  )}
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line3"],
+                    row: ["row5", "row6"]
+                  }}
+                >
+                  <StyledGrid style={{ flex: "3"}} template={{
+                    layoutRow: "[row1] 20% [row2] 40% [row3] 40% [row4]",
+                    layoutCol: "[line1] auto [line2]"
+                  }}>
+                    <StyledGridChild
+                      grid={{
+                        column: ["line1", "line2"],
+                        row: ["row1", "row2"]
+                      }}
+                      style={{ backgroundColor: "grey"}}
+                    />
+                    <StyledGridChild
+                      grid={{
+                        column: ["line1", "line2"],
+                        row: ["row2", "row3"]
+                      }}
+                      style={{ backgroundColor: "black"}}
+                    >
+                      <StyledButton
+                        active={files.length > 0 && !clicked}
+                        disabled={files.length === 0 || clicked}
+                        onClick={e => this.click(e)}
+                        type="button"
+                      >
+                        Convert
+                      </StyledButton>
+                    </StyledGridChild>
+                    <StyledGridChild
+                      grid={{
+                        column: ["line1", "line2"],
+                        row: ["row3", "row4"]
+                      }}
+                      style={{ backgroundColor: "black"}}
+                    >
+                      {clicked ? (
+                        <StyledDownloadButton
+                          href={convertedLink}
+                          download={`${outputFileName.replace(
+                            ".txt",
+                            ""
+                          )}_converted.txt`}
+                        >
+                          Download
+                        </StyledDownloadButton>
+                      ) : (
+                        <StyledButton
+                          disabled
+                          grid={{
+                            column: ["line1", "line1"],
+                            row: ["row3", "row4"]
+                          }}
+                          type="button"
+                        >
+                          Download
+                        </StyledButton>
+                      )}
+                    </StyledGridChild>
+                  </StyledGrid>
+                </StyledGridChild>
+              </StyledGrid>
+            </StyledGradient>
+          </StyledNavigation>
+          <StyledHalfRight>
+            <StyledGradient backGroundColorValue={backGroundColorValue.value}>
+              <StyledGrid template={{
+                layoutRow: "[row1] 8% [row2] 77% [row3] 15% [row4]",
+                layoutCol: "[line1] 100% [line2]"
+              }}>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line2"],
+                    row: ["row1", "row2"]
+                  }}
+                >
+                  <StyledGradient backGroundColorValue={backGroundColorValue.value}>
+                    <StyledRow>
+                      {this.renderHeader([
+                        { name: "Main" },
+                        { name: "Settings" }
+                      ])}
+                    </StyledRow>
+                  </StyledGradient>
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line2"],
+                    row: ["row2", "row3"]
+                  }}
+                >
+                  <StyledContent>
+                    <Content/>
+                  </StyledContent>
+                </StyledGridChild>
+                <StyledGridChild
+                  grid={{
+                    column: ["line1", "line2"],
+                    row: ["row3", "row4"]
+                  }}
+                >
+                  <StyledButtonArea>
+                    <StyledGradient backGroundColorValue={backGroundColorValue.value}>
+                      
+                    </StyledGradient>
+                  </StyledButtonArea>
+                </StyledGridChild>
+              </StyledGrid>
+            </StyledGradient>
+          </StyledHalfRight>
+        </StyledMainContainer>
+      </>
     );
   }
-}
+} */}

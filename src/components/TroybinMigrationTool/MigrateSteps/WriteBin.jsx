@@ -346,467 +346,10 @@ function writeDynamics(
   return result;
 }
 
-export function CheckValueType(value) {
-  let valueType = "";
-
-  switch (value.length) {
-    case 1:
-      valueType = "ONE_DOUBLE";
-      break;
-    case 2:
-      valueType = "TWO_DOUBLE";
-      break;
-    case 3:
-      valueType = "THREE_DOUBLE";
-      break;
-    case 4:
-      valueType = "FOUR_DOUBLE";
-      break;
-    case 5:
-      valueType = "FIVE_DOUBLE";
-      break;
-    default:
-      break;
-  }
-
-  return valueType;
-}
-/*
-Converts text into array with each entry representing a line of text
-Also removes backspaces
-*/
-export function FormatInput(originalTroybin) {
-  const troybinArray = originalTroybin.split("\r\n");
-  const convertedTroybin = [];
-
-  for (let i = 0; i < troybinArray.length; i += 1) {
-    const row = troybinArray[i];
-
-    if (row !== "") {
-      convertedTroybin.push(row);
-    }
-  }
-
-  return convertedTroybin;
-}
-
-/*
-Converts string value into array with floats
-*/
-export function FormatNumber(values) {
-  const formatedValue = [];
-
-  values.split(" ").forEach(value => {
-    formatedValue.push(parseFloat(value));
-  });
-
-  return formatedValue;
-}
-
-/*
-Converts string value to their correct type
-*/
-export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
-  const invalidValue = "INVALID_VALUE";
-  let formatedValue;
-
-  switch (type) {
-    case "ONE_DOUBLE":
-      formatedValue = parseFloat(values);
-
-      if (typeof formatedValue !== "number" || Number.isNaN(formatedValue)) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "TWO_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 2) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "THREE_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 3) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "FOUR_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 4) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "FIVE_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 5) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "COLOR_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 4) {
-        formatedValue = invalidValue;
-      }
-
-      if (formatedValue.find(value => value > 1) !== undefined) {
-        const correctValues = [];
-
-        formatedValue.forEach(value => {
-          correctValues.push(value / 255);
-        });
-
-        formatedValue = correctValues;
-      }
-
-      break;
-    case "DOUBLE_TO_PRIMITIVE":
-      if (values === "0") {
-        formatedValue = "primitiveNone";
-      } else if (values === "1") {
-        formatedValue = "primitiveArbitraryQuad";
-      } else if (values === "2") {
-        formatedValue = "primitiveAttachedMesh";
-      } else if (values === "3") {
-        formatedValue = "primitiveMesh";
-      } else if (values === "4") {
-        formatedValue = "primitiveArbitraryTrail";
-      } else if (values === "5") {
-        formatedValue = "primitiveTrail";
-      } else if (values === "6") {
-        formatedValue = "primitiveBeam";
-      } else if (values === "7") {
-        formatedValue = "primitivePlanarProjection";
-      } else if (values === "8") {
-        formatedValue = "primitiveRay";
-      } else {
-        formatedValue = invalidValue;
-      }
-      break;
-    case "BOOLEAN/INT":
-      if (values === "4") {
-        formatedValue = 4;
-      } else if (values === "3") {
-        formatedValue = 3;
-      } else if (values === "\"High\"" || values === "2") { // eslint-disable-line
-        formatedValue = 2;
-      } else if (values === "true" || values === "1") {
-        formatedValue = 1;
-      } else if (values === "0") {
-        formatedValue = 0;
-      } else if (
-        typeof parseInt(values, 10) === "number" ||
-        !Number.isNaN(parseInt(values, 10))
-      ) {
-        formatedValue = parseInt(values, 10);
-      } else {
-        formatedValue = invalidValue;
-      }
-      break;
-    case "INT/BOOLEAN":
-      if (values === "1" || values === "true") {
-        formatedValue = true;
-      } else if (values === "0" || values === "false") {
-        formatedValue = false;
-      } else {
-        formatedValue = invalidValue;
-      }
-      break;
-    case "STRING_PATH":
-      formatedValue = `\"${defaultAssetsPath}/${values.replace("\"", "")}`; // eslint-disable-line
-
-      if (updateFileTypes) {
-        formatedValue = formatedValue.replace(".tga", ".dds");
-      }
-      break;
-    case "STRING_NO_EXT":
-      formatedValue = values.replace(".troy", "");
-      break;
-    case "STRING_NO_PATH":
-      formatedValue = values;
-      break;
-    case "STRINGS_NO_PATH":
-      formatedValue = values.split(" ");
-      break;
-    case "TWO_DOUBLE_TO_ONE":
-      if (
-        values === "1" ||
-        values === "1.0" ||
-        values.split(" ")[0] === "1.0" ||
-        values.split(" ")[1] === "1.0"
-      ) {
-        formatedValue = 1;
-      } else if (values === "0") {
-        formatedValue = 0;
-      } else {
-        const valueArray = values.split(" ");
-
-        formatedValue = parseFloat(valueArray[0]);
-      }
-
-      if (values.split(" ").length !== 2 && values !== "1" && values !== "0") {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "TWO_DOUBLE_TO_XYZ":
-      if (values === "1") {
-        formatedValue = ["Y", parseFloat(values)];
-      } else if (values.split(" ")[0] === "0.0") {
-        formatedValue = ["X", parseFloat(values.split(" ")[1])];
-      } else if (values.split(" ")[0] === "1.0") {
-        formatedValue = ["Y", parseFloat(values.split(" ")[1])];
-      } else {
-        formatedValue = ["Z", parseFloat(values.split(" ")[1])];
-      }
-
-      if (values !== "1" && values.split(" ").length !== 2) {
-        formatedValue = invalidValue;
-      }
-
-      break;
-    case "ENSURE_TWO_DOUBLE":
-      formatedValue = FormatNumber(values);
-
-      if (formatedValue.length !== 2) {
-        if (formatedValue.length === 1) {
-          formatedValue = [
-            parseFloat(formatedValue[0]),
-            parseFloat(formatedValue[0])
-          ];
-        } else {
-          formatedValue = invalidValue;
-        }
-      }
-
-      break;
-    default:
-      formatedValue = invalidValue;
-      break;
-  }
-
-  return formatedValue;
-}
-
-/*
-Rewrites emitter and returns new properties array
-*/
-export function UpdateEmitters(data) {
-  // Needed since values get lost for some reason otherwise
-  const troybinData = JSON.parse(JSON.stringify(data));
-
-  const emitters = [];
-  const emittersToRemove = [];
-
-  troybinData.emitters.forEach(emit => {
-    // Needed since values get lost for some reason otherwise
-    const emitter = JSON.parse(JSON.stringify(emit));
-
-    if (emitter.needsChanges) {
-      const propertiesToAdd = [];
-      const propertiesToRemove = [];
-
-      const updatedEmitter = {
-        name: emitter.name,
-        properties: []
-      };
-
-      emitter.properties.forEach(prop => {
-        // Needed since values get lost for some reason otherwise
-        const property = JSON.parse(JSON.stringify(prop));
-
-        if (property.binGroup.name === "lifetime" && property.value === -1) {
-          propertiesToRemove.push("lifetime", "particleLifetime");
-        }
-
-        if (property.binGroup.name.includes("field")) {
-          const fieldEmitterIndex = troybinData.emitters.findIndex(
-            selectedEmit => `"${selectedEmit.name}"` === property.value
-          );
-          const fieldEmitter = troybinData.emitters[fieldEmitterIndex];
-
-          fieldEmitter.properties.forEach(fieldProp => {
-            const fieldProperty = fieldProp;
-
-            if (
-              fieldProp.binGroup.parent &&
-              Array.isArray(fieldProp.binGroup.parent)
-            ) {
-              const correctParent = fieldProp.binGroup.parent.filter(
-                parentEntry => parentEntry.name === property.binGroup.name
-              )[0];
-
-              fieldProperty.binGroup.parent = correctParent;
-            }
-
-            propertiesToAdd.push(fieldProperty);
-          });
-
-          propertiesToRemove.push(property.troybinName);
-
-          if (
-            emittersToRemove.findIndex(
-              emitterToRemove => emitterToRemove === fieldEmitter.name
-            ) === -1
-          ) {
-            emittersToRemove.push(fieldEmitter.name);
-          }
-        }
-
-        if (emitter.isSimple) {
-          // Todo: More rules
-          const isSimpleProperty = !!property.simpleValue;
-
-          let normalProperty;
-          let simpleProperty;
-
-          if (isSimpleProperty) {
-            if (property.binPropertyName === "constantValue") {
-              let nValue;
-              let sValue;
-
-              const valueType = CheckValueType(property.value);
-
-              if (valueType === property.troybinType) {
-                // Case: Value is normal Property
-                nValue = property.value;
-                sValue = property.value[0]; // eslint-disable-line
-              } else if (
-                property.binGroup.name === "birthRotationalVelocity0" ||
-                property.binGroup.name === "birthRotation0"
-              ) {
-                nValue = [property.value, 0, 0];
-                sValue = property.value; // eslint-disable-line
-              } else if (property.binGroup.name === "bindWeight") {
-                nValue = property.value;
-                sValue = [property.value, property.value];
-              } else {
-                // Case: Value is simple Property
-                nValue = [property.value, property.value, property.value];
-                sValue = property.value;
-              }
-
-              normalProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.troybinType,
-                binGroup: property.binGroup,
-                binGroupType: property.binGroupType,
-                binPropertyName: property.binPropertyName,
-                binPropertyType: property.binPropertyType,
-                value: nValue
-              };
-              simpleProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.simpleValue[0],
-                binGroup: property.simpleValue[3],
-                binGroupType: property.simpleValue[1],
-                binPropertyName:
-                  property.binGroup.name === "bindWeight"
-                    ? ""
-                    : property.binPropertyName,
-                binPropertyType: property.simpleValue[2],
-                value: sValue
-              };
-            } else {
-              const correctValue = property.simpleValue[4].includes(
-                "timesTable"
-              )
-                ? [
-                    property.value[0],
-                    property.value[1],
-                    property.value[1],
-                    property.value[1]
-                  ]
-                : property.value;
-
-              normalProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.simpleValue[0],
-                binGroup: property.binGroup,
-                binGroupType: property.binGroupType,
-                binPropertyName: property.simpleValue[4],
-                binPropertyType: property.simpleValue[4].includes("timesTable")
-                  ? property.binPropertyType
-                  : property.simpleValue[2],
-                value: correctValue
-              };
-
-              if (property.binGroup.name !== property.simpleValue[3].name) {
-                simpleProperty = {
-                  troybinName: property.troybinName,
-                  troybinType: property.simpleValue[0],
-                  binGroup: property.simpleValue[3],
-                  binGroupType: property.simpleValue[1],
-                  binPropertyName: property.simpleValue[4],
-                  binPropertyType: property.simpleValue[2],
-                  value: property.value
-                };
-              } else {
-                simpleProperty = undefined;
-              }
-            }
-
-            if (simpleProperty !== undefined) {
-              propertiesToAdd.push(normalProperty, simpleProperty);
-            } else {
-              propertiesToAdd.push(normalProperty);
-            }
-
-            propertiesToRemove.push(normalProperty.troybinName);
-          }
-        }
-      });
-
-      emitter.properties.forEach(property => {
-        const keepEntry =
-          propertiesToRemove.find(
-            element => element === property.troybinName
-          ) === undefined;
-
-        if (keepEntry) {
-          updatedEmitter.properties.push(property);
-        }
-      });
-
-      propertiesToAdd.forEach(addProperty => {
-        updatedEmitter.properties.push(addProperty);
-      });
-
-      emitters.push(updatedEmitter);
-    } else {
-      emitters.push(emitter);
-    }
-  });
-
-  const emittersNoField = [];
-
-  emitters.forEach(emitter => {
-    const keepEmitter =
-      emittersToRemove.find(element => element === emitter.name) === undefined;
-
-    if (keepEmitter) {
-      emittersNoField.push(emitter);
-    }
-  });
-
-  troybinData.emitters = emittersNoField;
-
-  return troybinData;
-}
-
 /*
 Returns array with property in bin format
 */
-export function WriteProperty(property, spacingAmount) {
+function WriteProperty(property, spacingAmount) {
   let constValueWritten;
   const forceDynamics = property.name === "worldAcceleration";
   const formatedProperty = [];
@@ -1100,41 +643,288 @@ export function WriteProperty(property, spacingAmount) {
   return formatedProperty;
 }
 
-export function GetStructureData(troybinArray) {
-  const entryStartIndices = [];
-  let entryAmount = 0;
-  let systemIndex = 0;
-  let unknownIndex = -1;
+const WriteBin = (bin, defaultFilePath) => {
+  const spacing = 0;
 
-  for (let i = 0; i < troybinArray.length; i += 1) {
-    const row = troybinArray[i];
+  const finalBin = [
+    `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
+      bin.name
+    }\" = VfxSystemDefinitionData {\r\n`, // eslint-disable-line
+    `${getSpacing(
+      spacing + 1
+    )}complexEmitterDefinitionData: list[pointer] = {\r\n`
+  ];
 
-    // Checks if row starts with "[" to see if it's an entry starting point
-    if (row[0] === "[") {
-      entryStartIndices.push(i);
-      entryAmount += 1;
+  bin.emitters.forEach(emitter => {
+    const propertiesWritten = [];
 
-      // Note down which one is the System entry
-      if (row === "[System]") {
-        systemIndex = i;
+    emitter.forEach(property => {
+      let entry;
+
+      if (property.name === "shape") {
+        console.log(property);
+        const writenLines = [];
+
+        property.members.forEach(member => {
+          entry = WriteProperty(member, spacing + 4);
+
+          entry.forEach(e => {
+            writenLines.push(e);
+          });
+        });
+
+        if (writenLines.length) {
+          propertiesWritten.push(
+            `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
+          );
+
+          writenLines.forEach(line => {
+            propertiesWritten.push(line);
+          });
+
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        }
+      } else if (property.name.includes("primitive")) {
+        console.log(property);
+        if (
+          property.name !== "primitiveNone" &&
+          property.name !== "primitive"
+        ) {
+          let hasContent = false;
+
+          switch (property.name) {
+            // 1
+            case "primitiveArbitraryQuad":
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveArbitraryQuad {}\r\n`
+              );
+              break;
+            // 2 ?
+            case "primitiveArbitraryTrail":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveArbitraryTrail {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+              );
+              break;
+            // 3
+            case "primitiveMesh":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+              );
+              break;
+            // 4 ?
+            case "primitiveAttachedMesh":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveAttachedMesh {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+              );
+              break;
+            // 5
+            case "primitiveTrail":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+              );
+              break;
+            // 6
+            case "primitiveBeam":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveBeam {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mBeam: embed = VfxBeamDefinitionData {\r\n`
+              );
+              break;
+            // 7
+            case "primitivePlanarProjection":
+              hasContent = true;
+
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitivePlanarProjection {\r\n`,
+                `${getSpacing(
+                  spacing + 4
+                )}mProjection: embed = VfxProjectionDefinitionData {\r\n`
+              );
+              break;
+            // 8 ?
+            case "primitiveRay":
+              propertiesWritten.push(
+                `${getSpacing(
+                  spacing + 3
+                )}primitive: pointer = VfxPrimitiveRay {}\r\n`
+              );
+              break;
+            default:
+              break;
+          }
+
+          if (hasContent && property.members.length) {
+            property.members.forEach(member => {
+              entry = WriteProperty(member, spacing + 5);
+
+              entry.forEach(e => {
+                propertiesWritten.push(e);
+              });
+            });
+
+            propertiesWritten.push(
+              `${getSpacing(spacing + 4)}}\r\n`,
+              `${getSpacing(spacing + 3)}}\r\n`
+            );
+          }
+        }
+      } else if (property.name === "distortionDefinition") {
+        propertiesWritten.push(
+          `${getSpacing(
+            spacing + 3
+          )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
+        );
+
+        property.members.forEach(member => {
+          entry = WriteProperty(member, spacing + 4);
+
+          entry.forEach(e => {
+            propertiesWritten.push(e);
+          });
+        });
+
+        propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+      } else if (property.name === "fieldCollectionDefinition") {
+        const writenLines = [];
+
+        property.members.forEach(member => {
+          let fieldType;
+
+          switch (member.name) {
+            case "fieldAccelerationDefinitions":
+              fieldType = "Acceleration";
+              break;
+            case "fieldAttractionDefinitions":
+              fieldType = "Attraction";
+              break;
+            case "fieldDragDefinitions":
+              fieldType = "Drag";
+              break;
+            case "fieldNoiseDefinitions":
+              fieldType = "Noise";
+              break;
+            case "fieldOrbitalDefinitions":
+              fieldType = "Orbital";
+              break;
+            default:
+              break;
+          }
+
+          writenLines.push(
+            `${getSpacing(
+              spacing + 4
+            )}field${fieldType}Definitions: list[embed] = {\r\n`,
+            `${getSpacing(spacing + 5)}VfxField${fieldType}DefinitionData {\r\n`
+          );
+
+          member.members.forEach(memb => {
+            entry = WriteProperty(memb, spacing + 6);
+
+            entry.forEach(e => {
+              writenLines.push(e);
+            });
+          });
+
+          writenLines.push(
+            `${getSpacing(spacing + 5)}}\r\n`,
+            `${getSpacing(spacing + 4)}}\r\n`
+          );
+        });
+
+        if (writenLines.length) {
+          propertiesWritten.push(
+            `${getSpacing(
+              spacing + 3
+            )}fieldCollectionDefinition: pointer = VfxFieldCollectionDefinitionData {\r\n`
+          );
+
+          writenLines.forEach(line => {
+            propertiesWritten.push(line);
+          });
+
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        }
+      } else {
+        entry = WriteProperty(property, spacing + 3);
+
+        entry.forEach(e => {
+          propertiesWritten.push(e);
+        });
       }
+    });
+
+    if (propertiesWritten.length) {
+      finalBin.push(`${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`);
+
+      propertiesWritten.forEach(emitterLine => {
+        finalBin.push(emitterLine);
+      });
+      finalBin.push(`${getSpacing(spacing + 2)}}\r\n`);
     }
-    // Note down which one is the UNKNOWN_HASHES entry if it exists
-    if (row === "[UNKNOWN_HASHES]" || row.includes("UNKNOWN_HASH")) {
-      if (unknownIndex === -1) {
-        entryStartIndices.push(i);
-        entryAmount += 1;
-        unknownIndex = i;
-      }
-    }
+  });
+
+  finalBin.push(`${getSpacing(spacing + 1)}}\r\n`);
+
+  bin.system.forEach(systemProperty => {
+    const systemEntry = WriteProperty(systemProperty, spacing + 1);
+
+    systemEntry.forEach(s => {
+      finalBin.push(s);
+    });
+  });
+
+  finalBin.push(`${getSpacing(spacing)}}\r\n`);
+
+  if (bin.unknowns.length) {
+    finalBin.push(
+      `\r\n`,
+      `Troygrade was unable to translate the following values: \r\n`
+    );
+
+    bin.unknowns.forEach(unknown => {
+      finalBin.push(`${unknown}\r\n`);
+    });
   }
 
-  const structureData = {
-    entryAmount,
-    entryStartIndices,
-    systemIndex,
-    unknownIndex
-  };
+  return finalBin.join("");
+};
 
-  return structureData;
-}
+export default WriteBin;
