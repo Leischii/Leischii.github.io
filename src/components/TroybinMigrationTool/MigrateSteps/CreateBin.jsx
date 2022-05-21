@@ -62,6 +62,10 @@ const CreateBin = (troybin, defaultFilePath) => {
                   troybinProperties.push(binProperty);
                 });
 
+                troybinProperties.sort(function compareNumbers(a, b) {
+                  return a.order - b.order;
+                });
+
                 const parentPropertyPart = {
                   name: parentMembers[0].binGroup.parent.name,
                   members: troybinProperties,
@@ -70,10 +74,6 @@ const CreateBin = (troybin, defaultFilePath) => {
 
                 parentParentPropertyParts.push(parentPropertyPart);
               }
-            });
-
-            parentParentPropertyParts.sort(function compareNumbers(a, b) {
-              return a.order - b.order;
             });
 
             finalProperty = {
@@ -214,6 +214,10 @@ const CreateBin = (troybin, defaultFilePath) => {
 
       binSystemProperties.push(finalProperty);
     }
+  });
+
+  binSystemProperties.sort(function compareNumbers(a, b) {
+    return a.members[0].binGroup.order - b.members[0].binGroup.order;
   });
 
   bin.system = binSystemProperties;

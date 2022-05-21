@@ -76,59 +76,128 @@ const UpdateEmitters = data => {
     emitter.properties.forEach(prop => {
       // Needed since values get lost for some reason otherwise
       const property = JSON.parse(JSON.stringify(prop));
-      console.log(property);
 
       if (property.binGroup.name === "lifetime" && property.value === -1) {
-        propertiesToRemove.push("lifetime", "particleLifetime");
+        propertiesToRemove.push("e-life", "p-life");
+      }
+
+      if (property.troybinName === "e-rate") {
+        for (let j = 1; j < 10; j += 1) {
+          const propertyName = `e-rate${j}`;
+          const timesTableEntryIndex = emitter.properties.findIndex(
+            propS => propS.troybinName === propertyName
+          );
+
+          if (timesTableEntryIndex !== -1) {
+            propertiesToRemove.push(propertyName);
+
+            const timesTableEntry = emitter.properties[timesTableEntryIndex];
+            const newTimesTableEntryValue = [
+              timesTableEntry.value[0],
+              timesTableEntry.value[1] * property.value
+            ];
+
+            const newTimesTableEntry = timesTableEntry;
+            newTimesTableEntry.value = newTimesTableEntryValue;
+
+            propertiesToAdd.push(newTimesTableEntry);
+          }
+        }
       }
 
       // Preparation for fixing particleLinger later
       if (property.binGroup.name === "particleLinger") {
         hasLinger = true;
+      }
 
-        if (property.value === 0) {
-          propertiesToRemove.push("particleLinger");
-          hasLinger = false;
+      // Color table values need to be multiplied with the constantValue
+      if (property.troybinName === "p-xrgba" || property.troybinName === "e-rgba") {
+        let colorNotDefault = false;
+
+        for (let i = 0; i < 4; i += 1) {
+          const colorValue = property.value[i];
+
+          if (colorValue !== 1) {
+            colorNotDefault = true;
+          }
+        }
+
+        if (colorNotDefault) {
+          for (let j = 1; j < 21; j += 1) {
+            const propertyName = `${property.troybinName}${j}`;
+            const timesTableEntryIndex = emitter.properties.findIndex(
+              propS => propS.troybinName === propertyName
+            );
+
+            if (timesTableEntryIndex !== -1) {
+              propertiesToRemove.push(propertyName);
+
+              const timesTableEntry = emitter.properties[timesTableEntryIndex];
+              const newTimesTableEntryValue = [timesTableEntry.value[0]];
+
+              for (let k = 1; k < 5; k += 1) {
+                newTimesTableEntryValue.push(
+                  timesTableEntry.value[k] * property.value[k - 1]
+                );
+              }
+
+              const newTimesTableEntry = timesTableEntry;
+              newTimesTableEntry.value = newTimesTableEntryValue;
+
+              propertiesToAdd.push(newTimesTableEntry);
+            }
+          }
         }
       }
 
-      // Read Primitive correctly
+      // Read Empty Primitive correctly
       if (property.binGroup.name === "primitive") {
-        console.log(property);
+        if (
+          property.value === "primitiveArbitraryQuad" ||
+          property.value === "primitiveRay"
+        ) {
+          const primitiveEntry = property;
+          primitiveEntry.binGroup.name = property.value;
+
+          propertiesToAdd.push(primitiveEntry);
+        }
       }
 
       if (property.binGroup.name.includes("field")) {
         const fieldEmitterIndex = troybinData.findIndex(
           selectedEmit => `"${selectedEmit.name}"` === property.value
         );
-        const fieldEmitter = troybinData[fieldEmitterIndex];
 
-        fieldEmitter.properties.forEach(fieldProp => {
-          const fieldProperty = fieldProp;
+        if (fieldEmitterIndex !== -1) {
+          const fieldEmitter = troybinData[fieldEmitterIndex];
+
+          fieldEmitter.properties.forEach(fieldProp => {
+            const fieldProperty = fieldProp;
+
+            if (
+              fieldProp.binGroup.parent &&
+              Array.isArray(fieldProp.binGroup.parent)
+            ) {
+              const correctParent = fieldProp.binGroup.parent.filter(
+                parentEntry => parentEntry.name === property.binGroup.name
+              )[0];
+
+              fieldProperty.binGroup.parent = correctParent;
+            }
+
+            propertiesToAdd.push(fieldProperty);
+          });
 
           if (
-            fieldProp.binGroup.parent &&
-            Array.isArray(fieldProp.binGroup.parent)
+            emittersToRemove.findIndex(
+              emitterToRemove => emitterToRemove === fieldEmitter.name
+            ) === -1
           ) {
-            const correctParent = fieldProp.binGroup.parent.filter(
-              parentEntry => parentEntry.name === property.binGroup.name
-            )[0];
-
-            fieldProperty.binGroup.parent = correctParent;
+            emittersToRemove.push(fieldEmitter.name);
           }
-
-          propertiesToAdd.push(fieldProperty);
-        });
+        }
 
         propertiesToRemove.push(property.troybinName);
-
-        if (
-          emittersToRemove.findIndex(
-            emitterToRemove => emitterToRemove === fieldEmitter.name
-          ) === -1
-        ) {
-          emittersToRemove.push(fieldEmitter.name);
-        }
       }
 
       if (emitter.isSimple) {
@@ -230,6 +299,52 @@ const UpdateEmitters = data => {
 
           propertiesToRemove.push(normalProperty.troybinName);
         }
+      } else {
+        const propertiesToCheckForTableEntries = [
+          "p-xscale",
+          "Particle-Velocity",
+          "Particle-Drag"
+        ];
+
+        if (propertiesToCheckForTableEntries.includes(property.troybinName)) {
+          let valueNotDefault = false;
+
+          for (let i = 0; i < 3; i += 1) {
+            const propertyValue = property.value[i];
+
+            if (propertyValue !== 1) {
+              valueNotDefault = true;
+            }
+          }
+
+          if (valueNotDefault) {
+            for (let j = 1; j < 10; j += 1) {
+              const propertyName = `${property.troybinName}${j}`;
+              const timesTableEntryIndex = emitter.properties.findIndex(
+                propS => propS.troybinName === propertyName
+              );
+
+              if (timesTableEntryIndex !== -1) {
+                propertiesToRemove.push(propertyName);
+
+                const timesTableEntry =
+                  emitter.properties[timesTableEntryIndex];
+                const newTimesTableEntryValue = [timesTableEntry.value[0]];
+
+                for (let k = 1; k < 4; k += 1) {
+                  newTimesTableEntryValue.push(
+                    timesTableEntry.value[k] * property.value[k - 1]
+                  );
+                }
+
+                const newTimesTableEntry = timesTableEntry;
+                newTimesTableEntry.value = newTimesTableEntryValue;
+
+                propertiesToAdd.push(newTimesTableEntry);
+              }
+            }
+          }
+        }
       }
     });
 
@@ -282,7 +397,7 @@ const UpdateEmitters = data => {
       let emitterNameNumber = number;
 
       for (let i = 0; i < emitter.isMultiUseEntry.length; i += 1) {
-        const newEmitterName = emitterName + emitterNameNumber;
+        const newEmitterName = `"${emitterName + emitterNameNumber}"`;
         const updatedProperties = getNewProperties(
           updatedEmitter.properties,
           newEmitterName

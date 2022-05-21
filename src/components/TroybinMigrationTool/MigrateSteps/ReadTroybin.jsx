@@ -202,7 +202,7 @@ const ReadTroybin = (
               }
             }
           });
-        } else if (propertyName[0] === "p") {
+        } else if (propertyName[0] === "p" || propertyName[0] === "P") {
           Values.pValues.forEach(pValue => {
             if (pValue.troybinName === propertyName) {
               assignedProperty = pValue;

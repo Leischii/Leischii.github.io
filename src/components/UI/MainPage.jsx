@@ -738,7 +738,7 @@ class MainPage extends Component {
                                   text: "Show Content (new Tab)"
                                 },
                                 {
-                                  disabled: selectedFiles.length === 0,
+                                  disabled: !activeFile,
                                   icon: <BrowserUpdatedIcon />,
                                   onClickFunc: () => {
                                     this.setState(

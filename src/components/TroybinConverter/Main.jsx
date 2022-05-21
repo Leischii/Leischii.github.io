@@ -88,7 +88,7 @@ function sanitizeStr(data) {
       .replace("\t", " ")
       .split(" ")
       .forEach(dataPart => {
-        if (dataPart) result1.push(parseFloat(dataPart).toFixed(1));
+        if (dataPart) result1.push(parseFloat(dataPart));
       });
 
     result = result1;

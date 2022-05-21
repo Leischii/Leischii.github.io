@@ -100,15 +100,20 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       if (values === "0") {
         formatedValue = "primitiveNone";
       } else if (values === "1") {
+        // confirmed
         formatedValue = "primitiveArbitraryQuad";
       } else if (values === "2") {
+        // confirmed
         formatedValue = "primitiveRay";
       } else if (values === "3") {
+        // confirmed
         formatedValue = "primitiveMesh";
       } else if (values === "4") {
-        formatedValue = "primitiveTrail";
-      } else if (values === "5") {
+        // confirmed
         formatedValue = "primitiveArbitraryTrail";
+      } else if (values === "5") {
+        // confirmed
+        formatedValue = "primitiveTrail";
       } else if (values === "6") {
         formatedValue = "primitiveBeam";
       } else if (values === "7") {
@@ -146,6 +151,11 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = false;
       } else {
         formatedValue = invalidValue;
+      }
+      break;
+    case "SET_ONE_DOUBLE":
+      if (values === "1") {
+        formatedValue = 2;
       }
       break;
     case "STRING_PATH":

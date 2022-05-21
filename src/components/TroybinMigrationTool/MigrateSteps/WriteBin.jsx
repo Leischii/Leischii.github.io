@@ -362,6 +362,10 @@ function WriteProperty(property, spacingAmount) {
   const timesTable = [];
   const timesSimpleTable = [];
 
+  // Only needed for the ShapeRotationAnglesProperty structure
+  const timesTableEntriesX = [];
+  const timesTableEntriesY = [];
+
   property.members.forEach(member => {
     const type = member.binPropertyName;
 
@@ -472,6 +476,14 @@ function WriteProperty(property, spacingAmount) {
               `${getSpacing(spacingAmount + 1)}${valuePart}\r\n`
             );
           });
+        } else if (property.members[0].binGroup.name === "emitRotationAxes") {
+          property.members.forEach(memberPart => {
+            const value = `{ ${memberPart.value[0]}, ${memberPart.value[1]}, ${memberPart.value[2]} }`;
+
+            formatedProperty.push(
+              `${getSpacing(spacingAmount + 1)}${value}\r\n`
+            );
+          });
         } else {
           constValueWritten = writeConstantValue(
             property,
@@ -551,14 +563,30 @@ function WriteProperty(property, spacingAmount) {
         } {\r\n`
       );
 
-      if (probTableX.length) {
+      if (timesTable.length) {
+        for (let i = 0; i < timesTable.length; i += 1) {
+          const tableEntry = timesTable[i];
+
+          if (tableEntry.troybinName.includes("e-rotation1")) {
+            timesTableEntriesX.push(tableEntry);
+          } else if (tableEntry.troybinName.includes("e-rotation2")) {
+            timesTableEntriesY.push(tableEntry);
+          }
+        }
+      }
+
+      const constantX = constantValues.filter(
+        constant => constant.troybinName === "e-rotation1"
+      )[0];
+
+      if (
+        probTableX.length ||
+        timesTableEntriesX.length ||
+        constantX !== undefined
+      ) {
         formatedProperty.push(
           `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
         );
-
-        const constantX = constantValues.filter(
-          constant => constant.troybinName === "e-rotation1"
-        )[0];
 
         constValueWritten = writeConstantValue(
           [constantX],
@@ -570,20 +598,22 @@ function WriteProperty(property, spacingAmount) {
           formatedProperty.push(entry);
         });
 
-        writeDynamics(
-          constValueWritten.constValue,
-          property,
-          probTableX,
-          [],
-          probTableZ,
-          probTableA,
-          spacingAmount + 2,
-          timesTable,
-          timesSimpleTable,
-          false
-        ).forEach(entry => {
-          formatedProperty.push(entry);
-        });
+        if (probTableX.length || timesTableEntriesX.length) {
+          writeDynamics(
+            constValueWritten.constValue,
+            property,
+            probTableX,
+            [],
+            probTableZ,
+            probTableA,
+            spacingAmount + 2,
+            timesTableEntriesX,
+            timesSimpleTable,
+            false
+          ).forEach(entry => {
+            formatedProperty.push(entry);
+          });
+        }
 
         formatedProperty.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
       } else {
@@ -592,14 +622,18 @@ function WriteProperty(property, spacingAmount) {
         );
       }
 
-      if (probTableY.length) {
+      const constantY = constantValues.filter(
+        constant => constant.troybinName === "e-rotation2"
+      )[0];
+
+      if (
+        probTableY.length ||
+        timesTableEntriesY.length ||
+        constantY !== undefined
+      ) {
         formatedProperty.push(
           `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
         );
-
-        const constantY = constantValues.filter(
-          constant => constant.troybinName === "e-rotation2"
-        )[0];
 
         constValueWritten = writeConstantValue(
           [constantY],
@@ -611,26 +645,24 @@ function WriteProperty(property, spacingAmount) {
           formatedProperty.push(entry);
         });
 
-        writeDynamics(
-          constValueWritten.constValue,
-          property,
-          [],
-          probTableY,
-          probTableZ,
-          probTableA,
-          spacingAmount + 2,
-          timesTable,
-          timesSimpleTable,
-          false
-        ).forEach(entry => {
-          formatedProperty.push(entry);
-        });
+        if (probTableY.length || timesTableEntriesY.length) {
+          writeDynamics(
+            constValueWritten.constValue,
+            property,
+            [],
+            probTableY,
+            probTableZ,
+            probTableA,
+            spacingAmount + 2,
+            timesTableEntriesY,
+            timesSimpleTable,
+            false
+          ).forEach(entry => {
+            formatedProperty.push(entry);
+          });
+        }
 
         formatedProperty.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
-      } else {
-        formatedProperty.push(
-          `${getSpacing(spacingAmount + 1)}ValueFloat {}\r\n`
-        );
       }
 
       formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
@@ -662,7 +694,6 @@ const WriteBin = (bin, defaultFilePath) => {
       let entry;
 
       if (property.name === "shape") {
-        console.log(property);
         const writenLines = [];
 
         property.members.forEach(member => {
