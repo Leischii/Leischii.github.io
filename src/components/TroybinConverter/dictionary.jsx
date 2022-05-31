@@ -2,6 +2,7 @@ const FIELD_VARS = 10;
 const GPART_VARS = 50;
 const MAT_VARS = 5;
 const RAND_VARS = 10;
+const COLOR_VARS = 25;
 const ROT_VARS = 10;
 
 function flex(args) {
@@ -17,6 +18,33 @@ function flex(args) {
     for (let j = 0; j < 4; j += 1) {
       result[resultindex] = `${propertyName}_flex${j}`;
       resultindex += 1;
+    }
+  }
+
+  return result;
+}
+
+function color(mods, args) {
+  const result = args;
+  let resultindex = args.length;
+
+  for (const arg in args) { // eslint-disable-line
+    const argsEntry = args[arg];
+
+    for (let j = 0; j < COLOR_VARS; j += 1) {
+      result[resultindex] = `${argsEntry}${j}`;
+      resultindex += 1;
+    }
+
+    for (const mod in mods) { // eslint-disable-line
+      const modEntry = mods[mod];
+      result[resultindex] = `${argsEntry}${modEntry}P`;
+      resultindex += 1;
+
+      for (let l = 0; l < COLOR_VARS; l += 1) {
+        result[resultindex] = `${argsEntry}${modEntry}P${l}`;
+        resultindex += 1;
+      }
     }
   }
 
@@ -69,6 +97,10 @@ function flexFloat(args) {
   }
 
   return result;
+}
+
+function randColorAmount(args) {
+  return color(["R", "G", "B", "A"], args);
 }
 
 function randFloat(args) {
@@ -192,10 +224,14 @@ const groupNames = [
   "e-soft-out-depth-delta",
   "e-timeoffset",
   "e-trail-cutoff",
+  "e-trail-smoothing",
   "e-uvscroll",
   "e-uvscroll-mult",
   "flag-brighter-in-fow",
   "flag-disable-z",
+  "flag-disable-y",
+  "flag-groundlayer",
+  "flag-ground-layer",
   "flag-force-animated-mesh-z-write",
   "flag-projected",
   "p-alphaslicerange",
@@ -306,7 +342,7 @@ const fluidNames = [
   "f-jetpos%PLACEHOLDER%",
   "f-jetspeed%PLACEHOLDER%"
 ];
-const fieldNames = ["f-axisfrac", "f-localspace"];
+const fieldNames = ["f-localspace", "f-axisfrac"];
 
 function generateList(arrayEntry, startEntry, endEntry) {
   const result = [];
@@ -341,7 +377,7 @@ function generateList(arrayEntry, startEntry, endEntry) {
   return result;
 }
 
-export default function getNamesList(nameArray) {
+export default function getDictionaryEntries(nameArray) {
   let result = [];
 
   switch (nameArray) {
@@ -359,16 +395,15 @@ export default function getNamesList(nameArray) {
         [
           groupNames,
           materialNames,
+          randColorAmount(["e-rgba", "p-xrgba"]),
           flexFloat(["p-scale", "p-scaleEmitOffset"]),
           flexRandFloat(["e-rate", "p-life", "p-rotvel"]),
           flexRandVec2(["e-uvoffset"]),
           flexRandVec3(["p-offset", "p-postoffset", "p-vel"]),
           randColor([
             "e-censor-modulate",
-            "e-rgba",
             "p-fresnel-color",
-            "p-reflection-fresnel-color",
-            "p-xrgba"
+            "p-reflection-fresnel-color"
           ]),
           randFloat([
             "e-color-modulate",
@@ -426,6 +461,7 @@ export default function getNamesList(nameArray) {
           undefined,
           undefined,
           undefined,
+          undefined,
           0,
           1,
           undefined
@@ -433,6 +469,7 @@ export default function getNamesList(nameArray) {
         [
           10,
           MAT_VARS,
+          undefined,
           undefined,
           undefined,
           undefined,
@@ -455,11 +492,13 @@ export default function getNamesList(nameArray) {
           randFloat([
             "f-accel",
             "f-drag",
+            "f-freq",
+            "f-frequency",
             "f-period",
             "f-radius",
             "f-veldelta"
           ]),
-          randVec3(["f-accel", "f-direction", "f-pos"])
+          randVec3(["f-accel", "f-direction", "f-pos", "f-axisfrac"])
         ],
         [undefined, undefined, undefined],
         [undefined, undefined, undefined]
