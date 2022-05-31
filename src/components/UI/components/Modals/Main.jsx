@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -56,6 +57,14 @@ const ConvertModal = ({
     defaultSettings.updateFileTypes
   );
 
+  const handleSetDefaultValues = settings => {
+    setAssetsPath(settings.assetsPath);
+    setFilePath(settings.filePath);
+    setNamesOnly(settings.namesOnly);
+    setSettingsPreset(settings.settingsPreset);
+    setUpdateFileTypes(settings.updateFileTypes);
+  };
+
   const handleChangeInput = (event, type) => {
     switch (type) {
       case "assetsPath":
@@ -86,22 +95,23 @@ const ConvertModal = ({
     if (currentFileIndex > 0) {
       const newIndex = currentFileIndex - 1;
       const settings = fileSettings[newIndex];
-      
-      handleSetDefaultValues(settings);      
+
+      handleSetDefaultValues(settings);
       setCurrentFileIndex(newIndex);
     }
   };
 
   const handleClickNext = isConvertStep => {
     const newSettings = [...fileSettings];
-    const isNewEntry = newSettings.findIndex(entry => entry.index === currentFileIndex) === -1;
+    const isNewEntry =
+      newSettings.findIndex(entry => entry.index === currentFileIndex) === -1;
     const settingsEntry = {
       assetsPath,
       filePath,
       index: currentFileIndex,
       namesOnly,
       settingsPreset,
-      updateFileTypes 
+      updateFileTypes
     };
 
     if (isNewEntry) {
@@ -128,14 +138,6 @@ const ConvertModal = ({
       setCurrentFileIndex(newIndex);
     }
   };
-
-  const handleSetDefaultValues = (settings) => {
-    setAssetsPath(settings.assetsPath);
-    setFilePath(settings.filePath);
-    setNamesOnly(settings.namesOnly);
-    setSettingsPreset(settings.settingsPreset);
-    setUpdateFileTypes(settings.updateFileTypes);
-  }
 
   return (
     <Dialog
@@ -378,7 +380,11 @@ const ConvertModal = ({
             </Grid>
             <Grid container item xs={0.5}>
               <Grid item xs={12}>
-                <Tooltip arrow placement="right" title={selectedFiles[currentFileIndex]?.fileName || "Empty"}>
+                <Tooltip
+                  arrow
+                  placement="right"
+                  title={selectedFiles[currentFileIndex]?.fileName || "Empty"}
+                >
                   <Typography
                     sx={{
                       maxWidth: 290,
@@ -404,33 +410,30 @@ const ConvertModal = ({
                     startIcon={<ArrowBackIcon />}
                     variant="outlined"
                   >
-                    <Typography>
-                      Back
-                    </Typography>
+                    <Typography>Back</Typography>
                   </Button>
                 </Grid>
-                <Grid align="center" item xs={6} >
+                <Grid align="center" item xs={6}>
                   <Button
                     disabled={currentFileIndex === selectedFiles.length - 1}
                     onClick={() => handleClickNext(false)}
                     endIcon={<ArrowForwardIcon />}
                     variant="contained"
                   >
-                    <Typography>
-                      Next
-                    </Typography>
+                    <Typography>Next</Typography>
                   </Button>
                 </Grid>
-                <Grid
-                  align="center"
-                  item
-                  xs={12} 
-                  sx={{ paddingTop: "4%"}}
-                >
+                <Grid align="center" item xs={12} sx={{ paddingTop: "4%" }}>
                   <Button
                     disabled={loading}
                     onClick={() => handleClickNext(true)}
-                    startIcon={loading ? <CircularProgress size={20}/> : <AutoFixHighIcon />}
+                    startIcon={
+                      loading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <AutoFixHighIcon />
+                      )
+                    }
                     sx={{ backgroundColor: "rgb(60, 60, 60)", width: "84%" }}
                     variant="outlined"
                   >
@@ -440,13 +443,26 @@ const ConvertModal = ({
                   </Button>
                 </Grid>
               </Grid>
-              <Grid container item xs={0.5} sx={{ backgroundColor: "rgb(60, 60, 60)" }}/>
+              <Grid
+                container
+                item
+                xs={0.5}
+                sx={{ backgroundColor: "rgb(60, 60, 60)" }}
+              />
             </Grid>
           </Grid>
         </Grid>
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default ConvertModal;
+
+ConvertModal.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  selectedFiles: PropTypes.any.isRequired, // eslint-disable-line
+  showModal: PropTypes.bool.isRequired,
+  startConverting: PropTypes.func.isRequired
+};
