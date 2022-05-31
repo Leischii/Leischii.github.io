@@ -2,14 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import FolderIcon from "@mui/icons-material/Folder";
 
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
@@ -41,7 +38,7 @@ const FileListItem = ({
         >
           <ArrowForwardIosIcon />
         </IconButton>
-      }      
+      }
       selected={selectedIndex !== -1}
       sx={{
         width: "100%",
@@ -50,7 +47,15 @@ const FileListItem = ({
       }}
     >
       <ListItemButton onClick={() => clickFile(file.fileId, selectedIndex)}>
-        <ImageList sx={{ width: 120, height: 50, mr: 2 }} cols={1} rowHeight={50}>
+        <ImageList
+          sx={{
+            width: 120,
+            height: 50,
+            mr: 2
+          }}
+          cols={1}
+          rowHeight={50}
+        >
           <ImageListItem key={file.fileId}>
             <img
               src={splashArt}

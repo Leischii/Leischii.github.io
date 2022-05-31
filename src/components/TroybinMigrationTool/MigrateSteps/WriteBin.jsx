@@ -575,6 +575,7 @@ function WriteProperty(property, spacingAmount) {
         }
       }
 
+      // eslint-disable-next-line
       const constantX = constantValues.filter(
         constant => constant.troybinName === "e-rotation1"
       )[0];
@@ -622,6 +623,7 @@ function WriteProperty(property, spacingAmount) {
         );
       }
 
+      // eslint-disable-next-line
       const constantY = constantValues.filter(
         constant => constant.troybinName === "e-rotation2"
       )[0];
@@ -716,7 +718,6 @@ const WriteBin = (bin, defaultFilePath) => {
           propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
         }
       } else if (property.name.includes("primitive")) {
-        console.log(property);
         if (
           property.name !== "primitiveNone" &&
           property.name !== "primitive"

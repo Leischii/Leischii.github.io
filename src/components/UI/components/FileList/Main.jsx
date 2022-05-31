@@ -41,7 +41,10 @@ const FileList = ({
   selectedFiles
 }) => {
   return (
-    <Dropzone accept=".txt, .troybin" onDrop={acceptedFiles => loadFile(acceptedFiles)}>
+    <Dropzone
+      accept=".txt, .troybin"
+      onDrop={acceptedFiles => loadFile(acceptedFiles)}
+    >
       {({ getRootProps, getInputProps }) => (
         <>
           {dataSource.length === 0 ? (

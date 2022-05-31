@@ -2,30 +2,22 @@ import { v4 as uuid } from "uuid";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import AddIcon from "@mui/icons-material/Add";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import BrowserUpdatedIcon from "@mui/icons-material/BrowserUpdated";
 import BuildIcon from "@mui/icons-material/Build";
-import CachedIcon from "@mui/icons-material/Cached";
-import CloseIcon from "@mui/icons-material/Close";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FolderIcon from "@mui/icons-material/Folder";
-import InputIcon from "@mui/icons-material/Input";
-import MenuIcon from "@mui/icons-material/Menu";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
 
-import Backdrop from "@mui/material/Backdrop";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
-import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
@@ -42,8 +34,43 @@ import FileList from "./components/FileList/Main";
 import getSplashArt, { SplashArtAmount } from "./components/SplashArt/Main";
 import MenuComponent from "./components/Menu";
 
+import BinFileReader from "../BinFileReader/Main";
 import ConvertTroybin from "../TroybinConverter/Main";
 import MigrateConvertedTroybin from "../TroybinMigrationTool/Main";
+import AboutModal from "./components/Modals/About";
+
+function getButtonsDisabled(selectedFilesFull) {
+  let hasTroybins = false;
+  let hasMigratedTroybins = false;
+  let hasBins = false;
+
+  for (let i = 0; i < selectedFilesFull.length; i += 1) {
+    const file = selectedFilesFull[i];
+
+    switch (file.type) {
+      case "CONV_TROYBIN":
+        hasTroybins = true;
+        break;
+      case "MIG_BIN":
+        hasMigratedTroybins = true;
+        break;
+      case "CONV_BIN":
+        hasBins = true;
+        break;
+      default:
+        break;
+    }
+  }
+
+  const result = {
+    hasTroybins,
+    hasMigratedTroybins,
+    hasBins,
+    amount: selectedFilesFull.length
+  };
+
+  return result;
+}
 
 function getDataSource(files, filter, search) {
   const filterOptions = ["ALL", "CONV_TROYBIN", "MIG_BIN", "CONV_BIN"];
@@ -60,48 +87,83 @@ function getDataSource(files, filter, search) {
   return dataWithFilter;
 }
 
+function getSelectedFiles(files, selectedFiles) {
+  const selectedFilesFull = [];
+
+  for (let i = 0; i < files.length; i += 1) {
+    for (let j = 0; j < selectedFiles.length; j += 1) {
+      if (files[i].id === selectedFiles[j]) {
+        selectedFilesFull.push(files[i]);
+      }
+    }
+  }
+
+  return selectedFilesFull;
+}
+
 class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       activeFile: undefined,
-      defaultAssetsPath: "Data/Particles",
-      defaultFilePath: "Data/Particles",
       dialogOpen: {
         action: "",
         open: false
       },
-      drawerOpen: false,
       failedConverts: [],
       files: [],
+      fileSettings: [],
       filter: 0,
+      fixToApply: "",
       loading: false,
-      namesOnly: false,
       search: "",
       selectedFiles: [],
+      showInfoModal: "",
       showMenu: {
         anchor: null,
         menu: ""
       },
-      showModal: "convert",
-      updateFileTypes: true
+      showModal: ""
     };
   }
 
   handleChangeDialogAccept(action, value) {
-    this.setState({ dialogOpen: value, loading: true }, () => {
+    const { selectedFiles } = this.state;
+    this.setState({ dialogOpen: value }, () => {
+      const settings = [];
+
       switch (action) {
-        case "auto_convert":
-          this.handleConvertFiles();
-          break;
         case "convert":
-          this.handleConvertFiles();
+          this.setState({ showModal: "convert" });
+          break;
+        case "convert_default":
+          for (let i = 0; i < selectedFiles.length; i += 1) {
+            const setting = {
+              assetsPath: "Data/Particles",
+              filePath: "Data/Particles",
+              namesOnly: false,
+              settingsPreset: "Default",
+              updateFileTypes: true
+            };
+
+            settings.push(setting);
+          }
+
+          this.setState(
+            {
+              fileSettings: settings
+            },
+            () => this.handleConvertFiles()
+          );
           break;
         case "download":
           this.handleDownloadFiles();
           break;
         case "delete":
           this.handleDeleteFiles();
+          break;
+        case "fix":
+          this.handleFixFiles();
           break;
         default:
           break;
@@ -114,9 +176,8 @@ class MainPage extends Component {
     this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
-  handleChangeDrawer(value) {
-    this.setState({ drawerOpen: value });
-    this.handleChangeShowMenu({ anchor: null, menu: "" });
+  handleChangeDrawer() {
+    this.setState({ failedConverts: [] });
   }
 
   handleChangeFileActive(file) {
@@ -156,12 +217,25 @@ class MainPage extends Component {
     this.setState({ filter, selectedFiles: [] });
   }
 
+  handleChangeLoading(val) {
+    this.setState({ loading: val });
+  }
+
   handleChangeSearch(searchNew) {
     const { search } = this.state;
 
     if (searchNew !== search) {
       this.setState({ search: searchNew, selectedFiles: [] });
     }
+  }
+
+  handleChangeSelectedFix(val) {
+    this.setState({ fixToApply: val });
+  }
+
+  handleChangeShowInfoModal(value) {
+    this.setState({ showInfoModal: value });
+    this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
   handleChangeShowMenu(event) {
@@ -179,16 +253,136 @@ class MainPage extends Component {
     this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
-  handleConvertFiles() {
-    const {
-      defaultAssetsPath,
-      defaultFilePath,
-      files,
-      namesOnly,
-      selectedFiles,
-      updateFileTypes
-    } = this.state;
+  handleFixFiles() {
+    const { files, fixToApply, selectedFiles } = this.state;
+    const oldSelectedFiles = selectedFiles;
+    const failedFiles = [];
+    const filesNew = [];
+    let activeFile;
 
+    for (let i = 0; i < files.length; i += 1) {
+      const file = files[i];
+
+      if (file.type === "CONV_BIN") {
+        let convertedEntry;
+
+        for (let j = 0; j < oldSelectedFiles.length; j += 1) {
+          if (file.id === oldSelectedFiles[j]) {
+            file.fileName = files[i].fileName
+              .replace("_Migrated", "")
+              .replace("_Fixed", "");
+
+            try {
+              const fixedBin = BinFileReader(fixToApply, file);
+              convertedEntry = {
+                id: uuid(),
+                fileName: `${file.fileName}_Fixed`,
+                content: fixedBin.result,
+                type: "CONV_BIN",
+                besen: file.besen,
+                originalFileID: file.id
+              };
+
+              activeFile = convertedEntry;
+            } catch (err) {
+              console.log(err);
+              failedFiles.push({
+                id: file.id,
+                error: err,
+                fileName: files[i].fileName,
+                type: file.type
+              });
+            }
+          }
+        }
+
+        if (convertedEntry !== undefined) {
+          filesNew.push(convertedEntry);
+        }
+      }
+
+      filesNew.push(file);
+    }
+
+    this.setState(
+      {
+        failedConverts: failedFiles,
+        files: filesNew,
+        selectedFiles: [],
+        showModal: ""
+      },
+      () => {
+        if (oldSelectedFiles.length === 1 && activeFile !== undefined) {
+          this.setState({ activeFile });
+        }
+      }
+    );
+  }
+
+  handleCombineFiles() {
+    /* const { files, selectedFiles } = this.state;
+    const oldSelectedFiles = selectedFiles;
+    const failedFiles = [];
+    const filesNew = [];
+    let activeFile;
+
+    for (let i = 0; i < files.length; i += 1) {
+      const file = files[i];
+
+      if (file.type === "CONV_BIN") {
+        let convertedEntry;
+
+        for (let j = 0; j < oldSelectedFiles.length; j += 1) {
+          if (file.id === oldSelectedFiles[j]) {
+            file.fileName = files[i].fileName.replace("_Migrated", "");
+
+            try {
+              const test = BinFileReader("listFix", file);
+              console.log(test);
+
+              if (fileContentCombined !== -1) {
+                convertedEntry = {
+                  id: uuid(),
+                  fileName: `${fileSettings.file.fileName}_Combined`,
+                  content: fileContentCombined,
+                  type: "CONV_BIN",
+                  besen: file.besen,
+                  originalFileID: file.id
+                };
+              }
+
+              activeFile = convertedEntry;
+            } catch (err) {
+              console.log(err);
+              failedFiles.push({
+                id: file.id,
+                error: err,
+                fileName: files[i].fileName,
+                type: file.type
+              });
+            }
+          }
+        }
+
+        if (convertedEntry !== undefined) {
+          filesNew.push(convertedEntry);
+        }
+      } else {
+        failedFiles.push({
+          id: file.id,
+          error:
+            "Target file must be a converted .bin file. Use ritobin to convert .bin files to .txt",
+          fileName: file.fileName,
+          type: file.type
+        });
+      }
+    } */
+    const { selectedFiles } = this.state;
+    return selectedFiles;
+  }
+
+  handleConvertFiles() {
+    const { files, fileSettings, selectedFiles } = this.state;
     const oldSelectedFiles = selectedFiles;
     const failedFiles = [];
     const filesNew = [];
@@ -208,11 +402,11 @@ class MainPage extends Component {
 
             try {
               const fileContentConverted = MigrateConvertedTroybin(
-                defaultAssetsPath,
-                defaultFilePath,
+                fileSettings[j].assetsPath,
+                fileSettings[j].filePath,
                 file,
-                namesOnly,
-                updateFileTypes
+                fileSettings[j].namesOnly,
+                fileSettings[j].updateFileTypes
               );
 
               if (fileContentConverted !== -1) {
@@ -288,7 +482,8 @@ class MainPage extends Component {
       {
         failedConverts: failedFiles,
         files: filesNew,
-        selectedFiles: []
+        selectedFiles: [],
+        showModal: ""
       },
       () => {
         if (oldSelectedFiles.length === 1 && activeFile !== undefined) {
@@ -354,20 +549,6 @@ class MainPage extends Component {
     }
 
     this.setState({ selectedFiles: [] });
-  }
-
-  handleOpenNewTab() {
-    const { files, selectedFiles } = this.state;
-    const fileIndex = files.findIndex(file => file.id === selectedFiles[0]);
-
-    if (fileIndex !== -1) {
-      const blob = new Blob([files[fileIndex].content], { type: "text/plain" });
-      const downloadLink = URL.createObjectURL(blob);
-
-      window.open(downloadLink);
-    }
-
-    this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
   handleLoadFiles = fileInput => {
@@ -448,27 +629,55 @@ class MainPage extends Component {
     }
   };
 
+  handleStartConvert(settings) {
+    this.setState(
+      {
+        fileSettings: settings,
+        loading: true
+      },
+      () => this.handleConvertFiles()
+    );
+  }
+
+  handleOpenNewTab() {
+    const { files, selectedFiles } = this.state;
+    const fileIndex = files.findIndex(file => file.id === selectedFiles[0]);
+
+    if (fileIndex !== -1) {
+      const blob = new Blob([files[fileIndex].content], { type: "text/plain" });
+      const downloadLink = URL.createObjectURL(blob);
+
+      window.open(downloadLink);
+    }
+
+    this.handleChangeShowMenu({ anchor: null, menu: "" });
+  }
+
   render() {
     const {
       activeFile,
       dialogOpen,
-      drawerOpen,
+      failedConverts,
       files,
       filter,
       loading,
       search,
       selectedFiles,
+      showInfoModal,
       showMenu,
       showModal
     } = this.state;
     const { lightMode } = this.props;
     const dataSource = getDataSource(files, filter, search);
+    const selectedFilesFull = getSelectedFiles(files, selectedFiles);
+    const selectedFilesInfo = getButtonsDisabled(selectedFilesFull);
 
     return (
       <>
         <Box sx={{ flexGrow: 1 }}>
           <AppBarComponent
             changeShowMenu={event => this.handleChangeShowMenu(event)}
+            clickAboutButton={val => this.handleChangeShowInfoModal(val)}
             clickThemeButton={() => this.handleChangeTheme()}
             menuDisabled={false}
             lightMode={lightMode}
@@ -579,7 +788,7 @@ class MainPage extends Component {
                                   menu: "List",
                                   options: [
                                     {
-                                      disabled: selectedFiles.length === 0,
+                                      disabled: selectedFilesInfo.amount === 0,
                                       icon: <BrowserUpdatedIcon />,
                                       onClickFunc: () =>
                                         this.handleChangeDialogVisible({
@@ -590,7 +799,9 @@ class MainPage extends Component {
                                       text: "Download"
                                     },
                                     {
-                                      disabled: selectedFiles.length === 0,
+                                      disabled:
+                                        selectedFilesInfo.amount === 0 ||
+                                        selectedFilesInfo.hasTroybins === false,
                                       icon: <AutoFixHighIcon />,
                                       onClickFunc: () =>
                                         this.handleChangeDialogVisible({
@@ -601,23 +812,33 @@ class MainPage extends Component {
                                       text: "Convert"
                                     },
                                     {
-                                      disabled: selectedFiles.length === 0,
+                                      disabled:
+                                        selectedFilesInfo.amount === 0 ||
+                                        (selectedFilesInfo.hasMigratedTroybins ===
+                                          false &&
+                                          selectedFilesInfo.hasBins === false),
                                       icon: <BuildIcon />,
                                       onClickFunc: () =>
-                                        this.handleChangeDrawer(true, 1),
+                                        this.handleChangeDialogVisible({
+                                          action: "fix",
+                                          open: true
+                                        }),
                                       order: 3,
                                       text: "Apply Bin Fixes"
                                     },
                                     {
-                                      disabled: selectedFiles.length <= 1,
+                                      disabled: true,
                                       icon: <CompareArrowsIcon />,
                                       onClickFunc: () =>
-                                        this.handleChangeDrawer(true, 1),
+                                        this.handleChangeDialogVisible({
+                                          action: "combine",
+                                          open: true
+                                        }),
                                       order: 4,
                                       text: "Combine"
                                     },
                                     {
-                                      disabled: selectedFiles.length === 0,
+                                      disabled: selectedFilesInfo.amount === 0,
                                       icon: <DeleteIcon />,
                                       onClickFunc: () =>
                                         this.handleChangeDialogVisible({
@@ -724,7 +945,7 @@ class MainPage extends Component {
                               menu: "File",
                               options: [
                                 {
-                                  disabled: false,
+                                  disabled: !activeFile,
                                   icon: <OpenInNewIcon />,
                                   onClickFunc: () => {
                                     this.setState(
@@ -756,7 +977,9 @@ class MainPage extends Component {
                                   text: "Download"
                                 },
                                 {
-                                  disabled: activeFile?.type === "CONV_BIN",
+                                  disabled:
+                                    !activeFile ||
+                                    activeFile.type !== "CONV_TROYBIN",
                                   icon: <AutoFixHighIcon />,
                                   onClickFunc: () => {
                                     this.setState(
@@ -774,21 +997,27 @@ class MainPage extends Component {
                                   text: "Convert"
                                 },
                                 {
-                                  disabled: activeFile?.type === "CONV_TROYBIN",
+                                  disabled:
+                                    !activeFile ||
+                                    activeFile.type === "CONV_TROYBIN",
                                   icon: <BuildIcon />,
                                   onClickFunc: () => {
                                     this.setState(
                                       {
                                         selectedFiles: [activeFile.id]
                                       },
-                                      () => this.handleChangeDrawer(true, 1)
+                                      () =>
+                                        this.handleChangeDialogVisible({
+                                          action: "fix",
+                                          open: true
+                                        })
                                     );
                                   },
                                   order: 4,
                                   text: "Apply Bin Fixes"
                                 },
                                 {
-                                  disabled: false,
+                                  disabled: !activeFile,
                                   icon: <DeleteIcon />,
                                   onClickFunc: () => {
                                     this.setState(
@@ -823,14 +1052,17 @@ class MainPage extends Component {
                         : "(Click the Arrow On A File From The List To See Its Content)"
                     }
                   />
-                  <CardMedia
-                    component="img"
-                    sx={{
-                      filter: "blur(6px)"
-                    }}
-                    image={getSplashArt(activeFile)}
-                    alt="random"
-                  />
+                  <CardActionArea>
+                    <CardMedia
+                      component="img"
+                      sx={{
+                        filter: "blur(6px)",
+                        maxHeight: 680
+                      }}
+                      image={getSplashArt(activeFile)}
+                      alt="random"
+                    />
+                  </CardActionArea>
                 </Card>
               </Grid>
             </Grid>
@@ -843,15 +1075,22 @@ class MainPage extends Component {
             this.handleChangeDialogAccept(action, val)
           }
           handleClose={val => this.handleChangeDialogVisible(val)}
+          handleSelect={val => this.handleChangeSelectedFix(val)}
         />
         <DrawerComponent
-          handleChange={val => this.handleChangeDrawer(val)}
-          isOpen={drawerOpen}
+          handleChange={() => this.handleChangeDrawer()}
+          isOpen={failedConverts.length}
         />
         <ConvertModal
+          startConverting={val => this.handleStartConvert(val)}
           loading={loading}
+          selectedFiles={selectedFilesFull}
           showModal={showModal}
           onClose={val => this.handleChangeShowModal(val)}
+        />
+        <AboutModal
+          onClose={val => this.handleChangeShowInfoModal(val)}
+          open={showInfoModal}
         />
       </>
     );

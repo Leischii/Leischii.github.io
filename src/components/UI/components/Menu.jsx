@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import PropTypes from "prop-types";
 
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -58,4 +59,25 @@ const MenuComponent = ({
   );
 };
 
-export default MenuComponent;
+export default React.memo(MenuComponent);
+
+MenuComponent.propTypes = {
+  changeShowMenu: PropTypes.func.isRequired,
+  menuDisabled: PropTypes.bool.isRequired,
+  menuSettings: PropTypes.shape({
+    menu: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        disabled: PropTypes.bool,
+        icon: PropTypes.element.isRequired,
+        order: PropTypes.number.isRequired,
+        onClickFunc: PropTypes.func.isRequired,
+        text: PropTypes.string.isRequired
+      })
+    ).isRequired
+  }).isRequired,
+  showMenu: PropTypes.shape({
+    anchor: PropTypes.any, // eslint-disable-line
+    menu: PropTypes.string
+  }).isRequired
+};

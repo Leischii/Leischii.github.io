@@ -2,9 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 
-import CachedIcon from "@mui/icons-material/Cached";
 import CloseIcon from "@mui/icons-material/Close";
 
+import Alert from "@mui/material/Alert";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -19,16 +19,17 @@ const DrawerHeader = styled.div`
 
 const DrawerComponent = ({ handleChange, isOpen }) => {
   return (
-    <Drawer anchor="bottom" onClose={() => handleChange(false)} open={isOpen}>
+    <Drawer anchor="bottom" onClose={handleChange} open={isOpen !== 0}>
       <DrawerHeader>
-        <CachedIcon sx={{ ml: 2 }} />
-        <Typography component="div" variant="h6" sx={{ flexGrow: 1, ml: 2 }}>
-          Converting Files
-        </Typography>
+        <Alert variant="outlined" severity="error" sx={{ flexGrow: 1, mr: 1 }}>
+          <Typography>{`${isOpen} file${
+            isOpen > 1 ? "s" : ""
+          } failed!`}</Typography>
+        </Alert>
         <Tooltip title="Close" arrow placement="top">
           <IconButton
             size="mediuam"
-            onClick={() => handleChange(false)}
+            onClick={handleChange}
             color="inherit"
             sx={{ flexGrow: 0 }}
           >
@@ -44,5 +45,5 @@ export default DrawerComponent;
 
 DrawerComponent.propTypes = {
   handleChange: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired
+  isOpen: PropTypes.number.isRequired
 };

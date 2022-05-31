@@ -687,7 +687,7 @@ const fieldOrbitName = {
   order: 1010
 };
 
-const frameRate = { // eslint-disable-line
+const frameRate = {
   name: "frameRate",
   members: [],
   structure: "SimpleProperty",
@@ -1040,6 +1040,13 @@ const spectatorPolicy = { // eslint-disable-line
   members: [],
   structure: "SimpleProperty",
   order: 32
+};
+
+const startFrame = {
+  name: "startFrame",
+  members: [],
+  structure: "SimpleProperty",
+  order: 211
 };
 
 const strength = {
@@ -3552,6 +3559,15 @@ const Values = {
       binGroupType: "pointer = VfxReflectionDefinitionData",
       binPropertyName: "fresnelColor",
       binPropertyType: "vec4",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-frameRate",
+      troybinType: "ONE_DOUBLE",
+      binGroup: frameRate,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     },
     {
@@ -6210,6 +6226,15 @@ const Values = {
       troybinType: "ONE_DOUBLE",
       binGroup: orientation1,
       binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-startframe",
+      troybinType: "ONE_DOUBLE",
+      binGroup: startFrame,
+      binGroupType: "u16",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined

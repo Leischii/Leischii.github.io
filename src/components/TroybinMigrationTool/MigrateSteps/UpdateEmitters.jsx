@@ -81,9 +81,12 @@ const UpdateEmitters = data => {
         propertiesToRemove.push("e-life", "p-life");
       }
 
-      if (property.troybinName === "e-rate") {
+      if (
+        property.troybinName === "e-rate" ||
+        property.troybinName === "p-life"
+      ) {
         for (let j = 1; j < 10; j += 1) {
-          const propertyName = `e-rate${j}`;
+          const propertyName = `${property.troybinName}${j}`;
           const timesTableEntryIndex = emitter.properties.findIndex(
             propS => propS.troybinName === propertyName
           );
@@ -111,7 +114,11 @@ const UpdateEmitters = data => {
       }
 
       // Color table values need to be multiplied with the constantValue
-      if (property.troybinName === "p-xrgba" || property.troybinName === "e-rgba") {
+      if (
+        property.troybinName === "p-xrgba" ||
+        property.troybinName === "e-rgba" ||
+        property.troybinName === "p-bindtoemitter"
+      ) {
         let colorNotDefault = false;
 
         for (let i = 0; i < 4; i += 1) {
@@ -301,6 +308,11 @@ const UpdateEmitters = data => {
         }
       } else {
         const propertiesToCheckForTableEntries = [
+          "p-quadrot",
+          "p-rotvel",
+          "p-scale",
+          "p-worldaccel",
+          "p-xquadrot",
           "p-xscale",
           "Particle-Velocity",
           "Particle-Drag"

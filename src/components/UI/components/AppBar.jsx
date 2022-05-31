@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import PropTypes from "prop-types";
 
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import InfoIcon from "@mui/icons-material/Info";
@@ -16,6 +17,7 @@ import MenuComponent from "./Menu";
 
 const AppBarComponent = ({
   changeShowMenu,
+  clickAboutButton,
   clickThemeButton,
   lightMode,
   menuDisabled,
@@ -59,6 +61,7 @@ const AppBarComponent = ({
             menu: "Appbar",
             options: [
               {
+                disabled: true,
                 icon: <SpeakerNotesIcon />,
                 onClickFunc: () => changeShowMenu({ anchor: null, menu: "" }),
                 order: 1,
@@ -72,7 +75,7 @@ const AppBarComponent = ({
               },
               {
                 icon: <InfoIcon />,
-                onClickFunc: () => changeShowMenu({ anchor: null, menu: "" }),
+                onClickFunc: () => clickAboutButton("about"),
                 order: 3,
                 text: "About"
               }
@@ -85,4 +88,16 @@ const AppBarComponent = ({
   );
 };
 
-export default AppBarComponent;
+export default React.memo(AppBarComponent);
+
+AppBarComponent.propTypes = {
+  changeShowMenu: PropTypes.func.isRequired,
+  clickAboutButton: PropTypes.func.isRequired,
+  clickThemeButton: PropTypes.func.isRequired,
+  lightMode: PropTypes.bool.isRequired,
+  menuDisabled: PropTypes.bool.isRequired,
+  showMenu: PropTypes.shape({
+    anchor: PropTypes.any, // eslint-disable-line
+    menu: PropTypes.string.isRequired
+  }).isRequired
+};

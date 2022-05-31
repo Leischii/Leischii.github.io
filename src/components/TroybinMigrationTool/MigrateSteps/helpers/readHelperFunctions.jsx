@@ -110,11 +110,12 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = "primitiveMesh";
       } else if (values === "4") {
         // confirmed
-        formatedValue = "primitiveArbitraryTrail";
+        formatedValue = "primitiveTrail";
       } else if (values === "5") {
         // confirmed
-        formatedValue = "primitiveTrail";
+        formatedValue = "primitiveArbitraryTrail";
       } else if (values === "6") {
+        // confirmed
         formatedValue = "primitiveBeam";
       } else if (values === "7") {
         formatedValue = "primitivePlanarProjection";
@@ -133,7 +134,7 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = 2;
       } else if (values === "true" || values === "1") {
         formatedValue = 1;
-      } else if (values === "\"Low\"" || values === "0") {
+      } else if (values === "\"Low\"" || values === "0") { // eslint-disable-line
         formatedValue = 0;
       } else if (
         typeof parseInt(values, 10) === "number" ||
