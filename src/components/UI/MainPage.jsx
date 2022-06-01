@@ -482,6 +482,8 @@ class MainPage extends Component {
       {
         failedConverts: failedFiles,
         files: filesNew,
+        fileSettings: [],
+        loading: false,
         selectedFiles: [],
         showModal: ""
       },
@@ -621,6 +623,12 @@ class MainPage extends Component {
             });
 
             this.handleChangeFilter(0);
+          }
+
+          if (fileInput.length === 1) {
+            this.setState({
+              activeFile: file
+            });
           }
         } else {
           console.log("File Type is unknown");
@@ -814,9 +822,7 @@ class MainPage extends Component {
                                     {
                                       disabled:
                                         selectedFilesInfo.amount === 0 ||
-                                        (selectedFilesInfo.hasMigratedTroybins ===
-                                          false &&
-                                          selectedFilesInfo.hasBins === false),
+                                        selectedFilesInfo.hasBins === false,
                                       icon: <BuildIcon />,
                                       onClickFunc: () =>
                                         this.handleChangeDialogVisible({
@@ -999,7 +1005,7 @@ class MainPage extends Component {
                                 {
                                   disabled:
                                     !activeFile ||
-                                    activeFile.type === "CONV_TROYBIN",
+                                    activeFile.type !== "CONV_BIN",
                                   icon: <BuildIcon />,
                                   onClickFunc: () => {
                                     this.setState(

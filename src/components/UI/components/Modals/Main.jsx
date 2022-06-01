@@ -124,6 +124,9 @@ const ConvertModal = ({
 
     if (isConvertStep) {
       startConverting(newSettings);
+
+      handleSetDefaultValues(defaultSettings);
+      setCurrentFileIndex(0);
     } else {
       const newIndex = currentFileIndex + 1;
 
@@ -463,6 +466,6 @@ ConvertModal.propTypes = {
   loading: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   selectedFiles: PropTypes.any.isRequired, // eslint-disable-line
-  showModal: PropTypes.bool.isRequired,
+  showModal: PropTypes.string.isRequired,
   startConverting: PropTypes.func.isRequired
 };
