@@ -31,7 +31,14 @@ const readObject = (content, currentPosition, objectSpacing) => {
 };
 
 const ReadBin = data => {
-  const content = data.split("\r\n");
+  let fileContent = data.split("\r\n");
+
+  // If formating is done differently
+  if (fileContent.length === 1) {
+    fileContent = fileContent[0].split("\n");
+  }
+
+  const content = fileContent;
   const entries = [];
   let currentRow = 5;
 

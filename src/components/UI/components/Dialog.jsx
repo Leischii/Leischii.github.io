@@ -24,6 +24,10 @@ const DialogComponent = ({
       id: "listFix"
     },
     {
+      name: "Fix muted character sound",
+      id: "mutedAudioFix"
+    },
+    {
       name: "Fix crash on movement",
       id: "updaterTypeFix"
     }

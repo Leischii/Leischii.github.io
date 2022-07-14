@@ -16,6 +16,14 @@ const listFix = [
   }
 ];
 
+const mutedAudioFix = [
+  {
+    type: "SkinCharacterDataProperties ",
+    oldString: "bankUnits: list[embed]",
+    newString: "bankUnits: list2[embed]"
+  }
+];
+
 const updaterTypeFix = [
   {
     type: "animationGraphData",
@@ -73,6 +81,8 @@ const getChangesEntries = value => {
   switch (value) {
     case "listFix":
       return listFix;
+    case "mutedAudioFix":
+      return mutedAudioFix;
     case "updaterTypeFix":
       return updaterTypeFix;
     default:
@@ -81,7 +91,14 @@ const getChangesEntries = value => {
 };
 
 const ApplyBinFix = (changesProps, content, metadata) => {
-  const data = content.split("\r\n");
+  let fileData = content.split("\r\n");
+
+  // If formating is done differently
+  if (fileData.length === 1) {
+    fileData = fileData[0].split("\n");
+  }
+
+  const data = fileData;
   const changes = getChangesEntries(changesProps);
   let amountChanges = 0;
 
@@ -90,6 +107,7 @@ const ApplyBinFix = (changesProps, content, metadata) => {
 
     for (let j = 0; j < changes.length; j += 1) {
       const changesEntry = changes[j];
+
       if (metaDataEntry.type === changesEntry.type) {
         for (let k = metaDataEntry.start; k <= metaDataEntry.end; k += 1) {
           const row = data[k];

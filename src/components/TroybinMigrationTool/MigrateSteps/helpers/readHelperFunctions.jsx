@@ -3,7 +3,14 @@ Converts text into array with each entry representing a line of text
 Also removes backspaces
 */
 export function FormatInput(originalTroybin) {
-  const troybinArray = originalTroybin.split("\r\n");
+  let troybinFileArray = originalTroybin.split("\r\n");
+
+  // If formating is done differently
+  if (troybinFileArray.length === 1) {
+    troybinFileArray = troybinFileArray[0].split("\n");
+  }
+
+  const troybinArray = troybinFileArray;
   const convertedTroybin = [];
 
   for (let i = 0; i < troybinArray.length; i += 1) {
