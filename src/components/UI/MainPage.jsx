@@ -114,7 +114,7 @@ class MainPage extends Component {
       files: [],
       fileSettings: [],
       filter: 0,
-      fixToApply: "",
+      fixesToApply: [],
       loading: false,
       search: "",
       selectedFiles: [],
@@ -230,7 +230,7 @@ class MainPage extends Component {
   }
 
   handleChangeSelectedFix(val) {
-    this.setState({ fixToApply: val });
+    this.setState({ fixesToApply: val });
   }
 
   handleChangeShowInfoModal(value) {
@@ -254,7 +254,7 @@ class MainPage extends Component {
   }
 
   handleFixFiles() {
-    const { files, fixToApply, selectedFiles } = this.state;
+    const { files, fixesToApply, selectedFiles } = this.state;
     const oldSelectedFiles = selectedFiles;
     const failedFiles = [];
     const filesNew = [];
@@ -273,11 +273,18 @@ class MainPage extends Component {
               .replace("_Fixed", "");
 
             try {
-              const fixedBin = BinFileReader(fixToApply, file);
+              let fileContent = file.content;
+
+              for (let k = 0; k < fixesToApply.length; k += 1) {
+                const updatedBin = BinFileReader(fixesToApply[k], fileContent);
+
+                fileContent = updatedBin.result;
+              }
+
               convertedEntry = {
                 id: uuid(),
                 fileName: `${file.fileName}_Fixed`,
-                content: fixedBin.result,
+                content: fileContent,
                 type: "CONV_BIN",
                 besen: file.besen,
                 originalFileID: file.id
@@ -675,7 +682,7 @@ class MainPage extends Component {
       showMenu,
       showModal
     } = this.state;
-    const { lightMode } = this.props;
+    const { lightMode, theme } = this.props;
     const dataSource = getDataSource(files, filter, search);
     const selectedFilesFull = getSelectedFiles(files, selectedFiles);
     const selectedFilesInfo = getButtonsDisabled(selectedFilesFull);
@@ -1082,6 +1089,7 @@ class MainPage extends Component {
           }
           handleClose={val => this.handleChangeDialogVisible(val)}
           handleSelect={val => this.handleChangeSelectedFix(val)}
+          theme={theme}
         />
         <DrawerComponent
           handleChange={() => this.handleChangeDrawer()}
@@ -1107,5 +1115,6 @@ export default React.memo(MainPage);
 
 MainPage.propTypes = {
   lightMode: PropTypes.bool.isRequired,
-  handleChangeTheme: PropTypes.func.isRequired
+  handleChangeTheme: PropTypes.func.isRequired,
+  theme: PropTypes.any.isRequired // eslint-disable-line
 };

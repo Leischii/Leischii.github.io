@@ -58,7 +58,11 @@ const Main = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MainPage lightMode={lightMode} handleChangeTheme={handleChangeTheme} />
+      <MainPage
+        lightMode={lightMode}
+        handleChangeTheme={handleChangeTheme}
+        theme={theme}
+      />
     </ThemeProvider>
   );
 };

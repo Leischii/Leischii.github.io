@@ -18,13 +18,23 @@ const listFix = [
 
 const mutedAudioFix = [
   {
-    type: "SkinCharacterDataProperties ",
+    type: "SkinCharacterDataProperties",
     oldString: "bankUnits: list[embed]",
     newString: "bankUnits: list2[embed]"
   }
 ];
 
 const updaterTypeFix = [
+  {
+    type: "animationGraphData",
+    oldString: "mUpdaterType: u8 = 0",
+    newString: ""
+  },
+  {
+    type: "animationGraphData",
+    oldString: "mUpdaterType: u32 = 0",
+    newString: ""
+  },
   {
     type: "animationGraphData",
     oldString: "mUpdaterType: u8 = 4",

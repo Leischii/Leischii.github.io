@@ -1,9 +1,9 @@
 import ApplyBinFix from "./components/ApplyBinFix";
 import ReadBin from "./components/ReadBin";
 
-const BinFileReader = (changes, file) => {
-  const getBinMetaData = ReadBin(file.content);
-  const applyFix = ApplyBinFix(changes, file.content, getBinMetaData);
+const BinFileReader = (changes, fileContent) => {
+  const getBinMetaData = ReadBin(fileContent);
+  const applyFix = ApplyBinFix(changes, fileContent, getBinMetaData);
 
   return applyFix;
 };
