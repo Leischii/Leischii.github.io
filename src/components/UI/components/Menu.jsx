@@ -8,6 +8,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
 
 const MenuComponent = ({
   changeShowMenu,
@@ -44,14 +45,17 @@ const MenuComponent = ({
       >
         {menuSettings.options.map(option => {
           return (
-            <MenuItem
-              disabled={option.disabled}
+            <Tooltip
+              arrow
               key={option.order}
-              onClick={option.onClickFunc}
+              title={option.desc}
+              placement="left"
             >
-              <ListItemIcon>{option.icon}</ListItemIcon>
-              <ListItemText>{option.text}</ListItemText>
-            </MenuItem>
+              <MenuItem disabled={option.disabled} onClick={option.onClickFunc}>
+                <ListItemIcon>{option.icon}</ListItemIcon>
+                <ListItemText>{option.text}</ListItemText>
+              </MenuItem>
+            </Tooltip>
           );
         })}
       </Menu>
@@ -68,6 +72,7 @@ MenuComponent.propTypes = {
     menu: PropTypes.string.isRequired,
     options: PropTypes.arrayOf(
       PropTypes.shape({
+        desc: PropTypes.string.isRequired,
         disabled: PropTypes.bool,
         icon: PropTypes.element.isRequired,
         order: PropTypes.number.isRequired,

@@ -61,6 +61,7 @@ const AppBarComponent = ({
             menu: "Appbar",
             options: [
               {
+                desc: "View Changelog",
                 disabled: true,
                 icon: <SpeakerNotesIcon />,
                 onClickFunc: () => changeShowMenu({ anchor: null, menu: "" }),
@@ -68,12 +69,14 @@ const AppBarComponent = ({
                 text: "Changelog"
               },
               {
+                desc: "Change Between Darkmode And Lightmode",
                 icon: lightMode ? <DarkModeIcon /> : <LightModeIcon />,
                 onClickFunc: () => clickThemeButton(),
                 order: 2,
                 text: lightMode ? "Darkmode" : "LightMode"
               },
               {
+                desc: "Show About Information",
                 icon: <InfoIcon />,
                 onClickFunc: () => clickAboutButton("about"),
                 order: 3,

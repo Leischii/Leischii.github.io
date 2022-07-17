@@ -18,6 +18,11 @@ const readObject = (content, currentPosition, objectSpacing) => {
 
   while (content[newPosition] !== `${objectSpacing}}`) {
     newPosition += 1;
+
+    if (newPosition === content.length) {
+      console.log("While Endless Loop Prevented!");
+      break;
+    }
   }
 
   const entry = {
@@ -51,6 +56,11 @@ const ReadBin = data => {
 
     while (content[counter] !== "}") {
       counter += 1;
+
+      if (counter === content.length) {
+        console.log("While Endless Loop Prevented!");
+        break;
+      }
     }
 
     currentRow = counter + 2;

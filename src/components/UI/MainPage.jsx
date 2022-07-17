@@ -9,15 +9,14 @@ import BuildIcon from "@mui/icons-material/Build";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 import SearchIcon from "@mui/icons-material/Search";
 
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
-import CardActionArea from "@mui/material/CardActionArea";
 import CardHeader from "@mui/material/CardHeader";
-import CardMedia from "@mui/material/CardMedia";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
@@ -28,6 +27,7 @@ import Tooltip from "@mui/material/Tooltip";
 
 import AppBarComponent from "./components/AppBar";
 import ConvertModal from "./components/Modals/Main";
+import CardMediaComponent from "./components/CardMedia";
 import DialogComponent from "./components/Dialog";
 import DrawerComponent from "./components/Drawer";
 import FileList from "./components/FileList/Main";
@@ -101,6 +101,21 @@ function getSelectedFiles(files, selectedFiles) {
   return selectedFilesFull;
 }
 
+function getTypeName(type) {
+  switch (type) {
+    case "TROYBIN":
+      return "Troybin";
+    case "CONV_TROYBIN":
+      return "Troybin (Converted)";
+    case "MIG_BIN":
+      return "Bin (Migrated)";
+    case "CONV_BIN":
+      return "Bin (Converted)";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 class MainPage extends Component {
   constructor(props) {
     super(props);
@@ -111,6 +126,7 @@ class MainPage extends Component {
         open: false
       },
       failedConverts: [],
+      fileContentDirty: "",
       files: [],
       fileSettings: [],
       filter: 0,
@@ -118,6 +134,7 @@ class MainPage extends Component {
       loading: false,
       search: "",
       selectedFiles: [],
+      showEditor: false,
       showInfoModal: "",
       showMenu: {
         anchor: null,
@@ -165,6 +182,9 @@ class MainPage extends Component {
         case "fix":
           this.handleFixFiles();
           break;
+        case "save":
+          this.handleSaveFile();
+          break;
         default:
           break;
       }
@@ -181,7 +201,7 @@ class MainPage extends Component {
   }
 
   handleChangeFileActive(file) {
-    this.setState({ activeFile: file });
+    this.setState({ activeFile: file, showEditor: false });
   }
 
   handleChangeFilesSelected(fileID, selectedFileIndex) {
@@ -253,6 +273,17 @@ class MainPage extends Component {
     this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
+  handleClickImage = value => {
+    const { activeFile } = this.state;
+
+    if (activeFile) {
+      this.setState({
+        fileContentDirty: activeFile.content,
+        showEditor: value
+      });
+    }
+  };
+
   handleFixFiles() {
     const { files, fixesToApply, selectedFiles } = this.state;
     const oldSelectedFiles = selectedFiles;
@@ -320,7 +351,7 @@ class MainPage extends Component {
       },
       () => {
         if (oldSelectedFiles.length === 1 && activeFile !== undefined) {
-          this.setState({ activeFile });
+          this.setState({ activeFile, showEditor: false });
         }
       }
     );
@@ -496,23 +527,27 @@ class MainPage extends Component {
       },
       () => {
         if (oldSelectedFiles.length === 1 && activeFile !== undefined) {
-          this.setState({ activeFile });
+          this.setState({ activeFile, showEditor: false });
         }
       }
     );
   }
 
   handleDeleteFiles() {
-    const { files, selectedFiles } = this.state;
-
+    const { activeFile, files, selectedFiles } = this.state;
     const oldSelectedFiles = [...selectedFiles];
     const newFiles = [];
+    let hasActiveFile = false;
 
     for (let i = 0; i < files.length; i += 1) {
       let deleteFile = false;
 
       for (let j = 0; j < oldSelectedFiles.length; j += 1) {
         if (files[i].id === oldSelectedFiles[j]) {
+          if (files[i].id === activeFile.id) {
+            hasActiveFile = true;
+          }
+
           deleteFile = true;
         }
       }
@@ -523,6 +558,10 @@ class MainPage extends Component {
     }
 
     this.setState({ files: newFiles, selectedFiles: [] });
+
+    if (hasActiveFile) {
+      this.setState({ activeFile: undefined, showEditor: false });
+    }
   }
 
   handleDownloadFiles() {
@@ -634,7 +673,8 @@ class MainPage extends Component {
 
           if (fileInput.length === 1) {
             this.setState({
-              activeFile: file
+              activeFile: file,
+              showEditor: false
             });
           }
         } else {
@@ -643,6 +683,40 @@ class MainPage extends Component {
       };
     }
   };
+
+  handleSaveFile() {
+    const { fileContentDirty, files, selectedFiles } = this.state;
+    const fileToUpdate = selectedFiles[0];
+    const filesNew = [];
+
+    let activeFile;
+
+    for (let i = 0; i < files.length; i += 1) {
+      const file = files[i];
+
+      if (file.id === fileToUpdate) {
+        const newFile = file;
+        newFile.content = fileContentDirty;
+        activeFile = newFile;
+
+        filesNew.push(newFile);
+      } else {
+        filesNew.push(file);
+      }
+    }
+
+    this.setState({
+      activeFile,
+      showEditor: false,
+      files: filesNew,
+      loading: false,
+      showModal: ""
+    });
+  }
+
+  handleSaveDirty(event) {
+    this.setState({ fileContentDirty: event.target.value });
+  }
 
   handleStartConvert(settings) {
     this.setState(
@@ -673,11 +747,13 @@ class MainPage extends Component {
       activeFile,
       dialogOpen,
       failedConverts,
+      fileContentDirty,
       files,
       filter,
       loading,
       search,
       selectedFiles,
+      showEditor,
       showInfoModal,
       showMenu,
       showModal
@@ -803,6 +879,7 @@ class MainPage extends Component {
                                   menu: "List",
                                   options: [
                                     {
+                                      desc: "Download selected files",
                                       disabled: selectedFilesInfo.amount === 0,
                                       icon: <BrowserUpdatedIcon />,
                                       onClickFunc: () =>
@@ -814,6 +891,8 @@ class MainPage extends Component {
                                       text: "Download"
                                     },
                                     {
+                                      desc:
+                                        "Convert selected troybin particles to bin particles",
                                       disabled:
                                         selectedFilesInfo.amount === 0 ||
                                         selectedFilesInfo.hasTroybins === false,
@@ -827,6 +906,8 @@ class MainPage extends Component {
                                       text: "Convert"
                                     },
                                     {
+                                      desc:
+                                        "Apply fixes to selected outdated files",
                                       disabled:
                                         selectedFilesInfo.amount === 0 ||
                                         selectedFilesInfo.hasBins === false,
@@ -840,6 +921,7 @@ class MainPage extends Component {
                                       text: "Apply Bin Fixes"
                                     },
                                     {
+                                      desc: "Combine selected files",
                                       disabled: true,
                                       icon: <CompareArrowsIcon />,
                                       onClickFunc: () =>
@@ -851,6 +933,7 @@ class MainPage extends Component {
                                       text: "Combine"
                                     },
                                     {
+                                      desc: "Delete selected files",
                                       disabled: selectedFilesInfo.amount === 0,
                                       icon: <DeleteIcon />,
                                       onClickFunc: () =>
@@ -858,7 +941,7 @@ class MainPage extends Component {
                                           action: "delete",
                                           open: true
                                         }),
-                                      order: 6,
+                                      order: 5,
                                       text: "Delete"
                                     }
                                   ]
@@ -958,6 +1041,8 @@ class MainPage extends Component {
                               menu: "File",
                               options: [
                                 {
+                                  desc:
+                                    "View content of selected file in new tab",
                                   disabled: !activeFile,
                                   icon: <OpenInNewIcon />,
                                   onClickFunc: () => {
@@ -969,9 +1054,29 @@ class MainPage extends Component {
                                     );
                                   },
                                   order: 1,
-                                  text: "Show Content (new Tab)"
+                                  text: "Show Content (New Tab)"
                                 },
                                 {
+                                  desc: "Save changes made to selected file",
+                                  disabled: !activeFile,
+                                  icon: <SaveAsIcon />,
+                                  onClickFunc: () => {
+                                    this.setState(
+                                      {
+                                        selectedFiles: [activeFile.id]
+                                      },
+                                      () =>
+                                        this.handleChangeDialogVisible({
+                                          action: "save",
+                                          open: true
+                                        })
+                                    );
+                                  },
+                                  order: 2,
+                                  text: "Save Changes"
+                                },
+                                {
+                                  desc: "Download selected file",
                                   disabled: !activeFile,
                                   icon: <BrowserUpdatedIcon />,
                                   onClickFunc: () => {
@@ -986,10 +1091,12 @@ class MainPage extends Component {
                                         })
                                     );
                                   },
-                                  order: 2,
+                                  order: 3,
                                   text: "Download"
                                 },
                                 {
+                                  desc:
+                                    "Convert selected troybin particle to bin particle",
                                   disabled:
                                     !activeFile ||
                                     activeFile.type !== "CONV_TROYBIN",
@@ -1006,10 +1113,12 @@ class MainPage extends Component {
                                         })
                                     );
                                   },
-                                  order: 3,
+                                  order: 4,
                                   text: "Convert"
                                 },
                                 {
+                                  desc:
+                                    "Apply fixes to selected outdated bin file",
                                   disabled:
                                     !activeFile ||
                                     activeFile.type !== "CONV_BIN",
@@ -1026,10 +1135,11 @@ class MainPage extends Component {
                                         })
                                     );
                                   },
-                                  order: 4,
+                                  order: 5,
                                   text: "Apply Bin Fixes"
                                 },
                                 {
+                                  desc: "Delete selected file",
                                   disabled: !activeFile,
                                   icon: <DeleteIcon />,
                                   onClickFunc: () => {
@@ -1044,7 +1154,7 @@ class MainPage extends Component {
                                         })
                                     );
                                   },
-                                  order: 5,
+                                  order: 6,
                                   text: "Delete"
                                 }
                               ]
@@ -1061,21 +1171,18 @@ class MainPage extends Component {
                     }
                     subheader={
                       activeFile
-                        ? `Type: ${activeFile.type}`
+                        ? `Type: ${getTypeName(activeFile.type)}`
                         : "(Click the Arrow On A File From The List To See Its Content)"
                     }
                   />
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      sx={{
-                        filter: "blur(6px)",
-                        maxHeight: 680
-                      }}
-                      image={getSplashArt(activeFile)}
-                      alt="random"
-                    />
-                  </CardActionArea>
+                  <CardMediaComponent
+                    activeFile={activeFile}
+                    fileContentDirty={fileContentDirty}
+                    handleClickImage={event => this.handleClickImage(event)}
+                    handleSaveDirty={event => this.handleSaveDirty(event)}
+                    image={getSplashArt(activeFile)}
+                    showEditor={showEditor}
+                  />
                 </Card>
               </Grid>
             </Grid>

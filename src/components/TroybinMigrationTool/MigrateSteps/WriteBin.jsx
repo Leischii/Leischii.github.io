@@ -946,14 +946,43 @@ const WriteBin = (bin, defaultFilePath) => {
   finalBin.push(`${getSpacing(spacing)}}\r\n`);
 
   if (bin.unknowns.length) {
-    finalBin.push(
-      `\r\n`,
-      `Troygrade was unable to translate the following values: \r\n`
-    );
+    const unknownProperties = [];
+    const disabledProperties = [];
 
-    bin.unknowns.forEach(unknown => {
-      finalBin.push(`${unknown}\r\n`);
-    });
+    for (let i = 0; i < bin.unknowns.length; i += 1) {
+      const unkn = bin.unknowns[i];
+      const namePart = unkn.split(": ")[1];
+
+      if (namePart[0] === "'") {
+        disabledProperties.push(unkn);
+      } else {
+        unknownProperties.push(unkn);
+      }
+    }
+
+    if (unknownProperties.length) {
+      finalBin.push(
+        `\r\n`,
+        `\r\n`,
+        `Troygrade was unable to translate the following properties: \r\n`
+      );
+
+      unknownProperties.forEach(unknownProp => {
+        finalBin.push(`${unknownProp}\r\n`);
+      });
+    }
+
+    if (disabledProperties.length) {
+      finalBin.push(
+        `\r\n`,
+        `\r\n`,
+        `Troygrade didn't translate the following properties because they were disabled: \r\n`
+      );
+
+      disabledProperties.forEach(disabledProp => {
+        finalBin.push(`${disabledProp}\r\n`);
+      });
+    }
   }
 
   return finalBin.join("");

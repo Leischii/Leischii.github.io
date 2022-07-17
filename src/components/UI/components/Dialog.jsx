@@ -114,6 +114,14 @@ const DialogComponent = ({
         ];
 
         break;
+      case "save":
+        dialogText = [
+          `You are about to save changes!`,
+          "This will overwrite the existing file and can not be reverted afterwards.",
+          "Are you sure you want to proceed?"
+        ];
+
+        break;
       default:
         dialogText = ["How did we end up here?"];
         break;
@@ -149,6 +157,9 @@ const DialogComponent = ({
         break;
       case "fix":
         dialogTitle = "Fix Outdated Bin Files?";
+        break;
+      case "save":
+        dialogTitle = "Save Changes?";
         break;
       default:
         dialogTitle = "You should never be able to read this";
