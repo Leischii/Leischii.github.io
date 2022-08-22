@@ -29,10 +29,10 @@ import AppBarComponent from "./components/AppBar";
 import ConvertModal from "./components/Modals/Main";
 import CardMediaComponent from "./components/CardMedia";
 import DialogComponent from "./components/Dialog";
-import DrawerComponent from "./components/Drawer";
 import FileList from "./components/FileList/Main";
 import getSplashArt, { SplashArtAmount } from "./components/SplashArt/Main";
 import MenuComponent from "./components/Menu";
+import MessageDrawer from "./components/Drawers/MessageDrawer";
 
 import BinFileReader from "../BinFileReader/Main";
 import ConvertTroybin from "../TroybinConverter/Main";
@@ -1058,7 +1058,7 @@ class MainPage extends Component {
                                 },
                                 {
                                   desc: "Save changes made to selected file",
-                                  disabled: !activeFile,
+                                  disabled: !activeFile || !showEditor,
                                   icon: <SaveAsIcon />,
                                   onClickFunc: () => {
                                     this.setState(
@@ -1198,7 +1198,7 @@ class MainPage extends Component {
           handleSelect={val => this.handleChangeSelectedFix(val)}
           theme={theme}
         />
-        <DrawerComponent
+        <MessageDrawer
           handleChange={() => this.handleChangeDrawer()}
           isOpen={failedConverts.length}
         />

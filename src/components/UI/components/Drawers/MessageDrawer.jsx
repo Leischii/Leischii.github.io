@@ -17,7 +17,7 @@ const DrawerHeader = styled.div`
   justify-content: flex-end;
 `;
 
-const DrawerComponent = ({ handleChange, isOpen }) => {
+const MessageDrawer = ({ handleChange, isOpen }) => {
   return (
     <Drawer anchor="bottom" onClose={handleChange} open={isOpen !== 0}>
       <DrawerHeader>
@@ -41,9 +41,9 @@ const DrawerComponent = ({ handleChange, isOpen }) => {
   );
 };
 
-export default DrawerComponent;
+export default MessageDrawer;
 
-DrawerComponent.propTypes = {
+MessageDrawer.propTypes = {
   handleChange: PropTypes.func.isRequired,
   isOpen: PropTypes.number.isRequired
 };

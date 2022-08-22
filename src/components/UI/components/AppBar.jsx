@@ -8,8 +8,10 @@ import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
+import Divider from "@mui/material/Divider";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 
@@ -23,6 +25,43 @@ const AppBarComponent = ({
   menuDisabled,
   showMenu
 }) => {
+  const getAppBarItem = itemName => {
+    return (
+      <Button>
+        <Typography
+          variant="h5"
+          component="div"
+          noWrap
+          sx={{
+            color: "white",
+            m: 1,
+            display: {
+              xs: "none",
+              md: "flex"
+            }
+          }}
+        >
+          {itemName}
+        </Typography>
+      </Button>
+    );
+  };
+
+  const getDivider = () => {
+    return (
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          ml: 3,
+          mr: 3,
+          mt: 2,
+          mb: 2
+        }}
+      />
+    );
+  };
+
   return (
     <AppBar position="static">
       <Toolbar sx={{ height: 78 }}>
@@ -30,7 +69,9 @@ const AppBarComponent = ({
           sx={{
             flexGrow: 1,
             maxWidth: 60,
-            mr: 2
+            mr: 1,
+            ml: 1,
+            border: "1px solid grey"
           }}
         >
           <CardMedia
@@ -44,15 +85,21 @@ const AppBarComponent = ({
           component="div"
           noWrap
           sx={{
-            mr: 4,
+            mr: 1,
             display: {
               xs: "none",
               md: "flex"
-            }
+            },
+            textTransform: "uppercase"
           }}
         >
-          Troygrade
+          Amardrianlo
         </Typography>
+        {getDivider()}
+        {getAppBarItem("Troygrade")}
+        {getDivider()}
+        {getAppBarItem("Property Wiki")}
+        {getDivider()}
         <Box sx={{ display: { md: "flex", xs: "none" }, flexGrow: 2 }} />
         <MenuComponent
           changeShowMenu={e => changeShowMenu(e)}

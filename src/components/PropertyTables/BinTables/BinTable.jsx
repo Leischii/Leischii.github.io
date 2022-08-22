@@ -1,0 +1,8 @@
+const bintable = {
+    "particleLifetime": {
+
+    },
+    "particleLinger": {
+        
+    }
+};
