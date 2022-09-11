@@ -495,7 +495,7 @@ const buildUpTime = {
   name: "buildUpTime",
   members: [],
   structure: "SimpleProperty",
-  order: 305
+  order: 306
 };
 
 const childParticleSetDefinition = {
@@ -700,7 +700,7 @@ const flags = {
     "SimulateWhileOffScreen"
   ],
   structure: "SimpleProperty",
-  order: 304
+  order: 305
 };
 
 const frameRate = {
@@ -909,7 +909,7 @@ const overrideScaleCap = {
   name: "overrideScaleCap",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 306
+  order: 307
 };
 
 const particleBind = {
@@ -1079,7 +1079,7 @@ const soundPersistentDefault = {
   name: "soundPersistentDefault",
   members: [],
   structure: "SimpleProperty",
-  order: 310
+  order: 304
 };
 
 const spectatorPolicy = { // eslint-disable-line

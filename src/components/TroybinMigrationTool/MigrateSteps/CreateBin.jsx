@@ -233,7 +233,7 @@ const CreateBin = (troybin, defaultFilePath) => {
           name: "flags",
           members: [],
           structure: "SimpleProperty",
-          order: 304
+          order: 305
         },
         binGroupType: "u8",
         binPropertyName: "",
