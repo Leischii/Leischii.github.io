@@ -495,7 +495,7 @@ const buildUpTime = {
   name: "buildUpTime",
   members: [],
   structure: "SimpleProperty",
-  order: 306
+  order: 307
 };
 
 const childParticleSetDefinition = {
@@ -700,7 +700,7 @@ const flags = {
     "SimulateWhileOffScreen"
   ],
   structure: "SimpleProperty",
-  order: 305
+  order: 306
 };
 
 const frameRate = {
@@ -909,7 +909,7 @@ const overrideScaleCap = {
   name: "overrideScaleCap",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 307
+  order: 308
 };
 
 const particleBind = {
@@ -1065,7 +1065,7 @@ const soundOnCreateDefault = {
   name: "soundOnCreateDefault",
   members: [],
   structure: "SimpleProperty",
-  order: 311
+  order: 305
 };
 
 const soundOnCreateName = {
