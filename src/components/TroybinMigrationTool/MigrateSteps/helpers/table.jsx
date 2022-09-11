@@ -165,7 +165,7 @@ const primitiveArbitraryTrail = {
 
 const primitiveAttachedMesh = {
   name: "primitiveAttachedMesh",
-  members: ["mMesh"],
+  members: ["mAnimationName", "mMesh", "mMeshName", "mMeshSkeletonName"],
   structure: "primitiveAttachedMesh",
   order: 55
 };
@@ -179,7 +179,7 @@ const primitiveBeam = { // eslint-disable-line
 
 const primitiveMesh = {
   name: "primitiveMesh",
-  members: ["mMesh"],
+  members: ["mAnimationName", "mMesh", "mMeshName", "mMeshSkeletonName"],
   structure: "primitiveMesh",
   order: 55
 };
@@ -495,7 +495,7 @@ const buildUpTime = {
   name: "buildUpTime",
   members: [],
   structure: "SimpleProperty",
-  order: 303
+  order: 305
 };
 
 const childParticleSetDefinition = {
@@ -687,6 +687,22 @@ const fieldOrbitName = {
   order: 1010
 };
 
+const flags = {
+  name: "flags",
+  members: [
+    "",
+    "SimulateEveryFrame",
+    "SoundsPlayWhileOffScreen",
+    "",
+    "",
+    "PersistThruRevive",
+    "PersistThruDeath",
+    "SimulateWhileOffScreen"
+  ],
+  structure: "SimpleProperty",
+  order: 304
+};
+
 const frameRate = {
   name: "frameRate",
   members: [],
@@ -781,6 +797,14 @@ const lifetime = {
   order: 17
 };
 
+const mAnimationName = {
+  name: "mAnimationName",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.3,
+  parent: [primitiveMesh, primitiveAttachedMesh]
+};
+
 const mBirthTilingSize = {
   name: "mBirthTilingSize",
   members: [],
@@ -820,12 +844,35 @@ const mMesh = {
   parent: [primitiveMesh, primitiveAttachedMesh]
 };
 
+const mMeshName = {
+  name: "mMeshName",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.1,
+  parent: [primitiveMesh, primitiveAttachedMesh]
+};
+
+const mMeshSkeletonName = {
+  name: "mMeshSkeletonName",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.2,
+  parent: [primitiveMesh, primitiveAttachedMesh]
+};
+
 const mMode = {
   name: "mMode",
   members: [],
   structure: "SimpleProperty",
   order: 55.1,
   parent: [primitiveArbitraryTrail, primitiveTrail]
+};
+
+const modulationFactor = {
+  name: "modulationFactor",
+  members: [],
+  structure: "SimpleProperty",
+  order: 74
 };
 
 const mSmoothingMode = { // eslint-disable-line
@@ -862,7 +909,7 @@ const overrideScaleCap = {
   name: "overrideScaleCap",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 305
+  order: 306
 };
 
 const particleBind = {
@@ -959,7 +1006,7 @@ const rate = {
 
 const reflectionDefinition = {
   name: "reflectionDefinition",
-  members: ["fresnelColor"],
+  members: ["fresnel", "fresnelColor"],
   structure: "MultConstantValueProperty",
   order: 78
 };
@@ -1185,6 +1232,15 @@ const Values = {
       troybinType: "BOOLEAN/INT",
       binGroup: alphaRef,
       binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-color-modulate",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: modulationFactor,
+      binGroupType: "vec4",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
@@ -3057,6 +3113,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-animation",
+      troybinType: "STRING_PATH",
+      binGroup: mAnimationName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-backfaceon",
       troybinType: "INT/BOOLEAN",
       binGroup: disableBackfaceCull,
@@ -3550,6 +3615,15 @@ const Values = {
       binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-fresnel",
+      troybinType: "ONE_DOUBLE",
+      binGroup: reflectionDefinition,
+      binGroupType: "pointer = VfxReflectionDefinitionData",
+      binPropertyName: "fresnel",
+      binPropertyType: "f32",
       defaultValue: undefined
     },
     {
@@ -4738,6 +4812,87 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "probTableZ9",
       binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset1",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset2",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset3",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable3",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset4",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable4",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset5",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable5",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset6",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable6",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset7",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable7",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset8",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable8",
+      binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-postoffset9",
+      troybinType: "FOUR_DOUBLE",
+      binGroup: birthTranslation,
+      binGroupType: "pointer = VfxAnimatedVector3fVariableData",
+      binPropertyName: "timesTable9",
+      binPropertyType: "vec3",
       defaultValue: undefined
     },
     {
@@ -6226,6 +6381,24 @@ const Values = {
       troybinType: "ONE_DOUBLE",
       binGroup: orientation1,
       binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-skeleton",
+      troybinType: "STRING_PATH",
+      binGroup: mMeshSkeletonName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-skin",
+      troybinType: "STRING_PATH",
+      binGroup: mMeshName,
+      binGroupType: "string",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
@@ -8923,13 +9096,40 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "SimulateEveryFrame",
-      troybinType: "INT/BOOLEAN",
-      binGroup: undefined,
-      binGroupType: "",
-      binPropertyName: "",
+      troybinName: "PersistThruDeath",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "6",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 196
+    },
+    {
+      troybinName: "PersistThruRevive",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "5",
+      binPropertyType: "",
+      defaultValue: 196
+    },
+    {
+      troybinName: "SimulateEveryFrame",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "1",
+      binPropertyType: "",
+      defaultValue: 196
+    },
+    {
+      troybinName: "SimulateWhileOffScreen",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "7",
+      binPropertyType: "",
+      defaultValue: 196
     },
     {
       troybinName: "SoundOnCreate",
@@ -8948,6 +9148,15 @@ const Values = {
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
+    },
+    {
+      troybinName: "SoundsPlayWhileOffScreen",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "2",
+      binPropertyType: "",
+      defaultValue: 196
     }
   ],
   others: [

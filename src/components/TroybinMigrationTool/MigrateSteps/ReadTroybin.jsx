@@ -53,7 +53,7 @@ const ReadTroybin = (
       const formatedA = a.split("=")[0].replace("'", "");
       const formatedB = b.split("=")[0].replace("'", "");
 
-      return formatedA.localeCompare(formatedB);
+      return formatedA.localeCompare(formatedB, "en", { numeric: true });
     });
 
     if (entry.name === "System") {

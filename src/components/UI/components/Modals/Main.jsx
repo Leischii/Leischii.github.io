@@ -22,8 +22,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 const defaultSettings = {
-  assetsPath: "Data/Particles",
-  filePath: "Data/Particles",
+  assetsPath: "Assets/Particles",
+  filePath: "Shared/Particles",
   namesOnly: false,
   settingsPreset: "Default",
   updateFileTypes: true
@@ -52,7 +52,7 @@ const ConvertModal = ({
   const [filePath, setFilePath] = useState(defaultSettings.filePath);
   const [fileSettings, setFileSettings] = useState([]);
   const [namesOnly, setNamesOnly] = useState(defaultSettings.namesOnly);
-  const [settingsPreset, setSettingsPreset] = useState("Default");
+  const [settingsPreset, setSettingsPreset] = useState("Custom");
   const [updateFileTypes, setUpdateFileTypes] = useState(
     defaultSettings.updateFileTypes
   );
@@ -101,25 +101,45 @@ const ConvertModal = ({
     }
   };
 
-  const handleClickNext = isConvertStep => {
+  const handleClickNext = (isConvertStep, applyToAll = false) => {
     const newSettings = [...fileSettings];
     const isNewEntry =
       newSettings.findIndex(entry => entry.index === currentFileIndex) === -1;
-    const settingsEntry = {
-      assetsPath,
-      filePath,
-      index: currentFileIndex,
-      namesOnly,
-      settingsPreset,
-      updateFileTypes
-    };
 
-    if (isNewEntry) {
-      newSettings.push(settingsEntry);
+    if (applyToAll) {
+      for (let i = 0; i < selectedFiles.length; i += 1) {
+        if (!newSettings[i]) {
+          const currentSettingsEntry = {
+            assetsPath,
+            filePath,
+            index: i,
+            namesOnly,
+            settingsPreset,
+            updateFileTypes
+          };
+
+          newSettings.push(currentSettingsEntry);
+        }
+      }
+
       setFileSettings(newSettings);
     } else {
-      newSettings[currentFileIndex] = settingsEntry;
-      setFileSettings(newSettings);
+      const settingsEntry = {
+        assetsPath,
+        filePath,
+        index: currentFileIndex,
+        namesOnly,
+        settingsPreset,
+        updateFileTypes
+      };
+
+      if (isNewEntry) {
+        newSettings.push(settingsEntry);
+        setFileSettings(newSettings);
+      } else {
+        newSettings[currentFileIndex] = settingsEntry;
+        setFileSettings(newSettings);
+      }
     }
 
     if (isConvertStep) {
@@ -129,7 +149,6 @@ const ConvertModal = ({
       setCurrentFileIndex(0);
     } else {
       const newIndex = currentFileIndex + 1;
-
       const nextSettings = newSettings[newIndex];
 
       if (nextSettings !== undefined) {
@@ -142,6 +161,21 @@ const ConvertModal = ({
     }
   };
 
+  const isConvertReady = currentIndex => {
+    const currentSetting = fileSettings.filter(
+      setting => setting.index === currentIndex
+    );
+    const lastToAdd =
+      currentSetting.length === 0 &&
+      fileSettings.length === selectedFiles.length - 1;
+
+    if (lastToAdd) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <Dialog
       fullWidth
@@ -152,7 +186,7 @@ const ConvertModal = ({
     >
       <DialogContent sx={{ padding: 0 }}>
         <Grid container>
-          <Grid item xs={8}>
+          <Grid item xs={7}>
             <Grid
               container
               direction="row"
@@ -250,7 +284,7 @@ const ConvertModal = ({
             container
             direction="column"
             item
-            xs={4}
+            xs={5}
             sx={{
               backgroundColor: "rgb(90, 90, 90)",
               padding: "2px 2.5px"
@@ -301,7 +335,9 @@ const ConvertModal = ({
                 </Typography>
               </Grid>
               <Grid item xs={3}>
-                <Typography sx={{ padding: "2px" }}>Convert</Typography>
+                <Typography sx={{ padding: "2px", marginLeft: "14px" }}>
+                  Convert
+                </Typography>
               </Grid>
             </Grid>
             <Grid container item sx={{ paddingTop: "1%" }} xs={0.5}>
@@ -361,7 +397,8 @@ const ConvertModal = ({
               <Grid item xs={2}>
                 <Typography
                   sx={{
-                    padding: "2px"
+                    padding: "2px",
+                    marginLeft: "6px"
                   }}
                 >
                   {`${currentFileIndex + 1} / ${selectedFiles.length}`}
@@ -390,11 +427,12 @@ const ConvertModal = ({
                 >
                   <Typography
                     sx={{
-                      maxWidth: 290,
+                      maxWidth: 340,
                       overflowX: "hidden",
                       padding: "2px",
                       pl: 2,
-                      textOverflow: "ellipsis"
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
                     }}
                   >
                     {selectedFiles[currentFileIndex]?.fileName || "Empty"}
@@ -402,56 +440,61 @@ const ConvertModal = ({
                 </Tooltip>
               </Grid>
             </Grid>
-            <Grid container item xs={3.5} />
+            <Grid container item xs={3} />
             <Divider />
             <Grid container item xs={0.5}>
-              <Grid container item sx={{ paddingTop: "5%" }}>
-                <Grid align="center" item xs={6}>
+              <Grid align="center" item xs={12}>
+                <Button
+                  disabled={currentFileIndex === 0}
+                  onClick={handleClickBack}
+                  startIcon={<ArrowBackIcon />}
+                  variant="outlined"
+                  sx={{ margin: "12px 16px 12px 16px" }}
+                >
+                  <Typography>Back</Typography>
+                </Button>
+                <Tooltip
+                  arrow
+                  placement="top"
+                  title="Applies the current settings to all files left and starts the converting process"
+                >
                   <Button
-                    disabled={currentFileIndex === 0}
-                    onClick={handleClickBack}
-                    startIcon={<ArrowBackIcon />}
+                    onClick={() => handleClickNext(true, true)}
                     variant="outlined"
+                    sx={{ margin: "12px 16px 12px 16px" }}
                   >
-                    <Typography>Back</Typography>
+                    <Typography>All</Typography>
                   </Button>
-                </Grid>
-                <Grid align="center" item xs={6}>
-                  <Button
-                    disabled={currentFileIndex === selectedFiles.length - 1}
-                    onClick={() => handleClickNext(false)}
-                    endIcon={<ArrowForwardIcon />}
-                    variant="contained"
-                  >
-                    <Typography>Next</Typography>
-                  </Button>
-                </Grid>
-                <Grid align="center" item xs={12} sx={{ paddingTop: "4%" }}>
-                  <Button
-                    disabled={loading}
-                    onClick={() => handleClickNext(true)}
-                    startIcon={
-                      loading ? (
-                        <CircularProgress size={20} />
-                      ) : (
-                        <AutoFixHighIcon />
-                      )
-                    }
-                    sx={{ backgroundColor: "rgb(60, 60, 60)", width: "84%" }}
-                    variant="outlined"
-                  >
-                    <Typography>
-                      {loading ? "Converting..." : "Start Converting"}
-                    </Typography>
-                  </Button>
-                </Grid>
+                </Tooltip>
+                <Button
+                  disabled={currentFileIndex === selectedFiles.length - 1}
+                  onClick={() => handleClickNext(false)}
+                  endIcon={<ArrowForwardIcon />}
+                  variant="contained"
+                  sx={{ margin: "12px 16px 12px 16px" }}
+                >
+                  <Typography>Next</Typography>
+                </Button>
               </Grid>
-              <Grid
-                container
-                item
-                xs={0.5}
-                sx={{ backgroundColor: "rgb(60, 60, 60)" }}
-              />
+              <Grid align="center" item xs={12}>
+                <Button
+                  disabled={loading || !isConvertReady(currentFileIndex)}
+                  onClick={() => handleClickNext(true)}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <AutoFixHighIcon />
+                    )
+                  }
+                  sx={{ backgroundColor: "rgb(60, 60, 60)", width: "90%" }}
+                  variant="outlined"
+                >
+                  <Typography>
+                    {loading ? "Converting..." : "Start Converting"}
+                  </Typography>
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

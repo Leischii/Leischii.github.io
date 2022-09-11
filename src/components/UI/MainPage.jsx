@@ -544,7 +544,7 @@ class MainPage extends Component {
 
       for (let j = 0; j < oldSelectedFiles.length; j += 1) {
         if (files[i].id === oldSelectedFiles[j]) {
-          if (files[i].id === activeFile.id) {
+          if (activeFile && files[i].id === activeFile.id) {
             hasActiveFile = true;
           }
 

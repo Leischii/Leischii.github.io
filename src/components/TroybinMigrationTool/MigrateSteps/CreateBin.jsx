@@ -205,16 +205,46 @@ const CreateBin = (troybin, defaultFilePath) => {
     }
   ];
 
+  const flagsBitValue = [1, 0, 0, 0, 0, 1, 0, 0];
+
   troybin.system.forEach(property => {
     if (property.binGroup) {
-      const finalProperty = {
-        name: property.binGroup.name,
-        members: [property]
-      };
+      if (property.binGroup.name === "flags") {
+        flagsBitValue[property.binPropertyName] = property.value;
+      } else {
+        const finalProperty = {
+          name: property.binGroup.name,
+          members: [property]
+        };
 
-      binSystemProperties.push(finalProperty);
+        binSystemProperties.push(finalProperty);
+      }
     }
   });
+
+  const flagsFinalValue = parseInt(flagsBitValue.join(""), 2);
+  const flags = {
+    name: "flags",
+    members: [
+      {
+        troybinName: "",
+        troybinType: "ONE_DOUBLE",
+        binGroup: {
+          name: "flags",
+          members: [],
+          structure: "SimpleProperty",
+          order: 304
+        },
+        binGroupType: "u8",
+        binPropertyName: "",
+        binPropertyType: "",
+        defaultValue: 196,
+        value: flagsFinalValue
+      }
+    ]
+  };
+
+  binSystemProperties.push(flags);
 
   binSystemProperties.sort(function compareNumbers(a, b) {
     return a.members[0].binGroup.order - b.members[0].binGroup.order;

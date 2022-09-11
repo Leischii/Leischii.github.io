@@ -497,7 +497,7 @@ function writeini(troybinParam) {
   let output = "";
   const troybin = {
     values: troybinParam.values.sort((a, b) =>
-      a.groupName.localeCompare(b.groupName)
+      a.groupName.localeCompare(b.groupName, "en", { numeric: true })
     ),
     unknownHashes: troybinParam.unknownHashes
   };
@@ -507,7 +507,7 @@ function writeini(troybinParam) {
     output += `[${emitter.groupName}]\r\n`;
 
     const properties = emitter.properties.sort((a, b) =>
-      a.propertyName.localeCompare(b.propertyName)
+      a.propertyName.localeCompare(b.propertyName, "en", { numeric: true })
     );
 
     for (let j = 0; j < properties.length; j += 1) {

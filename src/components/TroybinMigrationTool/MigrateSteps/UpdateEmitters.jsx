@@ -387,6 +387,44 @@ const UpdateEmitters = data => {
       propertiesToAdd.push(lingerProperty);
     }
 
+    if (emitter.isSimple) {
+      if (!hasLinger) {
+        const lingerProperty = {
+          troybinName: "p-linger",
+          troybinType: "ONE_DOUBLE",
+          binGroup: {
+            name: "particleLinger",
+            members: [],
+            structure: "SimpleObjectProperty",
+            order: 15
+          },
+          binGroupType: "option[f32]",
+          binPropertyName: "constantValue",
+          binPropertyType: "",
+          value: 10
+        };
+
+        propertiesToAdd.push(lingerProperty);
+      }
+
+      const meshRenderFlagsProperty = {
+        troybinName: "p-disable-mesh-z",
+        troybinType: "ONE_DOUBLE",
+        binGroup: {
+          name: "meshRenderFlags",
+          members: [],
+          structure: "SimpleProperty",
+          order: 57
+        },
+        binGroupType: "u8",
+        binPropertyName: "",
+        binPropertyType: "",
+        value: 0
+      };
+
+      propertiesToAdd.push(meshRenderFlagsProperty);
+    }
+
     emitter.properties.forEach(property => {
       const keepEntry =
         propertiesToRemove.find(element => element === property.troybinName) ===
