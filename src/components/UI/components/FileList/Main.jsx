@@ -83,8 +83,8 @@ const FileList = ({
             <List
               sx={{
                 height: "100%",
-                width: "100%",
-                overflowY: "auto"
+                overflowY: "scroll",
+                width: "100%"
               }}
               subheader={
                 <ListSubheader>

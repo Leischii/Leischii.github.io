@@ -1025,6 +1025,7 @@ class MainPage extends Component {
                         />
                       </Tooltip>
                     </BottomNavigation>
+                    <Divider />
                   </Box>
                 </Box>
               </Grid>

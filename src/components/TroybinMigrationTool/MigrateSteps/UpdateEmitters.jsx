@@ -18,6 +18,7 @@ const CheckValueType = value => {
       valueType = "FIVE_DOUBLE";
       break;
     default:
+      valueType = "ONE_DOUBLE";
       break;
   }
 
@@ -230,7 +231,7 @@ const UpdateEmitters = data => {
               property.binGroup.name === "birthRotation0"
             ) {
               nValue = [property.value, 0, 0];
-              sValue = property.value; // eslint-disable-line
+              sValue = property.value;
             } else if (property.binGroup.name === "bindWeight") {
               nValue = property.value;
               sValue = [property.value, property.value];
@@ -262,14 +263,19 @@ const UpdateEmitters = data => {
               value: sValue
             };
           } else {
-            const correctValue = property.simpleValue[4].includes("timesTable")
-              ? [
-                  property.value[0],
-                  property.value[1],
-                  property.value[1],
-                  property.value[1]
-                ]
-              : property.value;
+            let correctValue = property.value;
+
+            if (
+              property.simpleValue[4].includes("timesTable") &&
+              property.binGroup.name !== "particleLifetime"
+            ) {
+              correctValue = [
+                property.value[0],
+                property.value[1],
+                property.value[1],
+                property.value[1]
+              ];
+            }
 
             normalProperty = {
               troybinName: property.troybinName,

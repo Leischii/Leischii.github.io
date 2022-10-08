@@ -49,7 +49,7 @@ const MenuComponent = ({
               arrow
               key={option.order}
               title={option.desc}
-              placement="left"
+              placement="right"
             >
               <MenuItem disabled={option.disabled} onClick={option.onClickFunc}>
                 <ListItemIcon>{option.icon}</ListItemIcon>

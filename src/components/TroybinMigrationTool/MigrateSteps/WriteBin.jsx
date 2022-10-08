@@ -473,7 +473,7 @@ function WriteProperty(property, spacingAmount) {
         if (isStringArray) {
           property.members[0].value.forEach(valuePart => {
             formatedProperty.push(
-              `${getSpacing(spacingAmount + 1)}${valuePart}\r\n`
+              `${getSpacing(spacingAmount + 1)}"${valuePart}"\r\n`
             );
           });
         } else if (property.members[0].binGroup.name === "emitRotationAxes") {
@@ -678,9 +678,14 @@ function WriteProperty(property, spacingAmount) {
 }
 
 const WriteBin = (bin, defaultFilePath) => {
-  const spacing = 0;
+  const spacing = 1;
 
   const finalBin = [
+    "#PROP_text\r\n",
+    'type: string = "PROP"\r\n',
+    "version: u32 = 3\r\n",
+    "linked: list[string] = {}\r\n",
+    "entries: map[hash,embed] = {\r\n",
     `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
       bin.name
     }\" = VfxSystemDefinitionData {\r\n`, // eslint-disable-line
@@ -723,6 +728,8 @@ const WriteBin = (bin, defaultFilePath) => {
           property.name !== "primitive"
         ) {
           let hasContent = false;
+          const meshEntries = [];
+          const beamEntries = [];
 
           switch (property.name) {
             // 1
@@ -792,11 +799,57 @@ const WriteBin = (bin, defaultFilePath) => {
               propertiesWritten.push(
                 `${getSpacing(
                   spacing + 3
-                )}primitive: pointer = VfxPrimitiveBeam {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mBeam: embed = VfxBeamDefinitionData {\r\n`
+                )}primitive: pointer = VfxPrimitiveBeam {\r\n`
               );
+
+              for (let i = 0; i < property.members.length; i += 1) {
+                const primitiveMember = property.members[i];
+
+                if (primitiveMember.name === "mMesh") {
+                  meshEntries.push(primitiveMember);
+                } else {
+                  beamEntries.push(primitiveMember);
+                }
+              }
+
+              if (meshEntries.length) {
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 4
+                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                );
+
+                meshEntries.forEach(member => {
+                  const meshEntry = WriteProperty(member, spacing + 5);
+
+                  meshEntry.forEach(e => {
+                    propertiesWritten.push(e);
+                  });
+                });
+
+                propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
+              }
+
+              if (beamEntries.length) {
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 4
+                  )}mBeam: embed = VfxBeamDefinitionData {\r\n`
+                );
+
+                beamEntries.forEach(member => {
+                  const beamEntry = WriteProperty(member, spacing + 5);
+
+                  beamEntry.forEach(e => {
+                    propertiesWritten.push(e);
+                  });
+                });
+
+                propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
+              }
+
+              propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+
               break;
             // 7
             case "primitivePlanarProjection":
@@ -823,7 +876,11 @@ const WriteBin = (bin, defaultFilePath) => {
               break;
           }
 
-          if (hasContent && property.members.length) {
+          if (
+            hasContent &&
+            property.members.length &&
+            property.name !== "primitiveBeam"
+          ) {
             property.members.forEach(member => {
               entry = WriteProperty(member, spacing + 5);
 
@@ -943,19 +1000,16 @@ const WriteBin = (bin, defaultFilePath) => {
     });
   });
 
-  finalBin.push(`${getSpacing(spacing)}}\r\n`);
+  finalBin.push(`${getSpacing(spacing)}}\r\n`, "}\r\n");
 
   if (bin.unknowns.length) {
     const unknownProperties = [];
-    const disabledProperties = [];
 
     for (let i = 0; i < bin.unknowns.length; i += 1) {
       const unkn = bin.unknowns[i];
       const namePart = unkn.split(": ")[1];
 
-      if (namePart[0] === "'") {
-        disabledProperties.push(unkn);
-      } else {
+      if (namePart[0] !== "'") {
         unknownProperties.push(unkn);
       }
     }
@@ -969,18 +1023,6 @@ const WriteBin = (bin, defaultFilePath) => {
 
       unknownProperties.forEach(unknownProp => {
         finalBin.push(`${unknownProp}\r\n`);
-      });
-    }
-
-    if (disabledProperties.length) {
-      finalBin.push(
-        `\r\n`,
-        `\r\n`,
-        `Troygrade didn't translate the following properties because they were disabled: \r\n`
-      );
-
-      disabledProperties.forEach(disabledProp => {
-        finalBin.push(`${disabledProp}\r\n`);
       });
     }
   }

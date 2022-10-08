@@ -180,7 +180,7 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       formatedValue = values;
       break;
     case "STRINGS_NO_PATH":
-      formatedValue = values.split(" ");
+      formatedValue = values.replaceAll('"', "").split(" ");
       break;
     case "TWO_DOUBLE_TO_ONE":
       if (

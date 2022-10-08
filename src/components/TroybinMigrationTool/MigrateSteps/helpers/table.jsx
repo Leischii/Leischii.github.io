@@ -172,7 +172,7 @@ const primitiveAttachedMesh = {
 
 const primitiveBeam = { // eslint-disable-line
   name: "primitiveBeam",
-  members: ["mBeam"],
+  members: ["mBeam", "mMesh"],
   structure: "primitiveBeam",
   order: 55
 };
@@ -287,7 +287,7 @@ const alphaRef = {
   name: "alphaRef",
   members: [],
   structure: "SimpleProperty",
-  order: 77
+  order: 76
 };
 
 const axisFracF = {
@@ -540,6 +540,13 @@ const colorLookUpType = {
   order: 58
 };
 
+const depthBiasFactors = { // eslint-disable-line
+  name: "depthBiasFactors",
+  members: [],
+  structure: "SimpleProperty",
+  order: 78
+};
+
 const direction = {
   name: "direction",
   members: [],
@@ -690,11 +697,11 @@ const fieldOrbitName = {
 const flags = {
   name: "flags",
   members: [
-    "",
+    "KeepOrientationAfterSpellCast",
     "SimulateEveryFrame",
     "SoundsPlayWhileOffScreen",
-    "",
-    "",
+    "SoundEndsOnEmitterEnd",
+    "SimulateOncePerFrame",
     "PersistThruRevive",
     "PersistThruDeath",
     "SimulateWhileOffScreen"
@@ -841,7 +848,7 @@ const mMesh = {
   members: [],
   structure: "SimpleProperty",
   order: 55.1,
-  parent: [primitiveMesh, primitiveAttachedMesh]
+  parent: [primitiveMesh, primitiveAttachedMesh, primitiveBeam]
 };
 
 const mMeshName = {
@@ -1006,9 +1013,9 @@ const rate = {
 
 const reflectionDefinition = {
   name: "reflectionDefinition",
-  members: ["fresnel", "fresnelColor"],
+  members: ["fresnel", "fresnelColor", "reflectionMapTexture"],
   structure: "MultConstantValueProperty",
-  order: 78
+  order: 77
 };
 
 const rotation0 = {
@@ -1038,6 +1045,13 @@ const scale1 = {
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 231
+};
+
+const scaleBias = {
+  name: "scaleBias",
+  members: [],
+  structure: "SimpleProperty",
+  order: 234
 };
 
 const scaleBirthScaleByBoundObjectSize = {
@@ -5334,6 +5348,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "p-reflection-map",
+      troybinType: "STRING_PATH",
+      binGroup: reflectionDefinition,
+      binGroupType: "pointer = VfxReflectionDefinitionData",
+      binPropertyName: "reflectionMapTexture",
+      binPropertyType: "string",
+      defaultValue: undefined
+    },
+    {
       troybinName: "p-rgba",
       troybinType: "STRING_PATH",
       binGroup: particleColorTexture,
@@ -5834,6 +5857,15 @@ const Values = {
       binPropertyType: "vec3",
       defaultValue: "{ 1, 1, 1 }",
       simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", birthScale1]
+    },
+    {
+      troybinName: "p-scalebias",
+      troybinType: "TWO_DOUBLE",
+      binGroup: scaleBias,
+      binGroupType: "vec2",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
     },
     {
       troybinName: "p-scaleXP1",
@@ -9096,6 +9128,15 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "KeepOrientationAfterSpellCast",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "0",
+      binPropertyType: "",
+      defaultValue: 196
+    },
+    {
       troybinName: "PersistThruDeath",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
@@ -9119,6 +9160,15 @@ const Values = {
       binGroup: flags,
       binGroupType: "u8",
       binPropertyName: "1",
+      binPropertyType: "",
+      defaultValue: 196
+    },
+    {
+      troybinName: "SimulateOncePerFrame",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "4",
       binPropertyType: "",
       defaultValue: 196
     },
@@ -9148,6 +9198,15 @@ const Values = {
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
+    },
+    {
+      troybinName: "SoundEndsOnEmitterEnd",
+      troybinType: "ONE_DOUBLE",
+      binGroup: flags,
+      binGroupType: "u8",
+      binPropertyName: "3",
+      binPropertyType: "",
+      defaultValue: 196
     },
     {
       troybinName: "SoundsPlayWhileOffScreen",
