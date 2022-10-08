@@ -139,7 +139,7 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = 3;
       } else if (values === "\"High\"" || values === "\"clamp\"" || values === "2") { // eslint-disable-line
         formatedValue = 2;
-      } else if (values === "true" || values === "1") {
+      } else if (values === "\"NotWhenHigh\"" || values === "true" || values === "1") { // eslint-disable-line
         formatedValue = 1;
       } else if (values === "\"Low\"" || values === "0") { // eslint-disable-line
         formatedValue = 0;

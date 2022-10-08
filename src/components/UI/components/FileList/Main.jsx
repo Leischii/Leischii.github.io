@@ -42,7 +42,10 @@ const FileList = ({
 }) => {
   return (
     <Dropzone
-      accept=".txt, .troybin"
+      accept={{
+        "text/*": [".txt"],
+        "application/octet-stream": [".troybin"]
+      }}
       onDrop={acceptedFiles => loadFile(acceptedFiles)}
     >
       {({ getRootProps, getInputProps }) => (
@@ -106,7 +109,7 @@ const FileList = ({
               <input disabled {...getInputProps()} /> {/* eslint-disable-line */}
               {dataSource.map(fileEntry => (
                 <FileListItem
-                  clickFile={(id, selected) => clickFile(id, selected)}
+                  clickFile={(e, id, selected) => clickFile(e, id, selected)}
                   clickFileActive={() => clickFileActive(fileEntry)}
                   file={{
                     besen: fileEntry.besen,

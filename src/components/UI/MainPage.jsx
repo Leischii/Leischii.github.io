@@ -204,9 +204,16 @@ class MainPage extends Component {
     this.setState({ activeFile: file, showEditor: false });
   }
 
-  handleChangeFilesSelected(fileID, selectedFileIndex) {
+  handleChangeFilesSelected(e, fileID, selectedFileIndex) {
     const { selectedFiles } = this.state;
     const dataSource = [...selectedFiles];
+    const event = e || window.event;
+
+    if (event.stopPropagation) {
+      event.stopPropagation();
+    } else {
+      event.cancelBubble = true;
+    }
 
     if (selectedFileIndex === -1) {
       dataSource.push(fileID);
@@ -963,8 +970,8 @@ class MainPage extends Component {
                     }}
                   >
                     <FileList
-                      clickFile={(id, selected) =>
-                        this.handleChangeFilesSelected(id, selected)
+                      clickFile={(e, id, selected) =>
+                        this.handleChangeFilesSelected(e, id, selected)
                       }
                       clickFileActive={fileEntry =>
                         this.handleChangeFileActive(fileEntry)

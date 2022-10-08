@@ -35,7 +35,12 @@ const FileListItem = ({
         secondaryAction={
           <IconButton
             onClick={event => {
-              event.stopPropagation();
+              if (event && event.stopPropagation) {
+                event.stopPropagation();
+              } else {
+                window.event.cancelBubble = true;
+              }
+
               clickFileActive();
             }}
           >
@@ -46,7 +51,7 @@ const FileListItem = ({
         sx={{ minHeight: 60, p: 0 }}
       >
         <ListItemButton
-          onClick={() => clickFile(file.fileId, selectedIndex)}
+          onClick={e => clickFile(e, file.fileId, selectedIndex)}
           sx={{ width: "100%" }}
         >
           <ImageList
