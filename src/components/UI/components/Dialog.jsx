@@ -22,7 +22,7 @@ const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
     style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      maxHeight: ITEM_HEIGHT * 7 + ITEM_PADDING_TOP,
       width: 250
     }
   }
@@ -49,7 +49,21 @@ const fixes = [
     name: "Crash on movement and casting spells",
     id: "updaterTypeFix",
     type: "anm"
-  }
+  },
+  {
+    desc:
+      'Fixes particle structure changes between 12.20 and 13.1 (Includes "textureMult", "flags", "scaleBirthScaleByBoundObjectSize", "keywordsExcluded" and their related properties)',
+    name: "Outdated particle structure (12.20 - 13.1)",
+    id: "particleChanges131Fix",
+    type: "particle"
+  } /* ,
+  {
+    desc:
+      "Fixes SOME of the outdated file names for files shared across all particle bins",
+    name: "Outdated file names (13.1, Shared only)",
+    id: "fileRenames131Fix",
+    type: "particle"
+  } */
 ];
 
 const DialogComponent = ({
@@ -212,13 +226,16 @@ const DialogComponent = ({
           value={fixEntry.id}
           style={getSelectItemStyle(fixEntry.name)}
         >
-          {fixEntry.name}
+          <Tooltip arrow placement="left" title={fixEntry.desc}>
+            <span>{fixEntry.name}</span>
+          </Tooltip>
         </MenuItem>
       ));
     }
 
     const charFixList = fixes.filter(fix => fix.type === "char");
     const anmFixList = fixes.filter(fix => fix.type === "anm");
+    const particleFixList = fixes.filter(fix => fix.type === "particle");
 
     return (
       <Select
@@ -244,6 +261,8 @@ const DialogComponent = ({
         {getMenuItems(charFixList)}
         <ListSubheader color="primary">Animation Bin Fixes</ListSubheader>
         {getMenuItems(anmFixList)}
+        <ListSubheader color="primary">Particle Bin Fixes</ListSubheader>
+        {getMenuItems(particleFixList)}
       </Select>
     );
   }
@@ -280,7 +299,7 @@ const DialogComponent = ({
             setSelectedItems([]);
           }}
         >
-          Continue
+          {control.action === "fix" ? "Start" : "Continue"}
         </Button>
         <Button
           autoFocus={control.action === "delete"}

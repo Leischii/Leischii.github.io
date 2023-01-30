@@ -66,12 +66,12 @@ const UpdateEmitters = data => {
 
     const propertiesToAdd = [];
     const propertiesToRemove = [];
-
     const updatedEmitter = {
       name: emitter.name,
       properties: [],
       order: emitter.order
     };
+
     let hasLinger = false;
 
     emitter.properties.forEach(prop => {
@@ -220,6 +220,9 @@ const UpdateEmitters = data => {
             let nValue;
             let sValue;
 
+            let nBinType = property.binPropertyType;
+            const sBinType = property.simpleValue[2];
+
             const valueType = CheckValueType(property.value);
 
             if (valueType === property.troybinType) {
@@ -239,6 +242,8 @@ const UpdateEmitters = data => {
               // Case: Value is simple Property
               nValue = [property.value, property.value, property.value];
               sValue = property.value;
+
+              nBinType = "vec3";
             }
 
             normalProperty = {
@@ -247,7 +252,7 @@ const UpdateEmitters = data => {
               binGroup: property.binGroup,
               binGroupType: property.binGroupType,
               binPropertyName: property.binPropertyName,
-              binPropertyType: property.binPropertyType,
+              binPropertyType: nBinType,
               value: nValue
             };
             simpleProperty = {
@@ -259,7 +264,7 @@ const UpdateEmitters = data => {
                 property.binGroup.name === "bindWeight"
                   ? ""
                   : property.binPropertyName,
-              binPropertyType: property.simpleValue[2],
+              binPropertyType: sBinType,
               value: sValue
             };
           } else {

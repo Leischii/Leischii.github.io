@@ -117,6 +117,7 @@ function createMembers(arrays) {
 /* 
 Parent info necessary for generating bin entries
 */
+
 const distortionDefinition = {
   name: "distortionDefinition",
   members: ["distortion", "distortionMode", "normalMapTexture"],
@@ -149,6 +150,25 @@ const shape = {
   order: 50
 };
 
+const textureMultGroup = {
+  name: "textureMult",
+  members: [
+    "textureMult",
+    "texDivMult",
+    "uvScaleMult",
+    "texAddressModeMult",
+    "0x33b8543e",
+    "0x22c3cf3e",
+    "uvScrollAlphaMult",
+    "birthUvScrollRateMult",
+    "0xdd36a38c",
+    "birthUVOffsetMult",
+    "birthUvRotateRateMult"
+  ],
+  structure: "",
+  order: 223
+};
+
 const primitiveArbitraryQuad = { // eslint-disable-line
   name: "primitiveArbitraryQuad",
   members: [],
@@ -172,7 +192,7 @@ const primitiveAttachedMesh = {
 
 const primitiveBeam = { // eslint-disable-line
   name: "primitiveBeam",
-  members: ["mBeam", "mMesh"],
+  members: ["mBeam", "mMesh", "mBirthTilingSize"],
   structure: "primitiveBeam",
   order: 55
 };
@@ -452,7 +472,8 @@ const birthUVOffsetMult = {
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
-  order: 226
+  order: 223.9,
+  parent: textureMultGroup
 };
 
 const birthUvScrollRate = {
@@ -468,7 +489,8 @@ const birthUvScrollRateMult = {
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
-  order: 225
+  order: 223.8,
+  parent: textureMultGroup
 };
 
 const birthVelocity = {
@@ -985,7 +1007,10 @@ const primitive = {
 // TODO: Rename when translation is found
 const property_0x4ffce322 = { // eslint-disable-line
   name: "0x4ffce322",
-  members: ["scaleEmitOffsetByBoundObjectSize"],
+  members: [
+    "scaleEmitOffsetByBoundObjectSize",
+    "scaleBirthScaleByBoundObjectSize"
+  ],
   structure: "MultConstantValueProperty",
   order: 53
 };
@@ -1052,13 +1077,6 @@ const scaleBias = {
   members: [],
   structure: "SimpleProperty",
   order: 234
-};
-
-const scaleBirthScaleByBoundObjectSize = {
-  name: "scaleBirthScaleByBoundObjectSize",
-  members: [],
-  structure: "SimpleProperty",
-  order: 195
 };
 
 const sliceTechniqueRange = {
@@ -1130,7 +1148,8 @@ const texAddressModeMult = {
   name: "texAddressModeMult",
   members: [],
   structure: "SimpleProperty",
-  order: 229
+  order: 223.4,
+  parent: textureMultGroup
 };
 
 const texDiv = {
@@ -1144,7 +1163,8 @@ const texDivMult = {
   name: "texDivMult",
   members: [],
   structure: "SimpleProperty",
-  order: 230
+  order: 223.2,
+  parent: textureMultGroup
 };
 
 const texture = {
@@ -1158,7 +1178,8 @@ const textureMult = {
   name: "textureMult",
   members: [],
   structure: "SimpleProperty",
-  order: 223
+  order: 223.1,
+  parent: textureMultGroup
 };
 
 const timeBeforeFirstEmission = {
@@ -3625,10 +3646,10 @@ const Values = {
     {
       troybinName: "p-flexscale",
       troybinType: "ONE_DOUBLE",
-      binGroup: scaleBirthScaleByBoundObjectSize,
-      binGroupType: "f32",
-      binPropertyName: "",
-      binPropertyType: "",
+      binGroup: property_0x4ffce322, // eslint-disable-line
+      binGroupType: "pointer = 0xb13097f0",
+      binPropertyName: "scaleBirthScaleByBoundObjectSize",
+      binPropertyType: "f32",
       defaultValue: undefined
     },
     {
@@ -5630,7 +5651,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable1",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable1"
+      ]
     },
     {
       troybinName: "p-rotvel2",
@@ -5639,7 +5667,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable2",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable2"
+      ]
     },
     {
       troybinName: "p-rotvel3",
@@ -5648,7 +5683,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable3",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable3"
+      ]
     },
     {
       troybinName: "p-rotvel4",
@@ -5657,7 +5699,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable4",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable4"
+      ]
     },
     {
       troybinName: "p-rotvel5",
@@ -5666,7 +5715,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable5",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable5"
+      ]
     },
     {
       troybinName: "p-rotvel6",
@@ -5675,7 +5731,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable6",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable6"
+      ]
     },
     {
       troybinName: "p-rotvel7",
@@ -5684,7 +5747,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable7",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable7"
+      ]
     },
     {
       troybinName: "p-rotvel8",
@@ -5693,7 +5763,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable8",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable8"
+      ]
     },
     {
       troybinName: "p-rotvel9",
@@ -5702,7 +5779,14 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable9",
       binPropertyType: "vec3",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: [
+        "TWO_DOUBLE",
+        "embed = ValueFloat",
+        "f32",
+        birthRotationalVelocity1,
+        "timesTable9"
+      ]
     },
     {
       troybinName: "p-rotvelP1",
@@ -9131,7 +9215,7 @@ const Values = {
       troybinName: "KeepOrientationAfterSpellCast",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "0",
       binPropertyType: "",
       defaultValue: 196

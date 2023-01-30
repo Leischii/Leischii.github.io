@@ -334,9 +334,9 @@ function writeDynamics(
     result.push(
       `${getSpacing(spacingAmount + 2)}0\r\n`,
       `${getSpacing(spacingAmount + 1)}}\r\n`,
-      `${getSpacing(spacingAmount + 1)}values: list[${
-        property.members[0].binPropertyType
-      }] = {\r\n`,
+      `${getSpacing(spacingAmount + 1)}values: list[${property.members.find(
+        memb => memb.binPropertyName === "constantValue"
+      ).binPropertyType || property.members[0].binPropertyType}] = {\r\n`,
       `${getSpacing(spacingAmount + 2)}${constValue}\r\n`,
       `${getSpacing(spacingAmount + 1)}}\r\n`,
       `${getSpacing(spacingAmount)}}\r\n`
@@ -971,6 +971,20 @@ const WriteBin = (bin, defaultFilePath) => {
 
           propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
         }
+      } else if (property.name === "textureMult") {
+        propertiesWritten.push(
+          `${getSpacing(spacing + 3)}textureMult: pointer = 0xb097c1bd {\r\n`
+        );
+
+        property.members.forEach(member => {
+          entry = WriteProperty(member, spacing + 4);
+
+          entry.forEach(e => {
+            propertiesWritten.push(e);
+          });
+        });
+
+        propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
       } else {
         entry = WriteProperty(property, spacing + 3);
 

@@ -135,11 +135,12 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
     case "BOOLEAN/INT":
       if (values === "4") {
         formatedValue = 4;
-      } else if (values === "3") {
+      } else if (values === "\"NotWhenHigh\"" || values === "3") { // eslint-disable-line
+        // TODO: Check if NotWhenHigh is actually 3
         formatedValue = 3;
       } else if (values === "\"High\"" || values === "\"clamp\"" || values === "2") { // eslint-disable-line
         formatedValue = 2;
-      } else if (values === "\"NotWhenHigh\"" || values === "true" || values === "1") { // eslint-disable-line
+      } else if (values === "\"Medium\"" || values === "true" || values === "1") { // eslint-disable-line
         formatedValue = 1;
       } else if (values === "\"Low\"" || values === "0") { // eslint-disable-line
         formatedValue = 0;
