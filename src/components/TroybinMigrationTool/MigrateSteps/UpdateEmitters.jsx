@@ -84,8 +84,10 @@ const UpdateEmitters = data => {
             currProp.troybinName.includes("p-lifeP")
           ) !== -1;
 
+        propertiesToRemove.push("e-life");
+
         if (!hasTableEntries) {
-          propertiesToRemove.push("e-life", "p-life");
+          propertiesToRemove.push("p-life");
         }
       }
 
@@ -188,6 +190,15 @@ const UpdateEmitters = data => {
 
           fieldEmitter.properties.forEach(fieldProp => {
             const fieldProperty = fieldProp;
+
+            if (
+              fieldProperty.troybinName === "f-accel" &&
+              typeof fieldProperty.value === "number" &&
+              !Number.isNaN(fieldProperty.value)
+            ) {
+              fieldProperty.binGroup.propertyType = "ValueFloat";
+              fieldProperty.binPropertyType = "f32";
+            }
 
             if (
               fieldProp.binGroup.parent &&

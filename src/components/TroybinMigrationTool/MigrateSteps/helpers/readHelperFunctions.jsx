@@ -43,6 +43,7 @@ Converts string value to their correct type
 export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
   const invalidValue = "INVALID_VALUE";
   let formatedValue;
+  let isThreeDouble = false;
 
   switch (type) {
     case "ONE_DOUBLE":
@@ -232,6 +233,19 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         } else {
           formatedValue = invalidValue;
         }
+      }
+
+      break;
+    case "THREE_DOUBLE || ONE_DOUBLE":
+      isThreeDouble = values.split(" ").length === 3;
+      formatedValue = isThreeDouble ? FormatNumber(values) : parseFloat(values);
+
+      if (
+        (isThreeDouble && formatedValue.length !== 3) ||
+        (!isThreeDouble &&
+          (typeof formatedValue !== "number" || Number.isNaN(formatedValue)))
+      ) {
+        formatedValue = invalidValue;
       }
 
       break;
