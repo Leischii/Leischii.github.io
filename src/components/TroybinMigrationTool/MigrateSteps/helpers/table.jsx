@@ -660,7 +660,12 @@ const emitOffset = {
 
 const emitRotationAngles = {
   name: "emitRotationAngles",
-  members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
+  members: createMembers([
+    xTableEntries,
+    yTableEntries,
+    zTableEntries,
+    timesTableEntries
+  ]),
   structure: "ShapeRotationAnglesProperty",
   order: 50.3,
   parent: shape
@@ -668,7 +673,7 @@ const emitRotationAngles = {
 
 const emitRotationAxes = {
   name: "emitRotationAxes",
-  members: ["e-rotation1-axis", "e-rotation2-axis"],
+  members: ["e-rotation1-axis", "e-rotation2-axis", "e-rotation3-axis"],
   structure: "SimpleObjectProperty",
   order: 50.4,
   parent: shape
@@ -2096,6 +2101,60 @@ const Values = {
       binGroup: emitRotationAngles,
       binGroupType: "pointer = VfxAnimatedFloatVariableData",
       binPropertyName: "timesTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation3",
+      troybinType: "ONE_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "list[embed] =",
+      binPropertyName: "constantValue",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation3-axis",
+      troybinType: "THREE_DOUBLE",
+      binGroup: emitRotationAxes,
+      binGroupType: "list[vec3]",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation31",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation32",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "timesTable2",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation3P1",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableZ1",
+      binPropertyType: "f32",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "e-rotation3P2",
+      troybinType: "TWO_DOUBLE",
+      binGroup: emitRotationAngles,
+      binGroupType: "pointer = VfxAnimatedFloatVariableData",
+      binPropertyName: "probTableZ2",
       binPropertyType: "f32",
       defaultValue: undefined
     },
@@ -9224,7 +9283,7 @@ const Values = {
       troybinName: "PersistThruDeath",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "6",
       binPropertyType: "",
       defaultValue: 196
@@ -9233,7 +9292,7 @@ const Values = {
       troybinName: "PersistThruRevive",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "5",
       binPropertyType: "",
       defaultValue: 196
@@ -9242,7 +9301,7 @@ const Values = {
       troybinName: "SimulateEveryFrame",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "1",
       binPropertyType: "",
       defaultValue: 196
@@ -9251,7 +9310,7 @@ const Values = {
       troybinName: "SimulateOncePerFrame",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "4",
       binPropertyType: "",
       defaultValue: 196
@@ -9260,7 +9319,7 @@ const Values = {
       troybinName: "SimulateWhileOffScreen",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "7",
       binPropertyType: "",
       defaultValue: 196
@@ -9287,7 +9346,7 @@ const Values = {
       troybinName: "SoundEndsOnEmitterEnd",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "3",
       binPropertyType: "",
       defaultValue: 196
@@ -9296,7 +9355,7 @@ const Values = {
       troybinName: "SoundsPlayWhileOffScreen",
       troybinType: "ONE_DOUBLE",
       binGroup: flags,
-      binGroupType: "u8",
+      binGroupType: "u16",
       binPropertyName: "2",
       binPropertyType: "",
       defaultValue: 196

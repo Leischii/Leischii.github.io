@@ -331,12 +331,18 @@ function writeDynamics(
       `${getSpacing(spacingAmount + 0)}}\r\n`
     );
   } else {
+    const constValueEntry = property.members.find(
+      memb => memb.binPropertyName === "constantValue"
+    );
+
     result.push(
       `${getSpacing(spacingAmount + 2)}0\r\n`,
       `${getSpacing(spacingAmount + 1)}}\r\n`,
-      `${getSpacing(spacingAmount + 1)}values: list[${property.members.find(
-        memb => memb.binPropertyName === "constantValue"
-      ).binPropertyType || property.members[0].binPropertyType}] = {\r\n`,
+      `${getSpacing(spacingAmount + 1)}values: list[${
+        constValueEntry
+          ? constValueEntry.binPropertyType
+          : property.members[0].binPropertyType
+      }] = {\r\n`,
       `${getSpacing(spacingAmount + 2)}${constValue}\r\n`,
       `${getSpacing(spacingAmount + 1)}}\r\n`,
       `${getSpacing(spacingAmount)}}\r\n`

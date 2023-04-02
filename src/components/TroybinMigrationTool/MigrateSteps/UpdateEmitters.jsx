@@ -79,7 +79,14 @@ const UpdateEmitters = data => {
       const property = JSON.parse(JSON.stringify(prop));
 
       if (property.binGroup.name === "lifetime" && property.value === -1) {
-        propertiesToRemove.push("e-life", "p-life");
+        const hasTableEntries =
+          emitter.properties.findIndex(currProp =>
+            currProp.troybinName.includes("p-lifeP")
+          ) !== -1;
+
+        if (!hasTableEntries) {
+          propertiesToRemove.push("e-life", "p-life");
+        }
       }
 
       if (
@@ -87,13 +94,13 @@ const UpdateEmitters = data => {
         property.troybinName === "p-life"
       ) {
         for (let j = 1; j < 10; j += 1) {
-          const propertyName = `${property.troybinName}${j}`;
+          const timesTableName = `${property.troybinName}${j}`;
           const timesTableEntryIndex = emitter.properties.findIndex(
-            propS => propS.troybinName === propertyName
+            propS => propS.troybinName === timesTableName
           );
 
           if (timesTableEntryIndex !== -1) {
-            propertiesToRemove.push(propertyName);
+            propertiesToRemove.push(timesTableName);
 
             const timesTableEntry = emitter.properties[timesTableEntryIndex];
             const newTimesTableEntryValue = [

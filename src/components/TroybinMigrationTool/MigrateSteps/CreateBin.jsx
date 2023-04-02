@@ -235,7 +235,7 @@ const CreateBin = (troybin, defaultFilePath) => {
           structure: "SimpleProperty",
           order: 306
         },
-        binGroupType: "u8",
+        binGroupType: "u16",
         binPropertyName: "",
         binPropertyType: "",
         defaultValue: 196,
