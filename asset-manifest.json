@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/static/js/main.8f2dfba2.js",
+    "main.js": "/static/js/main.c297310b.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
     "static/media/Ezreal_Old.png": "/static/media/Ezreal_Old.024d106dec975c66d738.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
@@ -74,9 +74,9 @@
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "static/media/Ahri_New.png": "/static/media/Ahri_New.5d705e39b99e0ec2a071.png",
     "index.html": "/index.html",
-    "main.8f2dfba2.js.map": "/static/js/main.8f2dfba2.js.map"
+    "main.c297310b.js.map": "/static/js/main.c297310b.js.map"
   },
   "entrypoints": [
-    "static/js/main.8f2dfba2.js"
+    "static/js/main.c297310b.js"
   ]
 }
