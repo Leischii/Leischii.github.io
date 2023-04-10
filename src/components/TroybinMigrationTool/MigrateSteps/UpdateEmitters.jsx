@@ -234,106 +234,118 @@ const UpdateEmitters = data => {
         let simpleProperty;
 
         if (isSimpleProperty) {
-          if (property.binPropertyName === "constantValue") {
-            let nValue;
-            let sValue;
+          const isLifetime = property.binGroup.name === "particleLifetime";
+          const lifetimeHasBothTables =
+            isLifetime &&
+            emitter.properties.findIndex(
+              currProp => currProp.troybinName === "p-lifeP1"
+            ) !== -1 &&
+            emitter.properties.findIndex(
+              currProp => currProp.troybinName === "p-life1"
+            ) !== -1;
 
-            let nBinType = property.binPropertyType;
-            const sBinType = property.simpleValue[2];
+          if (!isLifetime || lifetimeHasBothTables) {
+            if (property.binPropertyName === "constantValue") {
+              let nValue;
+              let sValue;
 
-            const valueType = CheckValueType(property.value);
+              let nBinType = property.binPropertyType;
+              const sBinType = property.simpleValue[2];
 
-            if (valueType === property.troybinType) {
-              // Case: Value is normal Property
-              nValue = property.value;
-              sValue = property.value[0]; // eslint-disable-line
-            } else if (
-              property.binGroup.name === "birthRotationalVelocity0" ||
-              property.binGroup.name === "birthRotation0"
-            ) {
-              nValue = [property.value, 0, 0];
-              sValue = property.value;
-            } else if (property.binGroup.name === "bindWeight") {
-              nValue = property.value;
-              sValue = [property.value, property.value];
-            } else {
-              // Case: Value is simple Property
-              nValue = [property.value, property.value, property.value];
-              sValue = property.value;
+              const valueType = CheckValueType(property.value);
 
-              nBinType = "vec3";
-            }
+              if (valueType === property.troybinType) {
+                // Case: Value is normal Property
+                nValue = property.value;
+                sValue = property.value[0]; // eslint-disable-line
+              } else if (
+                property.binGroup.name === "birthRotationalVelocity0" ||
+                property.binGroup.name === "birthRotation0"
+              ) {
+                nValue = [property.value, 0, 0];
+                sValue = property.value;
+              } else if (property.binGroup.name === "bindWeight") {
+                nValue = property.value;
+                sValue = [property.value, property.value];
+              } else {
+                // Case: Value is simple Property
+                nValue = [property.value, property.value, property.value];
+                sValue = property.value;
 
-            normalProperty = {
-              troybinName: property.troybinName,
-              troybinType: property.troybinType,
-              binGroup: property.binGroup,
-              binGroupType: property.binGroupType,
-              binPropertyName: property.binPropertyName,
-              binPropertyType: nBinType,
-              value: nValue
-            };
-            simpleProperty = {
-              troybinName: property.troybinName,
-              troybinType: property.simpleValue[0],
-              binGroup: property.simpleValue[3],
-              binGroupType: property.simpleValue[1],
-              binPropertyName:
-                property.binGroup.name === "bindWeight"
-                  ? ""
-                  : property.binPropertyName,
-              binPropertyType: sBinType,
-              value: sValue
-            };
-          } else {
-            let correctValue = property.value;
+                nBinType = "vec3";
+              }
 
-            if (
-              property.simpleValue[4].includes("timesTable") &&
-              property.binGroup.name !== "particleLifetime"
-            ) {
-              correctValue = [
-                property.value[0],
-                property.value[1],
-                property.value[1],
-                property.value[1]
-              ];
-            }
-
-            normalProperty = {
-              troybinName: property.troybinName,
-              troybinType: property.simpleValue[0],
-              binGroup: property.binGroup,
-              binGroupType: property.binGroupType,
-              binPropertyName: property.simpleValue[4],
-              binPropertyType: property.simpleValue[4].includes("timesTable")
-                ? property.binPropertyType
-                : property.simpleValue[2],
-              value: correctValue
-            };
-
-            if (property.binGroup.name !== property.simpleValue[3].name) {
+              normalProperty = {
+                troybinName: property.troybinName,
+                troybinType: property.troybinType,
+                binGroup: property.binGroup,
+                binGroupType: property.binGroupType,
+                binPropertyName: property.binPropertyName,
+                binPropertyType: nBinType,
+                value: nValue
+              };
               simpleProperty = {
                 troybinName: property.troybinName,
                 troybinType: property.simpleValue[0],
                 binGroup: property.simpleValue[3],
                 binGroupType: property.simpleValue[1],
-                binPropertyName: property.simpleValue[4],
-                binPropertyType: property.simpleValue[2],
-                value: property.value
+                binPropertyName:
+                  property.binGroup.name === "bindWeight"
+                    ? ""
+                    : property.binPropertyName,
+                binPropertyType: sBinType,
+                value: sValue
               };
             } else {
-              simpleProperty = undefined;
+              let correctValue = property.value;
+
+              if (
+                property.simpleValue[4].includes("timesTable") &&
+                property.binGroup.name !== "particleLifetime"
+              ) {
+                correctValue = [
+                  property.value[0],
+                  property.value[1],
+                  property.value[1],
+                  property.value[1]
+                ];
+              }
+
+              normalProperty = {
+                troybinName: property.troybinName,
+                troybinType: property.simpleValue[0],
+                binGroup: property.binGroup,
+                binGroupType: property.binGroupType,
+                binPropertyName: property.simpleValue[4],
+                binPropertyType: property.simpleValue[4].includes("timesTable")
+                  ? property.binPropertyType
+                  : property.simpleValue[2],
+                value: correctValue
+              };
+
+              if (property.binGroup.name !== property.simpleValue[3].name) {
+                simpleProperty = {
+                  troybinName: property.troybinName,
+                  troybinType: property.simpleValue[0],
+                  binGroup: property.simpleValue[3],
+                  binGroupType: property.simpleValue[1],
+                  binPropertyName: property.simpleValue[4],
+                  binPropertyType: property.simpleValue[2],
+                  value: property.value
+                };
+              } else {
+                simpleProperty = undefined;
+              }
             }
-          }
 
-          if (simpleProperty !== undefined) {
-            propertiesToAdd.push(normalProperty, simpleProperty);
-          } else {
-            propertiesToAdd.push(normalProperty);
-          }
+            if (simpleProperty !== undefined) {
+              propertiesToAdd.push(normalProperty, simpleProperty);
+            } else {
+              propertiesToAdd.push(normalProperty);
+            }
 
-          propertiesToRemove.push(normalProperty.troybinName);
+            propertiesToRemove.push(normalProperty.troybinName);
+          }
         }
       } else {
         const propertiesToCheckForTableEntries = [

@@ -27,18 +27,8 @@ const mutedAudioFix = [
 const fileRenames131Fix = [
   {
     type: "VfxSystemDefinitionData",
-    oldString: "common_color-rampdown32.dds",
-    newString: "common_color-rampdown32.SRT_Preseason13_Chemtech.dds"
-  },
-  {
-    type: "VfxSystemDefinitionData",
-    oldString: "common_color-hold.TFT_Set7.dds",
-    newString: "common_color-hold.TFT_Booms_Set8.dds"
-  },
-  {
-    type: "VfxSystemDefinitionData",
-    oldString: "color-rampdown.TFT_Set7.dds",
-    newString: "color-rampdown.PIE_C_13_1.dds"
+    oldString: "3026_Glow_Bright.TFT_Set7.dds",
+    newString: "3026_Glow_Bright.PIE_C_12_22.dds"
   },
   {
     type: "VfxSystemDefinitionData",
@@ -47,18 +37,79 @@ const fileRenames131Fix = [
   },
   {
     type: "VfxSystemDefinitionData",
+    oldString: "ball32_01.TFT_Set7.dds",
+    newString: "ball32_01.TFT_Set8.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "bigglow02.TFT_Set7.dds",
+    newString: "bigglow02.TFT_Set8_Carousel.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "color-hold.UltBook_Ults_12_13_Future.dds",
+    newString: "color-hold.PIE_C_12_23.DDS"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "common_color-hold.TFT_Set7.dds",
+    newString: "common_color-hold.TFT_Booms_Set8.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "common_color-rampdown32.dds",
+    newString: "common_color-rampdown32.SRT_Preseason13_Chemtech.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "common_distort-soft-shockwave.TFT_Booms_Vi.dds",
+    newString: "common_distort-soft-shockwave.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "color-rampdown.TFT_Set7.dds",
+    newString: "color-rampdown.PIE_C_13_1.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "color-rampdown32_03.TFT_Set7.dds",
+    newString: "color-rampdown32_03.TFT_Set8.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "disc32.PIE_C_12_19",
+    newString: "disc32.PIE_C_12_21"
+  },
+  {
+    type: "VfxSystemDefinitionData",
     oldString: "Flame_trail_gradient.TFT_Set7.dds",
     newString: "Flame_trail_gradient.TFT_Booms_Set8.dds"
   },
   {
     type: "VfxSystemDefinitionData",
-    oldString: "3026_Glow_Bright.TFT_Set7.dds",
-    newString: "3026_Glow_Bright.PIE_C_12_22.dds"
+    oldString: "FN_Universal_Praxis_Red_001.dds",
+    newString: "FN_Universal_Praxis_Red_001.TFT_Set8.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "Ground_Glow.TFT_Set7.dds",
+    newString: "Ground_Glow.TFT_Set8.dds"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "TFT_Glb_Gradient.TFT_Set7_Stage2",
+    newString: "TFT_Glb_Gradient.TFT_Set8"
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: "wind_streaks.dds",
+    newString: "wind_streaks.TFT_Set8.dds"
   },
   {
     type: "VfxSystemDefinitionData",
     oldString: ".Season2022_SRT_Preseason.",
     newString: ".",
+    ignoreStringIncluded: true,
     exceptions: [
       {
         oldString:
@@ -72,6 +123,30 @@ const fileRenames131Fix = [
           "ASSETS/Maps/Particles/SR/Chemtech_Environemnt_DragonRune_02.SRT_Preseason13_Chemtech.dds"
       }
     ]
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: ".Season2022_SRT_Preseason_FirstStrike.",
+    newString: ".",
+    ignoreStringIncluded: true
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: ".Structure_Assetization.",
+    newString: ".",
+    ignoreStringIncluded: true
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: ".SummonersRiftTeam_Season2022_AprilFools.",
+    newString: ".",
+    ignoreStringIncluded: true
+  },
+  {
+    type: "VfxSystemDefinitionData",
+    oldString: ".TFT_Set6.",
+    newString: ".",
+    ignoreStringIncluded: true
   }
 ];
 
@@ -107,6 +182,9 @@ const particleChanges131Fix = [
       "0x22c3cf3e: embed = IntegratedValueVector2 {",
       "particleUVRotateRateMult: embed = IntegratedValueFloat {",
       "0xdd36a38c: embed = IntegratedValueFloat {",
+      "texAddressModeMult",
+      "uvRotationMult: embed = ValueFloat {",
+      "uvScaleMult: embed = ValueVector2 {",
       "uvScrollAlphaMult",
       "uvScrollClampMult",
       "uvTransformCenterMult",
@@ -115,9 +193,6 @@ const particleChanges131Fix = [
       "birthUvRotateRateMult: embed = ValueFloat {",
       "0x3bb0bd85",
       "0x38123c47",
-      "texAddressModeMult",
-      "uvRotationMult: embed = ValueFloat {",
-      "uvScaleMult: embed = ValueVector2 {",
       "emitterUvScrollRateMult"
     ],
     newString: "textureMult: pointer = 0xb097c1bd"
@@ -617,14 +692,15 @@ const ApplyBinFix = (changesProps, content, metadata) => {
 
         for (let l = 0; l < contentChanges.length; l += 1) {
           const currentChange = contentChanges[l];
-          const ignoreNewStringIncluded = currentChange.exceptions || false;
+          const ignoreStringIncluded =
+            currentChange.ignoreStringIncluded || false;
 
           if (
             rowIncludesOldString(
               currentRow,
               currentChange.oldString,
               currentChange.newString,
-              ignoreNewStringIncluded
+              ignoreStringIncluded
             )
           ) {
             let isException = false;
@@ -639,7 +715,7 @@ const ApplyBinFix = (changesProps, content, metadata) => {
                     currentRow,
                     currentException.oldString,
                     currentException.newString,
-                    ignoreNewStringIncluded
+                    ignoreStringIncluded
                   )
                 ) {
                   isException = true;

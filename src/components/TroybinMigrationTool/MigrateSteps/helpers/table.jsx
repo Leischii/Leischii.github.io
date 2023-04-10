@@ -1162,7 +1162,7 @@ const startFrame = {
 const strength = {
   name: "strength",
   members: [],
-  propertyType: "ValueVector3",
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 24.3,
   parent: fieldDragDefinitions
