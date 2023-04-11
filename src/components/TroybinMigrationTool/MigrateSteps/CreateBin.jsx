@@ -3,7 +3,10 @@ const CreateBin = (troybin, defaultFilePath) => {
 
   const bin = {
     name: binName,
-    emitters: [],
+    emitters: {
+      complex: [],
+      simple: []
+    },
     system: [],
     unknowns: troybin.unknown
   };
@@ -48,18 +51,87 @@ const CreateBin = (troybin, defaultFilePath) => {
               );
 
               if (parentMembers.length) {
+                const definitionGroups = [
+                  ...new Set(
+                    parentMembers.map(par => par.binGroup.parent.definitionName)
+                  )
+                ];
                 const troybinProperties = [];
 
-                parentMembers.forEach(member => {
-                  alreadyAdded.push(member.binGroup.name);
+                definitionGroups.forEach(defGroup => {
+                  const propertiesMatchingGroupName = [];
 
-                  const binProperty = {
-                    name: member.binGroup.name,
-                    members: [member],
-                    order: member.binGroup.order
-                  };
+                  parentMembers.forEach(member => {
+                    if (member.binGroup.parent.definitionName === defGroup) {
+                      alreadyAdded.push(member.binGroup.name);
 
-                  troybinProperties.push(binProperty);
+                      const binProperty = {
+                        name: member.binGroup.name,
+                        members: [member],
+                        order: member.binGroup.order
+                      };
+
+                      propertiesMatchingGroupName.push(binProperty);
+                    }
+                  });
+
+                  if (
+                    parentMember === "fieldNoiseDefinitions" &&
+                    propertiesMatchingGroupName.findIndex(
+                      binProperty => binProperty.name === "axisFraction"
+                    ) === -1
+                  ) {
+                    const binProperty = {
+                      name: "axisFraction",
+                      members: [
+                        {
+                          troybinName: "f-axisfrac",
+                          troybinType: "THREE_DOUBLE",
+                          binGroup: {
+                            name: "axisFraction",
+                            members: [],
+                            structure: "SimpleProperty",
+                            order: 24.5,
+                            parent: [
+                              {
+                                name: "fieldNoiseDefinitions",
+                                members: [
+                                  "position",
+                                  "radius",
+                                  "frequency",
+                                  "velocityDelta",
+                                  "axisFraction"
+                                ],
+                                structure: "fieldNoiseDefinitions",
+                                order: 24.4,
+                                parent: {
+                                  name: "fieldCollectionDefinition",
+                                  members: [
+                                    "fieldAccelerationDefinitions",
+                                    "fieldAttractionDefinitions",
+                                    "fieldDragDefinitions",
+                                    "fieldNoiseDefinitions",
+                                    "fieldOrbitalDefinitions"
+                                  ],
+                                  structure: "",
+                                  order: 24
+                                }
+                              }
+                            ]
+                          },
+                          binGroupType: "vec3",
+                          binPropertyName: "",
+                          binPropertyType: "",
+                          value: [1, 1, 1]
+                        }
+                      ],
+                      order: 24.5
+                    };
+
+                    propertiesMatchingGroupName.push(binProperty);
+                  }
+
+                  troybinProperties.push(propertiesMatchingGroupName);
                 });
 
                 troybinProperties.sort(function compareNumbers(a, b) {
@@ -161,7 +233,11 @@ const CreateBin = (troybin, defaultFilePath) => {
       return a.order - b.order;
     });
 
-    bin.emitters.push(binEmitters);
+    if (emitter.isSimple) {
+      bin.emitters.simple.push(binEmitters);
+    } else {
+      bin.emitters.complex.push(binEmitters);
+    }
   });
 
   const binSystemProperties = [

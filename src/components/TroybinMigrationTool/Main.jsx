@@ -18,9 +18,9 @@ const MigrateConvertedTroybin = (
     updateFileTypes
   );
 
-  const updatedEmitter = UpdateEmitters(troybinStructure.emitters);
+  const updatedEmitters = UpdateEmitters(troybinStructure.emitters);
   const updatedTroybin = {
-    emitters: updatedEmitter,
+    emitters: updatedEmitters,
     fileName: troybinStructure.fileName,
     system: troybinStructure.system,
     unknown: troybinStructure.unknown

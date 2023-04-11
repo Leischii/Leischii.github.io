@@ -684,6 +684,349 @@ function WriteProperty(property, spacingAmount) {
 }
 
 const WriteBin = (bin, defaultFilePath) => {
+  function writeEmitters(emitters, typeString, spacing) {
+    const result = [];
+
+    result.push(
+      `${getSpacing(spacing + 1)}${typeString}: list[pointer] = {\r\n`
+    );
+
+    emitters.forEach(emitter => {
+      const propertiesWritten = [];
+
+      emitter.forEach(property => {
+        let entry;
+
+        if (property.name === "shape") {
+          const writenLines = [];
+
+          property.members.forEach(member => {
+            entry = WriteProperty(member, spacing + 4);
+
+            entry.forEach(e => {
+              writenLines.push(e);
+            });
+          });
+
+          if (writenLines.length) {
+            propertiesWritten.push(
+              `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
+            );
+
+            writenLines.forEach(line => {
+              propertiesWritten.push(line);
+            });
+
+            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+          }
+        } else if (property.name.includes("primitive")) {
+          if (
+            property.name !== "primitiveNone" &&
+            property.name !== "primitive"
+          ) {
+            let hasContent = false;
+            const meshEntries = [];
+            const beamEntries = [];
+
+            switch (property.name) {
+              // 1
+              case "primitiveArbitraryQuad":
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveArbitraryQuad {}\r\n`
+                );
+                break;
+              // 2 ?
+              case "primitiveArbitraryTrail":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveArbitraryTrail {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+                );
+                break;
+              // 3
+              case "primitiveMesh":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                );
+                break;
+              // 4 ?
+              case "primitiveAttachedMesh":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveAttachedMesh {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                );
+                break;
+              // 5
+              case "primitiveTrail":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mTrail: embed = VfxTrailDefinitionData {\r\n`
+                );
+                break;
+              // 6
+              case "primitiveBeam":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveBeam {\r\n`
+                );
+
+                for (let i = 0; i < property.members.length; i += 1) {
+                  const primitiveMember = property.members[i];
+
+                  if (primitiveMember.name === "mMesh") {
+                    meshEntries.push(primitiveMember);
+                  } else {
+                    beamEntries.push(primitiveMember);
+                  }
+                }
+
+                if (meshEntries.length) {
+                  propertiesWritten.push(
+                    `${getSpacing(
+                      spacing + 4
+                    )}mMesh: embed = VfxMeshDefinitionData {\r\n`
+                  );
+
+                  meshEntries.forEach(member => {
+                    const meshEntry = WriteProperty(member, spacing + 5);
+
+                    meshEntry.forEach(e => {
+                      propertiesWritten.push(e);
+                    });
+                  });
+
+                  propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
+                }
+
+                if (beamEntries.length) {
+                  propertiesWritten.push(
+                    `${getSpacing(
+                      spacing + 4
+                    )}mBeam: embed = VfxBeamDefinitionData {\r\n`
+                  );
+
+                  beamEntries.forEach(member => {
+                    const beamEntry = WriteProperty(member, spacing + 5);
+
+                    beamEntry.forEach(e => {
+                      propertiesWritten.push(e);
+                    });
+                  });
+
+                  propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
+                }
+
+                propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+
+                break;
+              // 7
+              case "primitivePlanarProjection":
+                hasContent = true;
+
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitivePlanarProjection {\r\n`,
+                  `${getSpacing(
+                    spacing + 4
+                  )}mProjection: embed = VfxProjectionDefinitionData {\r\n`
+                );
+                break;
+              // 8 ?
+              case "primitiveRay":
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}primitive: pointer = VfxPrimitiveRay {}\r\n`
+                );
+                break;
+              default:
+                break;
+            }
+
+            if (
+              hasContent &&
+              property.members.length &&
+              property.name !== "primitiveBeam"
+            ) {
+              property.members.forEach(member => {
+                entry = WriteProperty(member, spacing + 5);
+
+                entry.forEach(e => {
+                  propertiesWritten.push(e);
+                });
+              });
+
+              propertiesWritten.push(
+                `${getSpacing(spacing + 4)}}\r\n`,
+                `${getSpacing(spacing + 3)}}\r\n`
+              );
+            }
+          }
+        } else if (property.name === "distortionDefinition") {
+          propertiesWritten.push(
+            `${getSpacing(
+              spacing + 3
+            )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
+          );
+
+          property.members.forEach(member => {
+            entry = WriteProperty(member, spacing + 4);
+
+            entry.forEach(e => {
+              propertiesWritten.push(e);
+            });
+          });
+
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        } else if (property.name === "fieldCollectionDefinition") {
+          const writenLines = [];
+
+          property.members.forEach(member => {
+            let fieldType;
+
+            switch (member.name) {
+              case "fieldAccelerationDefinitions":
+                fieldType = "Acceleration";
+                break;
+              case "fieldAttractionDefinitions":
+                fieldType = "Attraction";
+                break;
+              case "fieldDragDefinitions":
+                fieldType = "Drag";
+                break;
+              case "fieldNoiseDefinitions":
+                fieldType = "Noise";
+                break;
+              case "fieldOrbitalDefinitions":
+                fieldType = "Orbital";
+                break;
+              default:
+                break;
+            }
+
+            writenLines.push(
+              `${getSpacing(
+                spacing + 4
+              )}field${fieldType}Definitions: list[embed] = {\r\n`
+            );
+
+            member.members.forEach(definitionGroup => {
+              writenLines.push(
+                `${getSpacing(
+                  spacing + 5
+                )}VfxField${fieldType}DefinitionData {\r\n`
+              );
+
+              definitionGroup.forEach(memb => {
+                entry = WriteProperty(memb, spacing + 6);
+
+                entry.forEach(e => {
+                  writenLines.push(e);
+                });
+              });
+
+              writenLines.push(`${getSpacing(spacing + 5)}}\r\n`);
+            });
+
+            writenLines.push(`${getSpacing(spacing + 4)}}\r\n`);
+          });
+
+          if (writenLines.length) {
+            propertiesWritten.push(
+              `${getSpacing(
+                spacing + 3
+              )}fieldCollectionDefinition: pointer = VfxFieldCollectionDefinitionData {\r\n`
+            );
+
+            writenLines.forEach(line => {
+              propertiesWritten.push(line);
+            });
+
+            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+          }
+        } else if (property.name === "textureMult") {
+          propertiesWritten.push(
+            `${getSpacing(spacing + 3)}textureMult: pointer = 0xb097c1bd {\r\n`
+          );
+
+          property.members.forEach(member => {
+            entry = WriteProperty(member, spacing + 4);
+
+            entry.forEach(e => {
+              propertiesWritten.push(e);
+            });
+          });
+
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        } else if (property.name === "0xbc022424") {
+          propertiesWritten.push(
+            `${getSpacing(spacing + 3)}0xbc022424: pointer = 0x7f70a2b2 {\r\n`
+          );
+
+          property.members.forEach(member => {
+            entry = WriteProperty(member, spacing + 4);
+
+            entry.forEach(e => {
+              propertiesWritten.push(e);
+            });
+          });
+
+          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+        } else {
+          entry = WriteProperty(property, spacing + 3);
+
+          entry.forEach(e => {
+            propertiesWritten.push(e);
+          });
+        }
+      });
+
+      if (propertiesWritten.length) {
+        result.push(`${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`);
+
+        propertiesWritten.forEach(emitterLine => {
+          result.push(emitterLine);
+        });
+
+        result.push(`${getSpacing(spacing + 2)}}\r\n`);
+      }
+    });
+
+    result.push(`${getSpacing(spacing + 1)}}\r\n`);
+
+    return result;
+  }
+
   const spacing = 1;
 
   const finalBin = [
@@ -694,323 +1037,32 @@ const WriteBin = (bin, defaultFilePath) => {
     "entries: map[hash,embed] = {\r\n",
     `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
       bin.name
-    }\" = VfxSystemDefinitionData {\r\n`, // eslint-disable-line
-    `${getSpacing(
-      spacing + 1
-    )}complexEmitterDefinitionData: list[pointer] = {\r\n`
+    }\" = VfxSystemDefinitionData {\r\n` // eslint-disable-line
   ];
 
-  bin.emitters.forEach(emitter => {
-    const propertiesWritten = [];
+  if (bin.emitters.complex.length) {
+    const emitters = writeEmitters(
+      bin.emitters.complex,
+      "complexEmitterDefinitionData",
+      spacing
+    );
 
-    emitter.forEach(property => {
-      let entry;
-
-      if (property.name === "shape") {
-        const writenLines = [];
-
-        property.members.forEach(member => {
-          entry = WriteProperty(member, spacing + 4);
-
-          entry.forEach(e => {
-            writenLines.push(e);
-          });
-        });
-
-        if (writenLines.length) {
-          propertiesWritten.push(
-            `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
-          );
-
-          writenLines.forEach(line => {
-            propertiesWritten.push(line);
-          });
-
-          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-        }
-      } else if (property.name.includes("primitive")) {
-        if (
-          property.name !== "primitiveNone" &&
-          property.name !== "primitive"
-        ) {
-          let hasContent = false;
-          const meshEntries = [];
-          const beamEntries = [];
-
-          switch (property.name) {
-            // 1
-            case "primitiveArbitraryQuad":
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveArbitraryQuad {}\r\n`
-              );
-              break;
-            // 2 ?
-            case "primitiveArbitraryTrail":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveArbitraryTrail {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mTrail: embed = VfxTrailDefinitionData {\r\n`
-              );
-              break;
-            // 3
-            case "primitiveMesh":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveMesh {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-              );
-              break;
-            // 4 ?
-            case "primitiveAttachedMesh":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveAttachedMesh {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-              );
-              break;
-            // 5
-            case "primitiveTrail":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveCameraTrail {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mTrail: embed = VfxTrailDefinitionData {\r\n`
-              );
-              break;
-            // 6
-            case "primitiveBeam":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveBeam {\r\n`
-              );
-
-              for (let i = 0; i < property.members.length; i += 1) {
-                const primitiveMember = property.members[i];
-
-                if (primitiveMember.name === "mMesh") {
-                  meshEntries.push(primitiveMember);
-                } else {
-                  beamEntries.push(primitiveMember);
-                }
-              }
-
-              if (meshEntries.length) {
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 4
-                  )}mMesh: embed = VfxMeshDefinitionData {\r\n`
-                );
-
-                meshEntries.forEach(member => {
-                  const meshEntry = WriteProperty(member, spacing + 5);
-
-                  meshEntry.forEach(e => {
-                    propertiesWritten.push(e);
-                  });
-                });
-
-                propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
-              }
-
-              if (beamEntries.length) {
-                propertiesWritten.push(
-                  `${getSpacing(
-                    spacing + 4
-                  )}mBeam: embed = VfxBeamDefinitionData {\r\n`
-                );
-
-                beamEntries.forEach(member => {
-                  const beamEntry = WriteProperty(member, spacing + 5);
-
-                  beamEntry.forEach(e => {
-                    propertiesWritten.push(e);
-                  });
-                });
-
-                propertiesWritten.push(`${getSpacing(spacing + 4)}}\r\n`);
-              }
-
-              propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-
-              break;
-            // 7
-            case "primitivePlanarProjection":
-              hasContent = true;
-
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitivePlanarProjection {\r\n`,
-                `${getSpacing(
-                  spacing + 4
-                )}mProjection: embed = VfxProjectionDefinitionData {\r\n`
-              );
-              break;
-            // 8 ?
-            case "primitiveRay":
-              propertiesWritten.push(
-                `${getSpacing(
-                  spacing + 3
-                )}primitive: pointer = VfxPrimitiveRay {}\r\n`
-              );
-              break;
-            default:
-              break;
-          }
-
-          if (
-            hasContent &&
-            property.members.length &&
-            property.name !== "primitiveBeam"
-          ) {
-            property.members.forEach(member => {
-              entry = WriteProperty(member, spacing + 5);
-
-              entry.forEach(e => {
-                propertiesWritten.push(e);
-              });
-            });
-
-            propertiesWritten.push(
-              `${getSpacing(spacing + 4)}}\r\n`,
-              `${getSpacing(spacing + 3)}}\r\n`
-            );
-          }
-        }
-      } else if (property.name === "distortionDefinition") {
-        propertiesWritten.push(
-          `${getSpacing(
-            spacing + 3
-          )}distortionDefinition: pointer = VfxDistortionDefinitionData {\r\n`
-        );
-
-        property.members.forEach(member => {
-          entry = WriteProperty(member, spacing + 4);
-
-          entry.forEach(e => {
-            propertiesWritten.push(e);
-          });
-        });
-
-        propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-      } else if (property.name === "fieldCollectionDefinition") {
-        const writenLines = [];
-
-        property.members.forEach(member => {
-          let fieldType;
-
-          switch (member.name) {
-            case "fieldAccelerationDefinitions":
-              fieldType = "Acceleration";
-              break;
-            case "fieldAttractionDefinitions":
-              fieldType = "Attraction";
-              break;
-            case "fieldDragDefinitions":
-              fieldType = "Drag";
-              break;
-            case "fieldNoiseDefinitions":
-              fieldType = "Noise";
-              break;
-            case "fieldOrbitalDefinitions":
-              fieldType = "Orbital";
-              break;
-            default:
-              break;
-          }
-
-          writenLines.push(
-            `${getSpacing(
-              spacing + 4
-            )}field${fieldType}Definitions: list[embed] = {\r\n`,
-            `${getSpacing(spacing + 5)}VfxField${fieldType}DefinitionData {\r\n`
-          );
-
-          member.members.forEach(memb => {
-            entry = WriteProperty(memb, spacing + 6);
-
-            entry.forEach(e => {
-              writenLines.push(e);
-            });
-          });
-
-          writenLines.push(
-            `${getSpacing(spacing + 5)}}\r\n`,
-            `${getSpacing(spacing + 4)}}\r\n`
-          );
-        });
-
-        if (writenLines.length) {
-          propertiesWritten.push(
-            `${getSpacing(
-              spacing + 3
-            )}fieldCollectionDefinition: pointer = VfxFieldCollectionDefinitionData {\r\n`
-          );
-
-          writenLines.forEach(line => {
-            propertiesWritten.push(line);
-          });
-
-          propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-        }
-      } else if (property.name === "textureMult") {
-        propertiesWritten.push(
-          `${getSpacing(spacing + 3)}textureMult: pointer = 0xb097c1bd {\r\n`
-        );
-
-        property.members.forEach(member => {
-          entry = WriteProperty(member, spacing + 4);
-
-          entry.forEach(e => {
-            propertiesWritten.push(e);
-          });
-        });
-
-        propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-      } else {
-        entry = WriteProperty(property, spacing + 3);
-
-        entry.forEach(e => {
-          propertiesWritten.push(e);
-        });
-      }
+    emitters.forEach(emitterLine => {
+      finalBin.push(emitterLine);
     });
+  }
 
-    if (propertiesWritten.length) {
-      finalBin.push(`${getSpacing(spacing + 2)}VfxEmitterDefinitionData {\r\n`);
+  if (bin.emitters.simple.length) {
+    const emitters = writeEmitters(
+      bin.emitters.simple,
+      "simpleEmitterDefinitionData",
+      spacing
+    );
 
-      propertiesWritten.forEach(emitterLine => {
-        finalBin.push(emitterLine);
-      });
-      finalBin.push(`${getSpacing(spacing + 2)}}\r\n`);
-    }
-  });
-
-  finalBin.push(`${getSpacing(spacing + 1)}}\r\n`);
+    emitters.forEach(emitterLine => {
+      finalBin.push(emitterLine);
+    });
+  }
 
   bin.system.forEach(systemProperty => {
     const systemEntry = WriteProperty(systemProperty, spacing + 1);

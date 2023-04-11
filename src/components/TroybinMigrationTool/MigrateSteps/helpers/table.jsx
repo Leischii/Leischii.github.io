@@ -169,6 +169,21 @@ const textureMultGroup = {
   order: 223
 };
 
+const property0xbc022424 = {
+  name: "0xbc022424",
+  members: [
+    "birthScale",
+    "scale",
+    "birthRotation",
+    "birthRotationalVelocity",
+    "particleBind",
+    "scaleBias",
+    "orientation"
+  ],
+  structure: "",
+  order: 214
+};
+
 const primitiveArbitraryQuad = { // eslint-disable-line
   name: "primitiveArbitraryQuad",
   members: [],
@@ -415,11 +430,12 @@ const birthRotation0 = {
 };
 
 const birthRotation1 = {
-  name: "birthRotation1",
+  name: "birthRotation",
   members: createMembers([timesTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 232
+  order: 232,
+  parent: property0xbc022424
 };
 
 const birthRotationalVelocity0 = {
@@ -436,11 +452,12 @@ const birthRotationalVelocity0 = {
 };
 
 const birthRotationalVelocity1 = {
-  name: "birthRotationalVelocity1",
+  name: "birthRotationalVelocity",
   members: createMembers([timesTableEntries]),
-  propertyType: "ValueVector3",
+  propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 235
+  order: 235,
+  parent: property0xbc022424
 };
 
 const birthScale0 = {
@@ -457,11 +474,12 @@ const birthScale0 = {
 };
 
 const birthScale1 = {
-  name: "birthScale1",
+  name: "birthScale",
   members: createMembers([timesTableEntries, timesSimpleTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 230
+  order: 230,
+  parent: property0xbc022424
 };
 
 const birthUVOffset = {
@@ -580,7 +598,7 @@ const direction = {
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
   order: 24.2,
-  parent: fieldOrbitalDefinitions
+  parent: [fieldOrbitalDefinitions]
 };
 
 const directionVelocityMinScale = {
@@ -955,7 +973,8 @@ const orientation1 = {
   name: "orientation",
   members: [],
   structure: "SimpleProperty",
-  order: 240
+  order: 240,
+  parent: property0xbc022424
 };
 
 const overrideScaleCap = {
@@ -969,7 +988,8 @@ const particleBind = {
   name: "particleBind",
   members: [],
   structure: "SimpleProperty",
-  order: 233
+  order: 233,
+  parent: property0xbc022424
 };
 
 const particleColorTexture = {
@@ -1096,11 +1116,12 @@ const scale0 = {
 };
 
 const scale1 = {
-  name: "scale1",
+  name: "scale",
   members: createMembers([timesTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 231
+  order: 231,
+  parent: property0xbc022424
 };
 
 const scaleBias = {
@@ -1108,6 +1129,14 @@ const scaleBias = {
   members: [],
   structure: "SimpleProperty",
   order: 234
+};
+
+const scaleBias1 = {
+  name: "scaleBias",
+  members: [],
+  structure: "SimpleProperty",
+  order: 234,
+  parent: property0xbc022424
 };
 
 const sliceTechniqueRange = {
@@ -1165,7 +1194,7 @@ const strength = {
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
   order: 24.3,
-  parent: fieldDragDefinitions
+  parent: [fieldDragDefinitions]
 };
 
 const texAddressModeBase = {
@@ -2950,7 +2979,43 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "field-accel-2",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAccelName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-accel-3",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAccelName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "field-attract-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAttractName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-attract-2",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldAttractName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-attract-3",
       troybinType: "STRING_NO_PATH",
       binGroup: fieldAttractName,
       binGroupType: "string",
@@ -2968,6 +3033,24 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "field-drag-2",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldDragName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-drag-3",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldDragName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "field-noise-1",
       troybinType: "STRING_NO_PATH",
       binGroup: fieldNoiseName,
@@ -2977,7 +3060,43 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "field-noise-2",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldNoiseName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-noise-3",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldNoiseName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "field-orbit-1",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldOrbitName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-orbit-2",
+      troybinType: "STRING_NO_PATH",
+      binGroup: fieldOrbitName,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "field-orbit-3",
       troybinType: "STRING_NO_PATH",
       binGroup: fieldOrbitName,
       binGroupType: "string",
@@ -3373,7 +3492,7 @@ const Values = {
       binGroupType: "vec2",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: 0
+      defaultValue: "{ 0, 0 }"
     },
     {
       troybinName: "p-colorscale",
@@ -3382,7 +3501,7 @@ const Values = {
       binGroupType: "vec2",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: 0
+      defaultValue: "{ 1, 1 }"
     },
     {
       troybinName: "p-colortype",
@@ -3787,7 +3906,7 @@ const Values = {
       binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 0
     },
     {
       troybinName: "p-life",
@@ -4147,7 +4266,7 @@ const Values = {
       binGroupType: "u16",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 1
     },
     {
       troybinName: "p-offset",
@@ -6059,7 +6178,8 @@ const Values = {
       binGroupType: "vec2",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: undefined,
+      simpleValue: ["TWO_DOUBLE", "vec2", "", scaleBias1]
     },
     {
       troybinName: "p-scaleXP1",
@@ -6981,21 +7101,21 @@ const Values = {
       defaultValue: undefined
     },
     {
-      troybinName: "p-uvscroll-rgb-mult",
-      troybinType: "TWO_DOUBLE",
-      binGroup: birthUvScrollRateMult,
-      binGroupType: "embed = ValueVector2",
-      binPropertyName: "constantValue",
-      binPropertyType: "vec2",
-      defaultValue: undefined
-    },
-    {
       troybinName: "p-uvscroll-rgb-clamp-mult",
       troybinType: "INT/BOOLEAN",
       binGroup: uvScrollClampMult,
       binGroupType: "flag",
       binPropertyName: "",
       binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-uvscroll-rgb-mult",
+      troybinType: "TWO_DOUBLE",
+      binGroup: birthUvScrollRateMult,
+      binGroupType: "embed = ValueVector2",
+      binPropertyName: "constantValue",
+      binPropertyType: "vec2",
       defaultValue: undefined
     },
     {

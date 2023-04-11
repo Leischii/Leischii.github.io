@@ -69,7 +69,8 @@ const UpdateEmitters = data => {
     const updatedEmitter = {
       name: emitter.name,
       properties: [],
-      order: emitter.order
+      order: emitter.order,
+      isSimple: emitter.isSimple
     };
 
     let hasLinger = false;
@@ -91,6 +92,7 @@ const UpdateEmitters = data => {
         }
       }
 
+      // Multiply timesTable values with constValue values
       if (
         property.troybinName === "e-rate" ||
         property.troybinName === "p-life"
@@ -116,6 +118,64 @@ const UpdateEmitters = data => {
             propertiesToAdd.push(newTimesTableEntry);
           }
         }
+      }
+
+      if (
+        property.troybinName === "e-rotation1" ||
+        property.troybinName === "e-rotation2" ||
+        property.troybinName === "e-rotation3"
+      ) {
+        let axisEntry;
+        const axisName = `${property.troybinName}-axis`;
+        const axisIndex = emitter.properties.findIndex(
+          propS => propS.troybinName === axisName
+        );
+
+        if (axisIndex !== -1) {
+          const newValue = [];
+          propertiesToRemove.push(axisName);
+
+          axisEntry = emitter.properties[axisIndex];
+
+          // RoatationAxis has this instead of just 1
+          axisEntry.value.forEach(val => {
+            newValue.push(val === 1 ? 1.00000012 : val);
+          });
+
+          axisEntry.value = newValue;
+        } else {
+          axisEntry = {
+            troybinName: axisName,
+            troybinType: "THREE_DOUBLE",
+            binGroup: {
+              name: "emitRotationAxes",
+              members: [
+                "e-rotation1-axis",
+                "e-rotation2-axis",
+                "e-rotation3-axis"
+              ],
+              structure: "SimpleObjectProperty",
+              order: 50.4,
+              parent: {
+                name: "shape",
+                members: [
+                  "birthTranslation",
+                  "emitOffset",
+                  "emitRotationAngles",
+                  "emitRotationAxes"
+                ],
+                structure: "",
+                order: 50
+              }
+            },
+            binGroupType: "list[vec3]",
+            binPropertyName: "",
+            binPropertyType: "",
+            value: [0, 1.00000012, 0]
+          };
+        }
+
+        propertiesToAdd.push(axisEntry);
       }
 
       // Preparation for fixing particleLinger later
@@ -211,6 +271,7 @@ const UpdateEmitters = data => {
               fieldProperty.binGroup.parent = correctParent;
             }
 
+            fieldProperty.binGroup.parent.definitionName = fieldEmitter.name;
             propertiesToAdd.push(fieldProperty);
           });
 
@@ -234,6 +295,7 @@ const UpdateEmitters = data => {
         let simpleProperty;
 
         if (isSimpleProperty) {
+          // Special case: swap probTable/timeTable for particleLifetime if both present and simple emitter
           const isLifetime = property.binGroup.name === "particleLifetime";
           const lifetimeHasBothTables =
             isLifetime &&
@@ -245,7 +307,10 @@ const UpdateEmitters = data => {
             ) !== -1;
 
           if (!isLifetime || lifetimeHasBothTables) {
-            if (property.binPropertyName === "constantValue") {
+            if (
+              property.binPropertyName === "constantValue" ||
+              property.binGroup.name === "scaleBias"
+            ) {
               let nValue;
               let sValue;
 
@@ -255,9 +320,14 @@ const UpdateEmitters = data => {
               const valueType = CheckValueType(property.value);
 
               if (valueType === property.troybinType) {
-                // Case: Value is normal Property
-                nValue = property.value;
-                sValue = property.value[0]; // eslint-disable-line
+                if (property.binGroup.name === "scaleBias") {
+                  nValue = property.value;
+                  sValue = property.value;
+                } else {
+                  // Case: Value is normal Property
+                  nValue = property.value;
+                  sValue = property.value[0]; // eslint-disable-line
+                }
               } else if (
                 property.binGroup.name === "birthRotationalVelocity0" ||
                 property.binGroup.name === "birthRotation0"
@@ -339,7 +409,24 @@ const UpdateEmitters = data => {
             }
 
             if (simpleProperty !== undefined) {
-              propertiesToAdd.push(normalProperty, simpleProperty);
+              // The original version of these is skipped in simple emitters
+              const normalPropertiesToSkip = [
+                "birthScale",
+                "scale",
+                "birthRotation",
+                "birthRotationalVelocity",
+                "particleBind",
+                "scaleBias",
+                "orientation"
+              ];
+
+              if (
+                !normalPropertiesToSkip.includes(simpleProperty.binGroup.name)
+              ) {
+                propertiesToAdd.push(normalProperty);
+              }
+
+              propertiesToAdd.push(simpleProperty);
             } else {
               propertiesToAdd.push(normalProperty);
             }
