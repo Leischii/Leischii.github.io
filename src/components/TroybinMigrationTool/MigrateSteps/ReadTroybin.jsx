@@ -97,7 +97,22 @@ const ReadTroybin = (
       const propertyName = stringParts[0];
       const propertyValuePart = stringParts[1];
 
-      if (!isUnknown && propertyName[0] !== "'") {
+      let isDisabledField = false;
+      const fieldMarkers = [
+        "field-accel-",
+        "field-attract-",
+        "field-drag-",
+        "field-noise-",
+        "field-orbit-"
+      ];
+
+      fieldMarkers.forEach(marker => {
+        if (propertyName.includes(marker)) {
+          isDisabledField = true;
+        }
+      });
+
+      if (!isUnknown && (propertyName[0] !== "'" || isDisabledField)) {
         if (isSystem) {
           Values.systemValues.forEach(sValue => {
             if (sValue.troybinName === "GroupPart") {
@@ -185,9 +200,15 @@ const ReadTroybin = (
               }
             }
           });
-        } else if (propertyName[0] === "f") {
+        } else if (
+          propertyName[0] === "f" ||
+          (propertyName[0] === "'" && propertyName[1] === "f")
+        ) {
           Values.fValues.forEach(fValue => {
-            if (fValue.troybinName === propertyName) {
+            if (
+              fValue.troybinName === propertyName ||
+              fValue.troybinName === propertyName.slice(1)
+            ) {
               assignedProperty = fValue;
               entryFound = true;
 
@@ -199,6 +220,11 @@ const ReadTroybin = (
                 propertyName.includes("field-orbit-")
               ) {
                 needsChanges = true;
+              }
+
+              // This is used to recognize field emitters in the update emitter step
+              if (propertyName[0] === "'") {
+                assignedProperty.definitionId = true;
               }
             }
           });

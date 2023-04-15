@@ -1066,7 +1066,7 @@ class MainPage extends Component {
                                 },
                                 {
                                   desc: "Save changes made to selected file",
-                                  disabled: !activeFile,
+                                  disabled: true, // Old: !activeFile Bugged, changes are not applied correctly atm
                                   icon: <SaveAsIcon />,
                                   onClickFunc: () => {
                                     this.setState(

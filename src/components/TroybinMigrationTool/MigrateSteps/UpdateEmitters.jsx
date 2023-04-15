@@ -275,38 +275,42 @@ const UpdateEmitters = data => {
 
       if (property.binGroup.name.includes("field")) {
         const fieldEmitterIndex = troybinData.findIndex(
-          selectedEmit => `"${selectedEmit.name}"` === property.value
+          selectedEmit =>
+            `"${selectedEmit.name}"` === property.value ||
+            `"${selectedEmit.name}"` === `'${property.value}`
         );
 
         if (fieldEmitterIndex !== -1) {
           const fieldEmitter = troybinData[fieldEmitterIndex];
 
-          fieldEmitter.properties.forEach(fieldProp => {
-            const fieldProperty = fieldProp;
+          if (!property.definitionId) {
+            fieldEmitter.properties.forEach(fieldProp => {
+              const fieldProperty = fieldProp;
 
-            if (
-              fieldProperty.troybinName === "f-accel" &&
-              typeof fieldProperty.value === "number" &&
-              !Number.isNaN(fieldProperty.value)
-            ) {
-              fieldProperty.binGroup.propertyType = "ValueFloat";
-              fieldProperty.binPropertyType = "f32";
-            }
+              if (
+                fieldProperty.troybinName === "f-accel" &&
+                typeof fieldProperty.value === "number" &&
+                !Number.isNaN(fieldProperty.value)
+              ) {
+                fieldProperty.binGroup.propertyType = "ValueFloat";
+                fieldProperty.binPropertyType = "f32";
+              }
 
-            if (
-              fieldProperty.binGroup.parent &&
-              Array.isArray(fieldProperty.binGroup.parent)
-            ) {
-              const correctParent = fieldProperty.binGroup.parent.filter(
-                parentEntry => parentEntry.name === property.binGroup.name
-              )[0];
+              if (
+                fieldProperty.binGroup.parent &&
+                Array.isArray(fieldProperty.binGroup.parent)
+              ) {
+                const correctParent = fieldProperty.binGroup.parent.filter(
+                  parentEntry => parentEntry.name === property.binGroup.name
+                )[0];
 
-              fieldProperty.binGroup.parent = correctParent;
-            }
+                fieldProperty.binGroup.parent = correctParent;
+              }
 
-            fieldProperty.binGroup.parent.definitionName = fieldEmitter.name;
-            propertiesToAdd.push(fieldProperty);
-          });
+              fieldProperty.binGroup.parent.definitionName = fieldEmitter.name;
+              propertiesToAdd.push(fieldProperty);
+            });
+          }
 
           if (
             emittersToRemove.findIndex(
