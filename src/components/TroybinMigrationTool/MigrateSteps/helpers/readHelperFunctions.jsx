@@ -249,6 +249,14 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       }
 
       break;
+    case "ONE_DOUBLE_255_TO_PERCENT":
+      formatedValue = Math.round((parseFloat(values) / 255) * 100) / 100;
+
+      if (typeof formatedValue !== "number" || Number.isNaN(formatedValue)) {
+        formatedValue = invalidValue;
+      }
+
+      break;
     default:
       formatedValue = invalidValue;
       break;

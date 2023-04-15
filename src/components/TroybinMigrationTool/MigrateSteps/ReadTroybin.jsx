@@ -215,11 +215,40 @@ const ReadTroybin = (
               assignedProperty = other;
               entryFound = true;
             }
+
+            if (
+              (other.troybinName === "MaterialOverrideTexture" &&
+                propertyName.includes("MaterialOverride") &&
+                propertyName.includes("Texture")) ||
+              (other.troybinName === "MaterialOverridePriority" &&
+                propertyName.includes("MaterialOverride") &&
+                propertyName.includes("Priority"))
+            ) {
+              const definitionId = propertyName
+                .replace("MaterialOverride", "")
+                .replace("Texture", "")
+                .replace("Priority", "");
+
+              assignedProperty = other;
+              assignedProperty.definitionId = definitionId;
+
+              entryFound = true;
+              needsChanges = true;
+            }
           });
         }
       }
 
-      if (assignedProperty.binGroup === undefined && !needsChanges) {
+      const isComplexGroupPartEntry =
+        propertyName.includes("GroupPart") &&
+        propertyName.includes("Type") &&
+        propertyValuePart === '"Complex"';
+
+      if (
+        assignedProperty.binGroup === undefined &&
+        !needsChanges &&
+        !isComplexGroupPartEntry
+      ) {
         const text = namesOnly
           ? `${propertyName}`
           : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
@@ -229,7 +258,7 @@ const ReadTroybin = (
         }
       }
 
-      if (!entryFound) {
+      if (!entryFound && !isComplexGroupPartEntry) {
         const text = namesOnly
           ? `${propertyName}`
           : `${entry.name}: ${propertyName} = ${propertyValuePart}`;
@@ -281,7 +310,8 @@ const ReadTroybin = (
             binPropertyType: assignedProperty.binPropertyType,
             defaultValue: assignedProperty.defaultValue,
             simpleValue: assignedProperty.simpleValue || undefined,
-            value: formatedValue
+            value: formatedValue,
+            definitionId: assignedProperty.definitionId || undefined
           })
         );
 

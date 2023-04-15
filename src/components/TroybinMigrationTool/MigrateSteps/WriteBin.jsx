@@ -974,6 +974,38 @@ const WriteBin = (bin, defaultFilePath) => {
 
             propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
           }
+        } else if (property.name === "materialOverrideDefinitions") {
+          const writenLines = [];
+
+          property.members[0].members.forEach(member => {
+            writenLines.push(
+              `${getSpacing(spacing + 4)}${property.members[0].name} {\r\n`
+            );
+
+            member.forEach(memb => {
+              entry = WriteProperty(memb, spacing + 5);
+
+              entry.forEach(e => {
+                writenLines.push(e);
+              });
+            });
+
+            writenLines.push(`${getSpacing(spacing + 4)}}\r\n`);
+          });
+
+          if (writenLines.length) {
+            propertiesWritten.push(
+              `${getSpacing(
+                spacing + 3
+              )}MaterialOverrideDefinitions: list[embed] = {\r\n`
+            );
+
+            writenLines.forEach(line => {
+              propertiesWritten.push(line);
+            });
+
+            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+          }
         } else if (property.name === "textureMult") {
           propertiesWritten.push(
             `${getSpacing(spacing + 3)}textureMult: pointer = 0xb097c1bd {\r\n`

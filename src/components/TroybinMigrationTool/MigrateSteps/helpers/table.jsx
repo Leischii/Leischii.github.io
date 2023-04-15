@@ -138,6 +138,13 @@ const fieldCollectionDefinition = {
   order: 24
 };
 
+const materialOverrideDefinitions = {
+  name: "materialOverrideDefinitions",
+  members: ["VfxMaterialOverrideDefinitionData"],
+  structure: "",
+  order: 89
+};
+
 const shape = {
   name: "shape",
   members: [
@@ -290,6 +297,24 @@ const fieldOrbitalDefinitions = {
   parent: fieldCollectionDefinition
 };
 
+/*
+Material-Definitions
+*/
+const VfxMaterialOverrideDefinitionData = {
+  name: "VfxMaterialOverrideDefinitionData",
+  members: [
+    "priority",
+    "subMeshName",
+    "overrideBlendMode",
+    "baseTexture",
+    "transitionTexture",
+    "transitionSample"
+  ],
+  structure: "VfxMaterialOverrideDefinitionData",
+  order: 89.1,
+  parent: materialOverrideDefinitions
+};
+
 /* 
 Contains info necessary for generating bin entries
 
@@ -336,6 +361,14 @@ const axisFracF = {
   structure: "SimpleProperty",
   order: 24.5,
   parent: [fieldNoiseDefinitions]
+};
+
+const baseTexture = {
+  name: "baseTexture",
+  members: [],
+  structure: "SimpleProperty",
+  order: 89.4,
+  parent: [VfxMaterialOverrideDefinitionData]
 };
 
 const bindWeight = {
@@ -977,6 +1010,14 @@ const orientation1 = {
   parent: property0xbc022424
 };
 
+const overrideBlendMode = {
+  name: "overrideBlendMode",
+  members: [],
+  structure: "SimpleProperty",
+  order: 89.3,
+  parent: [VfxMaterialOverrideDefinitionData]
+};
+
 const overrideScaleCap = {
   name: "overrideScaleCap",
   members: [],
@@ -1053,6 +1094,14 @@ const primitive = {
   members: [],
   structure: "SimpleProperty",
   order: 55
+};
+
+const priority = {
+  name: "priority",
+  members: [],
+  structure: "SimpleProperty",
+  order: 89.1,
+  parent: [VfxMaterialOverrideDefinitionData]
 };
 
 // TODO: Rename when translation is found
@@ -1197,6 +1246,14 @@ const strength = {
   parent: [fieldDragDefinitions]
 };
 
+const subMeshName = {
+  name: "subMeshName",
+  members: [],
+  structure: "SimpleObjectProperty",
+  order: 89.2,
+  parent: [VfxMaterialOverrideDefinitionData]
+};
+
 const texAddressModeBase = {
   name: "texAddressModeBase",
   members: [],
@@ -1254,6 +1311,22 @@ const timeBeforeFirstEmission = {
   members: [],
   structure: "SimpleProperty",
   order: 3
+};
+
+const transitionSample = {
+  name: "transitionSample",
+  members: [],
+  structure: "SimpleProperty",
+  order: 89.6,
+  parent: [VfxMaterialOverrideDefinitionData]
+};
+
+const transitionTexture = {
+  name: "transitionTexture",
+  members: [],
+  structure: "SimpleProperty",
+  order: 89.5,
+  parent: [VfxMaterialOverrideDefinitionData]
 };
 
 const uvMode = {
@@ -6756,7 +6829,7 @@ const Values = {
       binGroupType: "u16",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: 0
     },
     {
       troybinName: "p-texdiv",
@@ -6765,7 +6838,7 @@ const Values = {
       binGroupType: "vec2",
       binPropertyName: "",
       binPropertyType: "",
-      defaultValue: undefined
+      defaultValue: "{ 1, 1 }"
     },
     {
       troybinName: "p-texdiv-mult",
@@ -6817,6 +6890,15 @@ const Values = {
       troybinType: "ONE_DOUBLE",
       binGroup: mMode,
       binGroupType: "u8",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-trans-sample",
+      troybinType: "ONE_DOUBLE_255_TO_PERCENT",
+      binGroup: transitionSample,
+      binGroupType: "f32",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined
@@ -9822,6 +9904,33 @@ const Values = {
       defaultValue: undefined
     },
     {
+      troybinName: "MaterialOverridePriority",
+      troybinType: "ONE_DOUBLE",
+      binGroup: priority,
+      binGroupType: "i32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "MaterialOverrideTexture",
+      troybinType: "STRING_PATH",
+      binGroup: baseTexture,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "MaterialOverrideTransMap",
+      troybinType: "STRING_PATH",
+      binGroup: transitionTexture,
+      binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
       troybinName: "rendermode",
       troybinType: "BOOLEAN/INT",
       binGroup: blendMode,
@@ -9853,6 +9962,24 @@ const Values = {
       troybinType: "INT/BOOLEAN",
       binGroup: isUniformScale,
       binGroupType: "flag",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "",
+      troybinType: "STRINGS_NO_PATH",
+      binGroup: subMeshName,
+      binGroupType: "option[string]",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "",
+      troybinType: "",
+      binGroup: overrideBlendMode,
+      binGroupType: "u32",
       binPropertyName: "",
       binPropertyType: "",
       defaultValue: undefined

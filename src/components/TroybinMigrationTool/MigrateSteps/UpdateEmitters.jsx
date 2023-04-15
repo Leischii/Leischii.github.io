@@ -240,6 +240,39 @@ const UpdateEmitters = data => {
         }
       }
 
+      if (property.binGroup.name === "baseTexture") {
+        // DeepClone as this was bugged otherwise
+        const originalEmitter = JSON.parse(JSON.stringify(emit));
+        const materialProps = originalEmitter.properties.filter(
+          materialProp =>
+            materialProp.binGroup.parent &&
+            materialProp.binGroup.parent.length &&
+            materialProp.binGroup.parent[0].name ===
+              property.binGroup.parent[0].name &&
+            (!materialProp.definitionId ||
+              materialProp.definitionId === property.definitionId)
+        );
+
+        materialProps.forEach(materialProp => {
+          const materialPropNew = materialProp;
+
+          propertiesToRemove.push(materialPropNew.troybinName);
+
+          if (
+            materialPropNew.binGroup.parent &&
+            Array.isArray(materialPropNew.binGroup.parent)
+          ) {
+            const correctParent = materialPropNew.binGroup.parent[0];
+
+            materialPropNew.binGroup.parent = correctParent;
+          }
+
+          materialPropNew.binGroup.parent.definitionName =
+            property.definitionId;
+          propertiesToAdd.push(materialPropNew);
+        });
+      }
+
       if (property.binGroup.name.includes("field")) {
         const fieldEmitterIndex = troybinData.findIndex(
           selectedEmit => `"${selectedEmit.name}"` === property.value
@@ -261,10 +294,10 @@ const UpdateEmitters = data => {
             }
 
             if (
-              fieldProp.binGroup.parent &&
-              Array.isArray(fieldProp.binGroup.parent)
+              fieldProperty.binGroup.parent &&
+              Array.isArray(fieldProperty.binGroup.parent)
             ) {
-              const correctParent = fieldProp.binGroup.parent.filter(
+              const correctParent = fieldProperty.binGroup.parent.filter(
                 parentEntry => parentEntry.name === property.binGroup.name
               )[0];
 

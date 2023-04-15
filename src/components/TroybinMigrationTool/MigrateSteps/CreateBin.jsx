@@ -38,7 +38,8 @@ const CreateBin = (troybin, defaultFilePath) => {
 
           if (
             parentParent !== undefined &&
-            parentParent.name.includes("field")
+            (parentParent.name.includes("field") ||
+              parentParent.name === "materialOverrideDefinitions")
           ) {
             const parentParentPropertyParts = [];
 
