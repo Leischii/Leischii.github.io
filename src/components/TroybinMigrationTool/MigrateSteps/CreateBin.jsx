@@ -63,13 +63,25 @@ const CreateBin = (troybin, defaultFilePath) => {
                   const propertiesMatchingGroupName = [];
 
                   parentMembers.forEach(member => {
-                    if (member.binGroup.parent.definitionName === defGroup) {
-                      alreadyAdded.push(member.binGroup.name);
+                    const editedMember = member;
+
+                    if (
+                      editedMember.binGroup.parent.definitionName === defGroup
+                    ) {
+                      alreadyAdded.push(editedMember.binGroup.name);
+
+                      // Has different name for noise
+                      if (
+                        parentMember === "fieldNoiseDefinitions" &&
+                        editedMember.binGroup.name === "frequency"
+                      ) {
+                        editedMember.binGroup.name = "period";
+                      }
 
                       const binProperty = {
-                        name: member.binGroup.name,
-                        members: [member],
-                        order: member.binGroup.order
+                        name: editedMember.binGroup.name,
+                        members: [editedMember],
+                        order: editedMember.binGroup.order
                       };
 
                       propertiesMatchingGroupName.push(binProperty);
@@ -310,7 +322,7 @@ const CreateBin = (troybin, defaultFilePath) => {
           name: "flags",
           members: [],
           structure: "SimpleProperty",
-          order: 306
+          order: 307
         },
         binGroupType: "u16",
         binPropertyName: "",

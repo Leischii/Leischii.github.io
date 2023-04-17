@@ -364,6 +364,14 @@ const UpdateEmitters = data => {
                   // Case: Value is normal Property
                   nValue = property.value;
                   sValue = property.value[0]; // eslint-disable-line
+
+                  if (property.value[0] === 0) {
+                    if (property.value[1] !== 0) {
+                      sValue = property.value[1]; // eslint-disable-line
+                    } else if (property.value[2] !== 0) {
+                      sValue = property.value[2]; // eslint-disable-line
+                    }
+                  }
                 }
               } else if (
                 property.binGroup.name === "birthRotationalVelocity0" ||
@@ -404,13 +412,14 @@ const UpdateEmitters = data => {
                 value: sValue
               };
             } else {
-              let correctValue = property.value;
+              let complexValue = property.value;
+              let simpleValue = property.value;
 
               if (
                 property.simpleValue[4].includes("timesTable") &&
                 property.binGroup.name !== "particleLifetime"
               ) {
-                correctValue = [
+                complexValue = [
                   property.value[0],
                   property.value[1],
                   property.value[1],
@@ -427,10 +436,41 @@ const UpdateEmitters = data => {
                 binPropertyType: property.simpleValue[4].includes("timesTable")
                   ? property.binPropertyType
                   : property.simpleValue[2],
-                value: correctValue
+                value: complexValue
               };
 
               if (property.binGroup.name !== property.simpleValue[3].name) {
+                if (
+                  property.simpleValue[4].includes("timesTable") &&
+                  property.binGroup.name !== "particleLifetime"
+                ) {
+                  let constValueName = property.troybinName.slice(
+                    0,
+                    property.troybinName.length - 1
+                  );
+
+                  if (constValueName[constValueName.length] === "P") {
+                    constValueName = constValueName.slice(
+                      0,
+                      property.troybinName.length - 1
+                    );
+                  }
+
+                  const constValuePropertyIndex = emitter.properties.findIndex(
+                    currProp => currProp.troybinName === constValueName
+                  );
+
+                  if (constValuePropertyIndex !== -1) {
+                    const constValueProperty =
+                      emitter.properties[constValuePropertyIndex];
+
+                    simpleValue = [
+                      property.value[0],
+                      property.value[1] * constValueProperty.value
+                    ];
+                  }
+                }
+
                 simpleProperty = {
                   troybinName: property.troybinName,
                   troybinType: property.simpleValue[0],
@@ -438,7 +478,7 @@ const UpdateEmitters = data => {
                   binGroupType: property.simpleValue[1],
                   binPropertyName: property.simpleValue[4],
                   binPropertyType: property.simpleValue[2],
-                  value: property.value
+                  value: simpleValue
                 };
               } else {
                 simpleProperty = undefined;
