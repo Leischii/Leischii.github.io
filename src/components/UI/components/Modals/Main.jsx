@@ -185,23 +185,36 @@ const ConvertModal = ({
       sx={{ flexGrow: 1 }}
     >
       <DialogContent sx={{ padding: 0 }}>
-        <Grid container>
-          <Grid item xs={7}>
-            <Grid
-              container
-              direction="row"
-              sx={{
-                backgroundColor: "rgb(90, 90, 90)",
-                padding: 3,
-                alignItems: "center"
-              }}
+        <Grid
+          container
+          direction="row"
+          sx={{
+            backgroundColor: "rgb(90, 90, 90)",
+            height: "10%",
+            padding: 1,
+            paddingLeft: 2,
+            alignItems: "center"
+          }}
+        >
+          <Grid item xs={11.5}>
+            <Typography variant="h5">Convert Files</Typography>
+          </Grid>
+          <Grid item xs={0.5}>
+            <IconButton
+              align="center"
+              aria-label="Close"
+              color="inherit"
+              edge="start"
+              onClick={() => onClose("")}
             >
-              <Grid item xs={8}>
-                <Typography variant="h5">Convert Files</Typography>
-              </Grid>
-            </Grid>
-            <Grid container direction="row" spacing={1} sx={{ padding: 4 }}>
-              <Grid item xs={10}>
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={1} sx={{ height: "70%" }}>
+          <Grid item xs={7.5}>
+            <Grid container sx={{ padding: 1 }}>
+              <Grid item xs={12} sx={{ paddingTop: 3 }}>
                 <TextField
                   fullWidth
                   helperText="Please select what settings to use"
@@ -224,7 +237,7 @@ const ConvertModal = ({
               <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
                 <Divider />
               </Grid>
-              <Grid item xs={10} sx={{ paddingBottom: "2%" }}>
+              <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
                 <TextField
                   disabled={settingsPreset !== "Custom"}
                   fullWidth
@@ -236,7 +249,7 @@ const ConvertModal = ({
                   onChange={event => handleChangeInput(event, "assetsPath")}
                 />
               </Grid>
-              <Grid item xs={10} sx={{ paddingBottom: "2%" }}>
+              <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
                 <TextField
                   disabled={settingsPreset !== "Custom"}
                   fullWidth
@@ -249,7 +262,7 @@ const ConvertModal = ({
                 />
               </Grid>
               <Grid item xs={12} sx={{ paddingBottom: "30%" }}>
-                <FormGroup>
+                <FormGroup sx={{ paddingLeft: 1 }}>
                   <FormControlLabel
                     disabled={settingsPreset !== "Custom"}
                     control={
@@ -280,49 +293,21 @@ const ConvertModal = ({
               </Grid>
             </Grid>
           </Grid>
-          <Grid
-            container
-            direction="column"
-            item
-            xs={5}
-            sx={{
-              backgroundColor: "rgb(90, 90, 90)",
-              padding: "2px 2.5px"
-            }}
-          >
-            <Grid
-              align="right"
-              item
-              sx={{
-                padding: "0px 0px"
-              }}
-              xs={1.4}
-            >
-              <IconButton
-                align="right"
-                aria-label="Close"
-                color="inherit"
-                edge="start"
-                onClick={() => onClose("")}
-                style={{ padding: 8 }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Grid>
+          <Grid item xs={4.5}>
             <Divider />
             <Grid
               align="center"
               item
               sx={{
                 backgroundColor: "rgb(120, 120, 120)",
-                paddingTop: "5%"
+                height: "10%"
               }}
-              xs={1}
+              xs={12}
             >
               <Typography variant="h5">General Information</Typography>
             </Grid>
             <Divider />
-            <Grid container item sx={{ paddingTop: "4%" }} xs={0.5}>
+            <Grid container item sx={{ paddingTop: "4%" }} xs={12}>
               <Grid item xs={9}>
                 <Typography
                   sx={{
@@ -340,8 +325,8 @@ const ConvertModal = ({
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container item sx={{ paddingTop: "1%" }} xs={0.5}>
-              <Grid item xs={11}>
+            <Grid container item sx={{ paddingTop: "1%" }} xs={12}>
+              <Grid item xs={10}>
                 <Typography
                   sx={{
                     padding: "2px",
@@ -352,17 +337,17 @@ const ConvertModal = ({
                   File Amount:
                 </Typography>
               </Grid>
-              <Grid item xs={1}>
+              <Grid item xs={2}>
                 <Typography
                   sx={{
-                    padding: "2px"
+                    float: "right"
                   }}
                 >
                   {selectedFiles.length}
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container item xs={0.5} />
+            <Grid container item xs={6} />
             <Divider />
             <Grid
               item
@@ -370,7 +355,7 @@ const ConvertModal = ({
                 backgroundColor: "rgb(120, 120, 120)",
                 paddingTop: "1%"
               }}
-              xs={0.6}
+              xs={12}
             >
               <Typography
                 variant="h6"
@@ -382,7 +367,7 @@ const ConvertModal = ({
               </Typography>
             </Grid>
             <Divider />
-            <Grid container item sx={{ paddingTop: "4%" }} xs={0.5}>
+            <Grid container item sx={{ paddingTop: "4%" }} xs={6}>
               <Grid item xs={10}>
                 <Typography
                   sx={{
@@ -405,7 +390,7 @@ const ConvertModal = ({
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container item sx={{ paddingTop: "1%" }} xs={0.5}>
+            <Grid container item sx={{ paddingTop: "1%" }} xs={6}>
               <Grid item xs={12}>
                 <Typography
                   sx={{
@@ -418,7 +403,7 @@ const ConvertModal = ({
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container item xs={0.5}>
+            <Grid container item xs={6}>
               <Grid item xs={12}>
                 <Tooltip
                   arrow
@@ -440,61 +425,58 @@ const ConvertModal = ({
                 </Tooltip>
               </Grid>
             </Grid>
-            <Grid container item xs={3} />
-            <Divider />
-            <Grid container item xs={0.5}>
-              <Grid align="center" item xs={12}>
+          </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={1} sx={{ height: "20%" }}>
+          <Grid item xs={7.5} />
+          <Grid item xs={4.5}>
+            <Grid align="center" item xs={12}>
+              <Button
+                disabled={currentFileIndex === 0}
+                onClick={handleClickBack}
+                startIcon={<ArrowBackIcon />}
+                variant="outlined"
+                sx={{ margin: "12px 16px 12px 16px" }}
+              >
+                <Typography>Back</Typography>
+              </Button>
+              <Tooltip
+                arrow
+                placement="top"
+                title="Applies the current settings to all files left and starts the converting process"
+              >
                 <Button
-                  disabled={currentFileIndex === 0}
-                  onClick={handleClickBack}
-                  startIcon={<ArrowBackIcon />}
+                  onClick={() => handleClickNext(true, true)}
                   variant="outlined"
                   sx={{ margin: "12px 16px 12px 16px" }}
                 >
-                  <Typography>Back</Typography>
+                  <Typography>All</Typography>
                 </Button>
-                <Tooltip
-                  arrow
-                  placement="top"
-                  title="Applies the current settings to all files left and starts the converting process"
-                >
-                  <Button
-                    onClick={() => handleClickNext(true, true)}
-                    variant="outlined"
-                    sx={{ margin: "12px 16px 12px 16px" }}
-                  >
-                    <Typography>All</Typography>
-                  </Button>
-                </Tooltip>
-                <Button
-                  disabled={currentFileIndex === selectedFiles.length - 1}
-                  onClick={() => handleClickNext(false)}
-                  endIcon={<ArrowForwardIcon />}
-                  variant="contained"
-                  sx={{ margin: "12px 16px 12px 16px" }}
-                >
-                  <Typography>Next</Typography>
-                </Button>
-              </Grid>
-              <Grid align="center" item xs={12}>
-                <Button
-                  disabled={loading || !isConvertReady(currentFileIndex)}
-                  onClick={() => handleClickNext(true)}
-                  startIcon={
-                    loading ? (
-                      <CircularProgress size={20} />
-                    ) : (
-                      <AutoFixHighIcon />
-                    )
-                  }
-                  sx={{ backgroundColor: "rgb(60, 60, 60)", width: "90%" }}
-                  variant="outlined"
-                >
-                  <Typography>
-                    {loading ? "Converting..." : "Start Converting"}
-                  </Typography>
-                </Button>
-              </Grid>
+              </Tooltip>
+              <Button
+                disabled={currentFileIndex === selectedFiles.length - 1}
+                onClick={() => handleClickNext(false)}
+                endIcon={<ArrowForwardIcon />}
+                variant="contained"
+                sx={{ margin: "12px 16px 12px 16px" }}
+              >
+                <Typography>Next</Typography>
+              </Button>
+            </Grid>
+            <Grid align="center" item xs={12}>
+              <Button
+                disabled={loading || !isConvertReady(currentFileIndex)}
+                onClick={() => handleClickNext(true)}
+                startIcon={
+                  loading ? <CircularProgress size={20} /> : <AutoFixHighIcon />
+                }
+                sx={{ backgroundColor: "rgb(60, 60, 60)", width: "90%" }}
+                variant="outlined"
+              >
+                <Typography>
+                  {loading ? "Converting..." : "Start Converting"}
+                </Typography>
+              </Button>
             </Grid>
           </Grid>
         </Grid>

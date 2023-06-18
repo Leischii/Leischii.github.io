@@ -259,7 +259,7 @@ Field-Definitions
 */
 const fieldAccelerationDefinitions = {
   name: "fieldAccelerationDefinitions",
-  members: ["isLocalSpace", "acceleration"],
+  members: ["isLocalSpace", "acceleration", "radius"],
   structure: "fieldAccelerationDefinitions",
   order: 24.1,
   parent: fieldCollectionDefinition
@@ -1122,6 +1122,7 @@ const radius = {
   structure: "SimpleObjectVariableProperty",
   order: 24.2,
   parent: [
+    fieldAccelerationDefinitions,
     fieldAttractionDefinitions,
     fieldDragDefinitions,
     fieldNoiseDefinitions
@@ -6334,7 +6335,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable1"
@@ -6350,7 +6351,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable2"
@@ -6366,7 +6367,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable3"
@@ -6382,7 +6383,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable4"
@@ -6398,7 +6399,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable5"
@@ -6414,7 +6415,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable6"
@@ -6430,7 +6431,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable7"
@@ -6446,7 +6447,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable8"
@@ -6462,7 +6463,7 @@ const Values = {
       defaultValue: undefined,
       simpleValue: [
         "TWO_DOUBLE",
-        "embed = ValueFloat",
+        "pointer = VfxAnimatedFloatVariableData",
         "f32",
         birthRotationalVelocity1,
         "timesTable9"
