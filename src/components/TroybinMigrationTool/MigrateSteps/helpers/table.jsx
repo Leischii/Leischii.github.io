@@ -235,7 +235,7 @@ const primitiveNone = { // eslint-disable-line
 
 const primitivePlanarProjection = { // eslint-disable-line
   name: "primitivePlanarProjection",
-  members: ["mProjection"],
+  members: ["mProjection", "mYRange", "mFading"],
   structure: "primitivePlanarProjection",
   order: 55
 };
@@ -924,6 +924,22 @@ const mCutoff = {
   structure: "SimpleProperty",
   order: 55.2,
   parent: [primitiveArbitraryTrail, primitiveTrail]
+};
+
+const mFading = {
+  name: "mFading",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.2,
+  parent: [primitivePlanarProjection]
+};
+
+const mYRange = {
+  name: "mYRange",
+  members: [],
+  structure: "SimpleProperty",
+  order: 55.1,
+  parent: [primitivePlanarProjection]
 };
 
 const meshRenderFlags = { // eslint-disable-line
@@ -5231,6 +5247,24 @@ const Values = {
       binGroupType: "pointer = VfxAnimatedVector3fVariableData",
       binPropertyName: "timesTable9",
       binPropertyType: "vec3",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-projection-fading",
+      troybinType: "ONE_DOUBLE",
+      binGroup: mFading,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
+      defaultValue: undefined
+    },
+    {
+      troybinName: "p-projection-y-range",
+      troybinType: "ONE_DOUBLE",
+      binGroup: mYRange,
+      binGroupType: "f32",
+      binPropertyName: "",
+      binPropertyType: "",
       defaultValue: undefined
     },
     {
