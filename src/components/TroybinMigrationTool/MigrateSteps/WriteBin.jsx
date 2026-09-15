@@ -36,7 +36,8 @@ function writeConstantValue(
   property,
   spacingAmount,
   isMult = true,
-  valueOnly = false
+  valueOnly = false,
+  addNewLine = true
 ) {
   const members = isMult ? property.members : property;
   const result = [];
@@ -51,12 +52,16 @@ function writeConstantValue(
 
     if (constValue !== member.defaultValue) {
       if (valueOnly) {
-        result.push(`${getSpacing(spacingAmount)}${constValue}\r\n`);
+        result.push(
+          `${getSpacing(spacingAmount)}${constValue}${
+            addNewLine ? "\r\n" : " "
+          }`
+        );
       } else {
         result.push(
           `${getSpacing(spacingAmount)}${member.binPropertyName}: ${
             member.binPropertyType
-          } = ${constValue}\r\n`
+          } = ${constValue}${addNewLine ? "\r\n" : " "}`
         );
       }
     }
@@ -85,6 +90,19 @@ function writeDynamics(
     probTableZ.length ||
     probTableA.length
   ) {
+    const probabilityTables = {
+      x: { data: probTableX, canHave: true },
+      y: { data: probTableY, canHave: false },
+      z: { data: probTableZ, canHave: false },
+      a: { data: probTableA, canHave: false }
+    };
+
+    property.members[0].binGroup.members.forEach(emit => {
+      if (emit.includes("probTableY")) probabilityTables.y.canHave = true;
+      if (emit.includes("probTableZ")) probabilityTables.z.canHave = true;
+      if (emit.includes("probTableA")) probabilityTables.a.canHave = true;
+    });
+
     result.push(
       `${getSpacing(spacingAmount)}dynamics: ${probTableX[0]?.binGroupType ||
         probTableY[0]?.binGroupType ||
@@ -93,190 +111,47 @@ function writeDynamics(
       `${getSpacing(spacingAmount + 1)}probabilityTables: list[pointer] = {\r\n`
     );
 
-    const canHaveA =
-      property.members[0].binGroup.members.findIndex(emit =>
-        emit.includes("probTableA")
-      ) !== -1;
-    const canHaveY =
-      property.members[0].binGroup.members.findIndex(emit =>
-        emit.includes("probTableY")
-      ) !== -1;
-    const canHaveZ =
-      property.members[0].binGroup.members.findIndex(emit =>
-        emit.includes("probTableZ")
-      ) !== -1;
+    Object.keys(probabilityTables).forEach(key => {
+      const currentProbTable = probabilityTables[key].data;
 
-    if (probTableX.length) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = {\r\n`
-      );
-
-      probTableX.forEach(probTable => {
+      if (currentProbTable.length) {
         result.push(
-          `${getSpacing(spacingAmount + 4)}${probTable.value[0]}\r\n`
+          `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
+          `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = { `
         );
-      });
 
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyValues: list[${
-          probTableX[0].binPropertyType
-        }] = {\r\n`
-      );
+        currentProbTable.forEach(probTable => {
+          result.push(`${probTable.value[0]}, `);
+        });
 
-      probTableX.forEach(probTable => {
-        let value = probTable.value[1];
-
-        if (probTable.value.length === 3) {
-          value = `{${value[1]}, ${value[2]}}`;
-        }
-
-        if (probTable.value.length === 4) {
-          value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
-        }
-
-        result.push(`${getSpacing(spacingAmount + 4)}${value}\r\n`);
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 2)}}\r\n`
-      );
-    } else if (writeEmptyEntries) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
-      );
-    }
-
-    if (probTableY.length) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = {\r\n`
-      );
-
-      probTableY.forEach(probTable => {
         result.push(
-          `${getSpacing(spacingAmount + 4)}${probTable.value[0]}\r\n`
+          `}\r\n`,
+          `${getSpacing(spacingAmount + 3)}keyValues: list[${
+            currentProbTable[0].binPropertyType
+          }] = { `
         );
-      });
 
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyValues: list[${
-          probTableY[0].binPropertyType
-        }] = {\r\n`
-      );
+        currentProbTable.forEach(probTable => {
+          let value = probTable.value[1];
 
-      probTableY.forEach(probTable => {
-        let value = probTable.value[1];
+          if (probTable.value.length === 3) {
+            value = `{${value[1]}, ${value[2]}}`;
+          }
 
-        if (probTable.value.length === 3) {
-          value = `{${value[1]}, ${value[2]}}`;
-        }
+          if (probTable.value.length === 4) {
+            value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
+          }
 
-        if (probTable.value.length === 4) {
-          value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
-        }
+          result.push(`${value}, `);
+        });
 
-        result.push(`${getSpacing(spacingAmount + 4)}${value}\r\n`);
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 2)}}\r\n`
-      );
-    } else if (canHaveY && writeEmptyEntries) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
-      );
-    }
-
-    if (probTableZ.length) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = {\r\n`
-      );
-
-      probTableZ.forEach(probTable => {
+        result.push(`}\r\n`, `${getSpacing(spacingAmount + 2)}}\r\n`);
+      } else if (probabilityTables[key].canHave && writeEmptyEntries) {
         result.push(
-          `${getSpacing(spacingAmount + 4)}${probTable.value[0]}\r\n`
+          `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData { }\r\n`
         );
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyValues: list[${
-          probTableZ[0].binPropertyType
-        }] = {\r\n`
-      );
-
-      probTableZ.forEach(probTable => {
-        let value = probTable.value[1];
-
-        if (probTable.value.length === 3) {
-          value = `{${value[1]}, ${value[2]}}`;
-        }
-
-        if (probTable.value.length === 4) {
-          value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
-        }
-
-        result.push(`${getSpacing(spacingAmount + 4)}${value}\r\n`);
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 2)}}\r\n`
-      );
-    } else if (canHaveZ && writeEmptyEntries) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
-      );
-    }
-
-    if (probTableA.length) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyTimes: list[f32] = {\r\n`
-      );
-
-      probTableA.forEach(probTable => {
-        result.push(
-          `${getSpacing(spacingAmount + 4)}${probTable.value[0]}\r\n`
-        );
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 3)}keyValues: list[${
-          probTableA[0].binPropertyType
-        }] = {\r\n`
-      );
-
-      probTableA.forEach(probTable => {
-        let value = probTable.value[1];
-
-        if (probTable.value.length === 3) {
-          value = `{${value[1]}, ${value[2]}}`;
-        }
-
-        if (probTable.value.length === 4) {
-          value = `{${value[1]}, ${value[2]}, ${value[3]}}`;
-        }
-
-        result.push(`${getSpacing(spacingAmount + 4)}${value}\r\n`);
-      });
-
-      result.push(
-        `${getSpacing(spacingAmount + 3)}}\r\n`,
-        `${getSpacing(spacingAmount + 2)}}\r\n`
-      );
-    } else if (canHaveA && writeEmptyEntries) {
-      result.push(
-        `${getSpacing(spacingAmount + 2)}VfxProbabilityTableData {}\r\n`
-      );
-    }
+      }
+    });
 
     result.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
   } else {
@@ -292,20 +167,20 @@ function writeDynamics(
     );
   }
 
-  result.push(`${getSpacing(spacingAmount + 1)}times: list[f32] = {\r\n`);
+  result.push(`${getSpacing(spacingAmount + 1)}times: list[f32] = { `);
 
   if (timesTable.length || timesSimpleTable.length) {
     const timesTableEntries = timesTable.length ? timesTable : timesSimpleTable;
 
     timesTableEntries.forEach(table => {
-      result.push(`${getSpacing(spacingAmount + 2)}${table.value[0]}\r\n`);
+      result.push(`${table.value[0]}, `);
     });
 
     result.push(
-      `${getSpacing(spacingAmount + 1)}}\r\n`,
+      `}\r\n`,
       `${getSpacing(spacingAmount + 1)}values: list[${
         timesTableEntries[0].binPropertyType
-      }] = {\r\n`
+      }] = { `
     );
 
     timesTableEntries.forEach(table => {
@@ -323,28 +198,23 @@ function writeDynamics(
         value = `{ ${table.value[1]}, ${table.value[2]}, ${table.value[3]}, ${table.value[4]} }`;
       }
 
-      result.push(`${getSpacing(spacingAmount + 2)}${value}\r\n`);
+      result.push(`${value}, `);
     });
 
-    result.push(
-      `${getSpacing(spacingAmount + 1)}}\r\n`,
-      `${getSpacing(spacingAmount + 0)}}\r\n`
-    );
+    result.push(`}\r\n`, `${getSpacing(spacingAmount + 0)}}\r\n`);
   } else {
     const constValueEntry = property.members.find(
       memb => memb.binPropertyName === "constantValue"
     );
 
     result.push(
-      `${getSpacing(spacingAmount + 2)}0\r\n`,
-      `${getSpacing(spacingAmount + 1)}}\r\n`,
+      `0, }\r\n`,
       `${getSpacing(spacingAmount + 1)}values: list[${
         constValueEntry
           ? constValueEntry.binPropertyType
           : property.members[0].binPropertyType
-      }] = {\r\n`,
-      `${getSpacing(spacingAmount + 2)}${constValue}\r\n`,
-      `${getSpacing(spacingAmount + 1)}}\r\n`,
+      }] = { `,
+      `${constValue}, }\r\n`,
       `${getSpacing(spacingAmount)}}\r\n`
     );
   }
@@ -470,7 +340,7 @@ function WriteProperty(property, spacingAmount) {
         formatedProperty.push(
           `${getSpacing(spacingAmount)}${property.name}: ${
             property.members[0].binGroupType
-          } = {\r\n`
+          } = { `
         );
 
         const isStringArray =
@@ -478,24 +348,21 @@ function WriteProperty(property, spacingAmount) {
 
         if (isStringArray) {
           property.members[0].value.forEach(valuePart => {
-            formatedProperty.push(
-              `${getSpacing(spacingAmount + 1)}"${valuePart}"\r\n`
-            );
+            formatedProperty.push(`"${valuePart}", `);
           });
         } else if (property.members[0].binGroup.name === "emitRotationAxes") {
           property.members.forEach(memberPart => {
             const value = `{ ${memberPart.value[0]}, ${memberPart.value[1]}, ${memberPart.value[2]} }`;
 
-            formatedProperty.push(
-              `${getSpacing(spacingAmount + 1)}${value}\r\n`
-            );
+            formatedProperty.push(`${value}, `);
           });
         } else {
           constValueWritten = writeConstantValue(
             property,
-            spacingAmount + 1,
+            0,
             true,
-            true
+            true,
+            false
           );
 
           constValueWritten.result.forEach(entry => {
@@ -503,7 +370,7 @@ function WriteProperty(property, spacingAmount) {
           });
         }
 
-        formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
+        formatedProperty.push(`}\r\n`);
       }
 
       break;
@@ -562,7 +429,7 @@ function WriteProperty(property, spacingAmount) {
       }
 
       break;
-    case "ShapeRotationAnglesProperty":
+    case "ShapeRotationAnglesProperty": {
       formatedProperty.push(
         `${getSpacing(spacingAmount)}${property.name}: ${
           property.members[0].binGroupType
@@ -581,101 +448,79 @@ function WriteProperty(property, spacingAmount) {
         }
       }
 
-      // eslint-disable-next-line
-      const constantX = constantValues.filter(
-        constant => constant.troybinName === "e-rotation1"
-      )[0];
+      const angleData = {
+        xData: {
+          constValue: undefined,
+          hasProbTable: probTableX.length > 0 || timesTableEntriesX.length > 0
+        },
+        yData: {
+          constValue: undefined,
+          hasProbTable: probTableY.length > 0 || timesTableEntriesY.length > 0
+        }
+      };
 
-      if (
-        probTableX.length ||
-        timesTableEntriesX.length ||
-        constantX !== undefined
-      ) {
-        formatedProperty.push(
-          `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
-        );
+      constantValues.forEach(constant => {
+        if (constant.troybinName === "e-rotation1") {
+          angleData.xData.constValue = constant;
+        } else if (constant.troybinName === "e-rotation2") {
+          angleData.yData.constValue = constant;
+        }
+      });
 
-        constValueWritten = writeConstantValue(
-          [constantX],
-          spacingAmount + 2,
-          false
-        );
+      Object.keys(angleData).forEach(angleKey => {
+        const angleEntry = angleData[angleKey];
+        const probTables = angleKey === "xData" ? probTableX : probTableY;
+        const timesTables =
+          angleKey === "xData" ? timesTableEntriesX : timesTableEntriesY;
 
-        constValueWritten.result.forEach(entry => {
-          formatedProperty.push(entry);
-        });
+        if (angleEntry.hasProbTable || angleEntry.constValue) {
+          if (!angleEntry.constValue) {
+            // TODO: Add case handling for when constValue is missing, example: vi_q_mis_Child.troy
+          }
 
-        if (probTableX.length || timesTableEntriesX.length) {
-          writeDynamics(
-            constValueWritten.constValue,
-            property,
-            probTableX,
-            [],
-            probTableZ,
-            probTableA,
+          formatedProperty.push(
+            `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
+          );
+
+          constValueWritten = writeConstantValue(
+            [angleEntry.constValue],
             spacingAmount + 2,
-            timesTableEntriesX,
-            timesSimpleTable,
             false
-          ).forEach(entry => {
+          );
+
+          constValueWritten.result.forEach(entry => {
             formatedProperty.push(entry);
           });
+
+          if (angleEntry.hasProbTable) {
+            writeDynamics(
+              constValueWritten.constValue,
+              property,
+              probTables,
+              [],
+              probTableZ,
+              probTableA,
+              spacingAmount + 2,
+              timesTables,
+              timesSimpleTable,
+              false
+            ).forEach(entry => {
+              formatedProperty.push(entry);
+            });
+          }
+
+          formatedProperty.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
+        } else if (angleKey === "xData") {
+          formatedProperty.push(
+            `${getSpacing(spacingAmount + 1)}ValueFloat {}\r\n`
+          );
         }
-
-        formatedProperty.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
-      } else {
-        formatedProperty.push(
-          `${getSpacing(spacingAmount + 1)}ValueFloat {}\r\n`
-        );
-      }
-
-      // eslint-disable-next-line
-      const constantY = constantValues.filter(
-        constant => constant.troybinName === "e-rotation2"
-      )[0];
-
-      if (
-        probTableY.length ||
-        timesTableEntriesY.length ||
-        constantY !== undefined
-      ) {
-        formatedProperty.push(
-          `${getSpacing(spacingAmount + 1)}ValueFloat {\r\n`
-        );
-
-        constValueWritten = writeConstantValue(
-          [constantY],
-          spacingAmount + 2,
-          false
-        );
-
-        constValueWritten.result.forEach(entry => {
-          formatedProperty.push(entry);
-        });
-
-        if (probTableY.length || timesTableEntriesY.length) {
-          writeDynamics(
-            constValueWritten.constValue,
-            property,
-            [],
-            probTableY,
-            probTableZ,
-            probTableA,
-            spacingAmount + 2,
-            timesTableEntriesY,
-            timesSimpleTable,
-            false
-          ).forEach(entry => {
-            formatedProperty.push(entry);
-          });
-        }
-
-        formatedProperty.push(`${getSpacing(spacingAmount + 1)}}\r\n`);
-      }
+      });
 
       formatedProperty.push(`${getSpacing(spacingAmount)}}\r\n`);
 
       break;
+    }
     default:
       break;
   }
@@ -693,31 +538,97 @@ const WriteBin = (bin, defaultFilePath) => {
 
     emitters.forEach(emitter => {
       const propertiesWritten = [];
+      let hasSpawnShape = false;
 
       emitter.forEach(property => {
         let entry;
 
-        if (property.name === "shape") {
-          const writenLines = [];
+        if (property.name === "SpawnShape") {
+          if (
+            property.members.length === 1 &&
+            property.members[0].name === "emitOffset" &&
+            property.members[0].members.length === 1 &&
+            property.members[0].members[0].troybinName === "p-offset"
+          ) {
+            const value = getValue(property.members[0].members[0]);
 
-          property.members.forEach(member => {
-            entry = WriteProperty(member, spacing + 4);
-
-            entry.forEach(e => {
-              writenLines.push(e);
-            });
-          });
-
-          if (writenLines.length) {
             propertiesWritten.push(
-              `${getSpacing(spacing + 3)}shape: embed = VfxShape {\r\n`
+              `${getSpacing(
+                spacing + 3
+              )}SpawnShape: pointer = 0xee39916f {\r\n`,
+              `${getSpacing(spacing + 4)}emitOffset: vec3 = ${value}\r\n`,
+              `${getSpacing(spacing + 3)}}\r\n`
             );
 
-            writenLines.forEach(line => {
-              propertiesWritten.push(line);
-            });
+            hasSpawnShape = true;
+          } else {
+            const emitOffsetProperty = property.members.find(
+              member => member.name === "emitOffset"
+            );
 
-            propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+            if (emitOffsetProperty) {
+              const isShapeBox =
+                emitOffsetProperty.members.length > 1 &&
+                emitOffsetProperty.members.every(
+                  member =>
+                    member.troybinName === "p-offset" ||
+                    (member.troybinType === "TWO_DOUBLE" &&
+                      ((member.value[0] === 0 && member.value[1] === -1) ||
+                        (member.value[0] === 1 && member.value[1] === 1)))
+                );
+
+              if (isShapeBox) {
+                const emitOffsetTroybinProperty = emitOffsetProperty.members.find(
+                  member => member.troybinName === "p-offset"
+                );
+                // Write shapebox when p-offset is presnt and all dynamics are either [0, -1] or [1, 1]
+                propertiesWritten.push(
+                  `${getSpacing(
+                    spacing + 3
+                  )}SpawnShape: pointer = VfxShapeBox {\r\n`,
+                  `${getSpacing(spacing + 4)}flags: u8 = 1\r\n`,
+                  emitOffsetTroybinProperty
+                    ? `${getSpacing(spacing + 4)}Size: vec3 = ${getValue(
+                        emitOffsetTroybinProperty
+                      )}\r\n`
+                    : "",
+                  `${getSpacing(spacing + 3)}}\r\n`
+                );
+
+                hasSpawnShape = true;
+              } else {
+                // Write legacy shape structure
+                const writenLines = [];
+
+                property.members.forEach(member => {
+                  entry = WriteProperty(member, spacing + 4);
+
+                  entry.forEach(e => {
+                    writenLines.push(e);
+                  });
+                });
+
+                if (writenLines.length) {
+                  propertiesWritten.push(
+                    `${getSpacing(
+                      spacing + 3
+                    )}SpawnShape: pointer = VfxShapeLegacy {\r\n`
+                  );
+
+                  writenLines.forEach(line => {
+                    propertiesWritten.push(line);
+                  });
+
+                  propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
+
+                  hasSpawnShape = true;
+                }
+              }
+            } else {
+              bin.unknowns.push(
+                "Error: Shape could not be created due to missing emitOffset constValue"
+              );
+            }
           }
         } else if (property.name.includes("primitive")) {
           if (
@@ -863,6 +774,19 @@ const WriteBin = (bin, defaultFilePath) => {
                 break;
               // 8 ?
               case "primitiveRay":
+                if (!hasSpawnShape) {
+                  // TODO: Check exactly how this is supposed to work
+                  /* propertiesWritten.push(
+                    `${getSpacing(
+                      spacing + 3
+                    )}SpawnShape: pointer = VfxShapeCylinder {\r\n`,
+                    `${getSpacing(spacing + 4)}radius: f32 = 1\r\n`,
+                    `${getSpacing(spacing + 3)}}\r\n`
+                  );
+
+                  hasSpawnShape = true; */
+                }
+
                 propertiesWritten.push(
                   `${getSpacing(
                     spacing + 3
@@ -1020,9 +944,11 @@ const WriteBin = (bin, defaultFilePath) => {
           });
 
           propertiesWritten.push(`${getSpacing(spacing + 3)}}\r\n`);
-        } else if (property.name === "0xbc022424") {
+        } else if (property.name === "LegacySimple") {
           propertiesWritten.push(
-            `${getSpacing(spacing + 3)}0xbc022424: pointer = 0x7f70a2b2 {\r\n`
+            `${getSpacing(
+              spacing + 3
+            )}LegacySimple: pointer = VfxEmitterLegacySimple {\r\n`
           );
 
           property.members.forEach(member => {

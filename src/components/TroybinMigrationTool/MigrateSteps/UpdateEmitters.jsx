@@ -157,9 +157,8 @@ const UpdateEmitters = data => {
               structure: "SimpleObjectProperty",
               order: 50.4,
               parent: {
-                name: "shape",
+                name: "SpawnShape",
                 members: [
-                  "birthTranslation",
                   "emitOffset",
                   "emitRotationAngles",
                   "emitRotationAxes"
@@ -186,8 +185,7 @@ const UpdateEmitters = data => {
       // Color table values need to be multiplied with the constantValue
       if (
         property.troybinName === "p-xrgba" ||
-        property.troybinName === "e-rgba" ||
-        property.troybinName === "p-bindtoemitter"
+        property.troybinName === "e-rgba"
       ) {
         let colorNotDefault = false;
 
@@ -513,14 +511,24 @@ const UpdateEmitters = data => {
         }
       } else {
         const propertiesToCheckForTableEntries = [
+          "e-tilesize",
+          "e-uvoffset",
+          "e-uvoffset-mult",
+          "p-bindtoemitter",
+          "p-drag",
+          "p-offset",
+          "p-orbitvel",
+          "p-postoffset",
           "p-quadrot",
           "p-rotvel",
           "p-scale",
+          "p-vel",
           "p-worldaccel",
           "p-xquadrot",
           "p-xscale",
-          "Particle-Velocity",
-          "Particle-Drag"
+          "Particle-Acceleration",
+          "Particle-Drag",
+          "Particle-Velocity"
         ];
 
         if (propertiesToCheckForTableEntries.includes(property.troybinName)) {
@@ -529,7 +537,7 @@ const UpdateEmitters = data => {
           for (let i = 0; i < 3; i += 1) {
             const propertyValue = property.value[i];
 
-            if (propertyValue !== 1) {
+            if (propertyValue && propertyValue !== 1) {
               valueNotDefault = true;
             }
           }

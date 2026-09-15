@@ -136,10 +136,10 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
     case "BOOLEAN/INT":
       if (values === "4") {
         formatedValue = 4;
-      } else if (values === "\"NotWhenHigh\"" || values === "3") { // eslint-disable-line
+      } else if (values === "\"High\"" || values === "3") { // eslint-disable-line
         // TODO: Check if NotWhenHigh is actually 3
         formatedValue = 3;
-      } else if (values === "\"High\"" || values === "\"clamp\"" || values === "2") { // eslint-disable-line
+      } else if (values === "\"NotWhenHigh\"" || values === "\"clamp\"" || values === "2") { // eslint-disable-line
         formatedValue = 2;
       } else if (values === "\"Medium\"" || values === "true" || values === "1") { // eslint-disable-line
         formatedValue = 1;
@@ -192,7 +192,7 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         values.split(" ")[1] === "1.0"
       ) {
         formatedValue = 1;
-      } else if (values === "0") {
+      } else if (values === "0" || values === "0.0") {
         formatedValue = 0;
       } else {
         const valueArray = values.split(" ");
@@ -202,6 +202,18 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
 
       if (values.split(" ").length !== 2 && values !== "1" && values !== "0") {
         formatedValue = invalidValue;
+      }
+
+      break;
+    case "THREE_DOUBLE_TO_TWO":
+      formatedValue = FormatNumber(values);
+
+      if (formatedValue.length === 3) {
+        const removedItem = formatedValue.pop();
+
+        if (formatedValue.length !== 2 || removedItem !== formatedValue[1]) {
+          formatedValue = invalidValue;
+        }
       }
 
       break;

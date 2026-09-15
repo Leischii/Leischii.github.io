@@ -16,10 +16,12 @@ const CreateBin = (troybin, defaultFilePath) => {
     const binEmitters = [];
 
     emitter.properties.forEach(property => {
-      if (
-        alreadyAdded.filter(entry => entry === property.binGroup.name)
-          .length === 0
-      ) {
+      const finalPropertyName =
+        property.binGroup.parent?.parent?.name ||
+        property.binGroup.parent?.name ||
+        property.binGroup.name;
+
+      if (alreadyAdded.findIndex(entry => entry === finalPropertyName) === -1) {
         const propertyGroup = property.binGroup.name;
         let propertyParts = [];
 
@@ -33,9 +35,11 @@ const CreateBin = (troybin, defaultFilePath) => {
 
         let finalProperty = {};
 
+        // Does property have parent
         if (property.binGroup.parent !== undefined) {
           const parentParent = property.binGroup.parent.parent;
 
+          // Does the parent have a parent that is field or materialOverrideDefinitions
           if (
             parentParent !== undefined &&
             (parentParent.name.includes("field") ||
@@ -44,6 +48,7 @@ const CreateBin = (troybin, defaultFilePath) => {
             const parentParentPropertyParts = [];
 
             parentParent.members.forEach(parentMember => {
+              // Get properties that are part of this fieldDefinition or materialOverrideDefinition
               const parentMembers = emitter.properties.filter(
                 props =>
                   props.binGroup.parent !== undefined &&
@@ -68,8 +73,6 @@ const CreateBin = (troybin, defaultFilePath) => {
                     if (
                       editedMember.binGroup.parent.definitionName === defGroup
                     ) {
-                      alreadyAdded.push(editedMember.binGroup.name);
-
                       // Has different name for noise
                       if (
                         parentMember === "fieldNoiseDefinitions" &&
@@ -195,10 +198,6 @@ const CreateBin = (troybin, defaultFilePath) => {
                 );
 
                 if (members.length) {
-                  members.forEach(member => {
-                    alreadyAdded.push(member.binGroup.name);
-                  });
-
                   const parentPropertyPart = {
                     name: members[0].binGroup.name,
                     members,
@@ -226,19 +225,17 @@ const CreateBin = (troybin, defaultFilePath) => {
               };
             }
           }
-
-          binEmitters.push(finalProperty);
         } else {
           finalProperty = {
             name: propertyGroup,
             members: propertyParts,
             order: property.binGroup.order
           };
-
-          binEmitters.push(finalProperty);
-
-          alreadyAdded.push(propertyGroup);
         }
+
+        binEmitters.push(finalProperty);
+
+        alreadyAdded.push(finalProperty.name);
       }
     });
 

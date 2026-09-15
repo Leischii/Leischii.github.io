@@ -203,7 +203,7 @@ const particleChanges131Fix = [
       "scaleBirthScaleByBoundObjectSize",
       "scaleEmitOffsetByBoundObjectSize"
     ],
-    newString: "0x4ffce322: pointer = 0xb13097f0"
+    newString: "FlexShapeDefinition: pointer = VfxFlexShapeDefinitionData"
   },
   {
     type: "VfxSystemDefinitionData",
