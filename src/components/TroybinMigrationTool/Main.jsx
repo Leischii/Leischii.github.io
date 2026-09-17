@@ -18,7 +18,10 @@ const MigrateConvertedTroybin = (
     updateFileTypes
   );
 
-  const updatedEmitters = UpdateEmitters(troybinStructure.emitters);
+  const { updatedEmitters, keywords } = UpdateEmitters(
+    troybinStructure.emitters
+  );
+
   const updatedTroybin = {
     emitters: updatedEmitters,
     fileName: troybinStructure.fileName,
@@ -26,9 +29,13 @@ const MigrateConvertedTroybin = (
     unknown: troybinStructure.unknown
   };
 
-  const binStructure = CreateBin(updatedTroybin, defaultFilePath);
+  const { binStructures, unknowns } = CreateBin(
+    updatedTroybin,
+    defaultFilePath,
+    keywords
+  );
 
-  const finalBin = WriteBin(binStructure, defaultFilePath);
+  const finalBin = WriteBin(binStructures, defaultFilePath, unknowns);
 
   return finalBin;
 };

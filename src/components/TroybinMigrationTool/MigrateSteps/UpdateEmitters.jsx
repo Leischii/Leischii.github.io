@@ -59,6 +59,7 @@ const UpdateEmitters = data => {
 
   const emitters = [];
   const emittersToRemove = [];
+  const keywords = [];
 
   troybinData.forEach(emit => {
     // Needed since values get lost for some reason otherwise
@@ -70,7 +71,8 @@ const UpdateEmitters = data => {
       name: emitter.name,
       properties: [],
       order: emitter.order,
-      isSimple: emitter.isSimple
+      isSimple: emitter.isSimple,
+      keywords: {}
     };
 
     let hasLinger = false;
@@ -79,142 +81,114 @@ const UpdateEmitters = data => {
       // Needed since values get lost for some reason otherwise
       const property = JSON.parse(JSON.stringify(prop));
 
-      if (property.binGroup.name === "lifetime" && property.value === -1) {
-        const hasTableEntries =
-          emitter.properties.findIndex(currProp =>
-            currProp.troybinName.includes("p-lifeP")
-          ) !== -1;
+      switch (property.binGroup.name) {
+        case "lifetime": {
+          if (property.value === -1) {
+            const hasTableEntries =
+              emitter.properties.findIndex(currProp =>
+                currProp.troybinName.includes("p-lifeP")
+              ) !== -1;
 
-        propertiesToRemove.push("e-life");
+            propertiesToRemove.push("e-life");
 
-        if (!hasTableEntries) {
-          propertiesToRemove.push("p-life");
+            if (!hasTableEntries) {
+              propertiesToRemove.push("p-life");
+            }
+          }
+          break;
         }
-      }
+        case "particleLinger": {
+          // Preparation for fixing particleLinger later
+          hasLinger = true;
+          break;
+        }
+        case "primitive": {
+          // Read Empty Primitive correctly
+          if (
+            property.value === "primitiveArbitraryQuad" ||
+            property.value === "primitiveRay"
+          ) {
+            const primitiveEntry = property;
+            primitiveEntry.binGroup.name = property.value;
 
-      // Multiply timesTable values with constValue values
-      if (
-        property.troybinName === "e-rate" ||
-        property.troybinName === "p-life"
-      ) {
-        for (let j = 1; j < 10; j += 1) {
-          const timesTableName = `${property.troybinName}${j}`;
-          const timesTableEntryIndex = emitter.properties.findIndex(
-            propS => propS.troybinName === timesTableName
+            propertiesToAdd.push(primitiveEntry);
+          }
+
+          break;
+        }
+        case "baseTexture": {
+          // DeepClone as this was bugged otherwise
+          const originalEmitter = JSON.parse(JSON.stringify(emit));
+          const materialProps = originalEmitter.properties.filter(
+            materialProp =>
+              materialProp.binGroup.parent &&
+              materialProp.binGroup.parent.length &&
+              materialProp.binGroup.parent[0].name ===
+                property.binGroup.parent[0].name &&
+              (!materialProp.definitionId ||
+                materialProp.definitionId === property.definitionId)
           );
 
-          if (timesTableEntryIndex !== -1) {
-            propertiesToRemove.push(timesTableName);
+          materialProps.forEach(materialProp => {
+            const materialPropNew = materialProp;
 
-            const timesTableEntry = emitter.properties[timesTableEntryIndex];
-            const newTimesTableEntryValue = [
-              timesTableEntry.value[0],
-              timesTableEntry.value[1] * property.value
-            ];
+            propertiesToRemove.push(materialPropNew.troybinName);
 
-            const newTimesTableEntry = timesTableEntry;
-            newTimesTableEntry.value = newTimesTableEntryValue;
+            if (
+              materialPropNew.binGroup.parent &&
+              Array.isArray(materialPropNew.binGroup.parent)
+            ) {
+              const correctParent = materialPropNew.binGroup.parent[0];
 
-            propertiesToAdd.push(newTimesTableEntry);
-          }
-        }
-      }
+              materialPropNew.binGroup.parent = correctParent;
+            }
 
-      if (
-        property.troybinName === "e-rotation1" ||
-        property.troybinName === "e-rotation2" ||
-        property.troybinName === "e-rotation3"
-      ) {
-        let axisEntry;
-        const axisName = `${property.troybinName}-axis`;
-        const axisIndex = emitter.properties.findIndex(
-          propS => propS.troybinName === axisName
-        );
-
-        if (axisIndex !== -1) {
-          const newValue = [];
-          propertiesToRemove.push(axisName);
-
-          axisEntry = emitter.properties[axisIndex];
-
-          // RoatationAxis has this instead of just 1
-          axisEntry.value.forEach(val => {
-            newValue.push(val === 1 ? 1.00000012 : val);
+            materialPropNew.binGroup.parent.definitionName =
+              property.definitionId;
+            propertiesToAdd.push(materialPropNew);
           });
 
-          axisEntry.value = newValue;
-        } else {
-          axisEntry = {
-            troybinName: axisName,
-            troybinType: "THREE_DOUBLE",
-            binGroup: {
-              name: "emitRotationAxes",
-              members: [
-                "e-rotation1-axis",
-                "e-rotation2-axis",
-                "e-rotation3-axis"
-              ],
-              structure: "SimpleObjectProperty",
-              order: 50.4,
-              parent: {
-                name: "SpawnShape",
-                members: [
-                  "emitOffset",
-                  "emitRotationAngles",
-                  "emitRotationAxes"
-                ],
-                structure: "",
-                order: 50
-              }
-            },
-            binGroupType: "list[vec3]",
-            binPropertyName: "",
-            binPropertyType: "",
-            value: [0, 1.00000012, 0]
-          };
+          break;
         }
-
-        propertiesToAdd.push(axisEntry);
-      }
-
-      // Preparation for fixing particleLinger later
-      if (property.binGroup.name === "particleLinger") {
-        hasLinger = true;
-      }
-
-      // Color table values need to be multiplied with the constantValue
-      if (
-        property.troybinName === "p-xrgba" ||
-        property.troybinName === "e-rgba"
-      ) {
-        let colorNotDefault = false;
-
-        for (let i = 0; i < 4; i += 1) {
-          const colorValue = property.value[i];
-
-          if (colorValue !== 1) {
-            colorNotDefault = true;
+        case "keywordsExcluded":
+        case "keywordsRequired": {
+          if (!updatedEmitter.keywords[property.binGroup.name]) {
+            updatedEmitter.keywords[property.binGroup.name] = [];
           }
-        }
 
-        if (colorNotDefault) {
-          for (let j = 1; j < 21; j += 1) {
-            const propertyName = `${property.troybinName}${j}`;
+          property.value.forEach(keyword => {
+            updatedEmitter.keywords[property.binGroup.name].push(keyword);
+
+            if (!keywords.includes(keyword)) {
+              keywords.push(keyword);
+            }
+          });
+
+          propertiesToRemove.push(property.troybinName);
+          break;
+        }
+        default:
+          break;
+      }
+
+      switch (property.troybinName) {
+        case "e-rate":
+        case "p-life": {
+          // Multiply timesTable values with constValue values
+          for (let j = 1; j < 10; j += 1) {
+            const timesTableName = `${property.troybinName}${j}`;
             const timesTableEntryIndex = emitter.properties.findIndex(
-              propS => propS.troybinName === propertyName
+              propS => propS.troybinName === timesTableName
             );
 
             if (timesTableEntryIndex !== -1) {
-              propertiesToRemove.push(propertyName);
+              propertiesToRemove.push(timesTableName);
 
               const timesTableEntry = emitter.properties[timesTableEntryIndex];
-              const newTimesTableEntryValue = [timesTableEntry.value[0]];
-
-              for (let k = 1; k < 5; k += 1) {
-                newTimesTableEntryValue.push(
-                  timesTableEntry.value[k] * property.value[k - 1]
-                );
-              }
+              const newTimesTableEntryValue = [
+                timesTableEntry.value[0],
+                timesTableEntry.value[1] * property.value
+              ];
 
               const newTimesTableEntry = timesTableEntry;
               newTimesTableEntry.value = newTimesTableEntryValue;
@@ -222,53 +196,109 @@ const UpdateEmitters = data => {
               propertiesToAdd.push(newTimesTableEntry);
             }
           }
+          break;
         }
-      }
+        case "e-rotation1":
+        case "e-rotation2":
+        case "e-rotation3": {
+          let axisEntry;
+          const axisName = `${property.troybinName}-axis`;
+          const axisIndex = emitter.properties.findIndex(
+            propS => propS.troybinName === axisName
+          );
 
-      // Read Empty Primitive correctly
-      if (property.binGroup.name === "primitive") {
-        if (
-          property.value === "primitiveArbitraryQuad" ||
-          property.value === "primitiveRay"
-        ) {
-          const primitiveEntry = property;
-          primitiveEntry.binGroup.name = property.value;
+          if (axisIndex !== -1) {
+            const newValue = [];
+            propertiesToRemove.push(axisName);
 
-          propertiesToAdd.push(primitiveEntry);
-        }
-      }
+            axisEntry = emitter.properties[axisIndex];
 
-      if (property.binGroup.name === "baseTexture") {
-        // DeepClone as this was bugged otherwise
-        const originalEmitter = JSON.parse(JSON.stringify(emit));
-        const materialProps = originalEmitter.properties.filter(
-          materialProp =>
-            materialProp.binGroup.parent &&
-            materialProp.binGroup.parent.length &&
-            materialProp.binGroup.parent[0].name ===
-              property.binGroup.parent[0].name &&
-            (!materialProp.definitionId ||
-              materialProp.definitionId === property.definitionId)
-        );
+            // RoatationAxis has this instead of just 1
+            axisEntry.value.forEach(val => {
+              newValue.push(val === 1 ? 1.00000012 : val);
+            });
 
-        materialProps.forEach(materialProp => {
-          const materialPropNew = materialProp;
-
-          propertiesToRemove.push(materialPropNew.troybinName);
-
-          if (
-            materialPropNew.binGroup.parent &&
-            Array.isArray(materialPropNew.binGroup.parent)
-          ) {
-            const correctParent = materialPropNew.binGroup.parent[0];
-
-            materialPropNew.binGroup.parent = correctParent;
+            axisEntry.value = newValue;
+          } else {
+            axisEntry = {
+              troybinName: axisName,
+              troybinType: "THREE_DOUBLE",
+              binGroup: {
+                name: "emitRotationAxes",
+                members: [
+                  "e-rotation1-axis",
+                  "e-rotation2-axis",
+                  "e-rotation3-axis"
+                ],
+                structure: "SimpleObjectProperty",
+                order: 50.4,
+                parent: {
+                  name: "SpawnShape",
+                  members: [
+                    "emitOffset",
+                    "emitRotationAngles",
+                    "emitRotationAxes"
+                  ],
+                  structure: "",
+                  order: 50
+                }
+              },
+              binGroupType: "list[vec3]",
+              binPropertyName: "",
+              binPropertyType: "",
+              value: [0, 1.00000012, 0]
+            };
           }
 
-          materialPropNew.binGroup.parent.definitionName =
-            property.definitionId;
-          propertiesToAdd.push(materialPropNew);
-        });
+          propertiesToAdd.push(axisEntry);
+
+          break;
+        }
+        case "p-xrgba":
+        case "e-rgba": {
+          // Color table values need to be multiplied with the constantValue
+          let colorNotDefault = false;
+
+          for (let i = 0; i < 4; i += 1) {
+            const colorValue = property.value[i];
+
+            if (colorValue !== 1) {
+              colorNotDefault = true;
+            }
+          }
+
+          if (colorNotDefault) {
+            for (let j = 1; j < 21; j += 1) {
+              const propertyName = `${property.troybinName}${j}`;
+              const timesTableEntryIndex = emitter.properties.findIndex(
+                propS => propS.troybinName === propertyName
+              );
+
+              if (timesTableEntryIndex !== -1) {
+                propertiesToRemove.push(propertyName);
+
+                const timesTableEntry =
+                  emitter.properties[timesTableEntryIndex];
+                const newTimesTableEntryValue = [timesTableEntry.value[0]];
+
+                for (let k = 1; k < 5; k += 1) {
+                  newTimesTableEntryValue.push(
+                    timesTableEntry.value[k] * property.value[k - 1]
+                  );
+                }
+
+                const newTimesTableEntry = timesTableEntry;
+                newTimesTableEntry.value = newTimesTableEntryValue;
+
+                propertiesToAdd.push(newTimesTableEntry);
+              }
+            }
+          }
+
+          break;
+        }
+        default:
+          break;
       }
 
       if (property.binGroup.name.includes("field")) {
@@ -639,11 +669,11 @@ const UpdateEmitters = data => {
     }
 
     emitter.properties.forEach(property => {
-      const keepEntry =
-        propertiesToRemove.find(element => element === property.troybinName) ===
-        undefined;
+      const removeEntry = !!propertiesToRemove.find(
+        element => element === property.troybinName
+      );
 
-      if (keepEntry) {
+      if (!removeEntry) {
         updatedEmitter.properties.push(property);
       }
     });
@@ -685,10 +715,11 @@ const UpdateEmitters = data => {
   for (let i = 0; i < emitters.length; i += 1) {
     const emitter = emitters[i];
 
-    const keepEmitter =
-      emittersToRemove.find(element => element === emitter.name) === undefined;
+    const removeEmitter = !!emittersToRemove.find(
+      element => element === emitter.name
+    );
 
-    if (keepEmitter) {
+    if (!removeEmitter) {
       emittersNoField.push(emitter);
     }
   }
@@ -698,7 +729,7 @@ const UpdateEmitters = data => {
     return a.order - b.order;
   });
 
-  return emittersNoField;
+  return { updatedEmitters: emittersNoField, keywords };
 };
 
 export default UpdateEmitters;

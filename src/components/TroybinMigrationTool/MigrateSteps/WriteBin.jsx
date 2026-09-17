@@ -528,7 +528,7 @@ function WriteProperty(property, spacingAmount) {
   return formatedProperty;
 }
 
-const WriteBin = (bin, defaultFilePath) => {
+const WriteBin = (bins, defaultFilePath, unknowns) => {
   function writeEmitters(emitters, typeString, spacing) {
     const result = [];
 
@@ -625,7 +625,7 @@ const WriteBin = (bin, defaultFilePath) => {
                 }
               }
             } else {
-              bin.unknowns.push(
+              unknowns.push(
                 "Error: Shape could not be created due to missing emitOffset constValue"
               );
             }
@@ -992,51 +992,58 @@ const WriteBin = (bin, defaultFilePath) => {
     'type: string = "PROP"\r\n',
     "version: u32 = 3\r\n",
     "linked: list[string] = {}\r\n",
-    "entries: map[hash,embed] = {\r\n",
-    `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
-      bin.name
-    }\" = VfxSystemDefinitionData {\r\n` // eslint-disable-line
+    "entries: map[hash,embed] = {\r\n"
   ];
 
-  if (bin.emitters.complex.length) {
-    const emitters = writeEmitters(
-      bin.emitters.complex,
-      "complexEmitterDefinitionData",
-      spacing
+  bins.forEach(bin => {
+    finalBin.push(
+      `${getSpacing(spacing)}\"${defaultFilePath}/${ // eslint-disable-line
+        bin.name
+      }\" = VfxSystemDefinitionData {\r\n` // eslint-disable-line
     );
 
-    emitters.forEach(emitterLine => {
-      finalBin.push(emitterLine);
+    if (bin.emitters.complex.length) {
+      const emitters = writeEmitters(
+        bin.emitters.complex,
+        "complexEmitterDefinitionData",
+        spacing
+      );
+
+      emitters.forEach(emitterLine => {
+        finalBin.push(emitterLine);
+      });
+    }
+
+    if (bin.emitters.simple.length) {
+      const emitters = writeEmitters(
+        bin.emitters.simple,
+        "simpleEmitterDefinitionData",
+        spacing
+      );
+
+      emitters.forEach(emitterLine => {
+        finalBin.push(emitterLine);
+      });
+    }
+
+    bin.system.forEach(systemProperty => {
+      const systemEntry = WriteProperty(systemProperty, spacing + 1);
+
+      systemEntry.forEach(s => {
+        finalBin.push(s);
+      });
     });
-  }
 
-  if (bin.emitters.simple.length) {
-    const emitters = writeEmitters(
-      bin.emitters.simple,
-      "simpleEmitterDefinitionData",
-      spacing
-    );
-
-    emitters.forEach(emitterLine => {
-      finalBin.push(emitterLine);
-    });
-  }
-
-  bin.system.forEach(systemProperty => {
-    const systemEntry = WriteProperty(systemProperty, spacing + 1);
-
-    systemEntry.forEach(s => {
-      finalBin.push(s);
-    });
+    finalBin.push(`${getSpacing(spacing)}}\r\n`);
   });
 
-  finalBin.push(`${getSpacing(spacing)}}\r\n`, "}\r\n");
+  finalBin.push("}\r\n");
 
-  if (bin.unknowns.length) {
+  if (unknowns.length) {
     const unknownProperties = [];
 
-    for (let i = 0; i < bin.unknowns.length; i += 1) {
-      const unkn = bin.unknowns[i];
+    for (let i = 0; i < unknowns.length; i += 1) {
+      const unkn = unknowns[i];
       const namePart = unkn.split(": ")[1];
 
       if (namePart[0] !== "'") {

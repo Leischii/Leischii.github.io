@@ -881,8 +881,8 @@ const keywordsExcluded = {
   order: 40
 };
 
-const KeywordsRequired = {
-  name: "KeywordsRequired",
+const keywordsRequired = {
+  name: "keywordsRequired",
   members: [],
   structure: "SimpleObjectProperty",
   order: 41
@@ -9904,7 +9904,7 @@ const Values = {
     {
       troybinName: "KeywordsRequired",
       troybinType: "STRINGS_NO_PATH",
-      binGroup: KeywordsRequired,
+      binGroup: keywordsRequired,
       binGroupType: "list[string]",
       binPropertyName: "",
       binPropertyType: ""
