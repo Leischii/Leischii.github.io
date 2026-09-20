@@ -186,11 +186,7 @@ function readNew() {
       for (let k = 0; k < count; k += 1) {
         const value = struct(fmt).unpack(readBytes(struct(fmt).size))[0] * mul;
 
-        if (count !== 1 || mul !== 1) {
-          tmp[k] = value.toFixed(1);
-        } else {
-          tmp[k] = value;
-        }
+        tmp[k] = value;
       }
 
       result[j] = { hash: keys[j], value: count === 1 ? tmp[0] : tmp };
