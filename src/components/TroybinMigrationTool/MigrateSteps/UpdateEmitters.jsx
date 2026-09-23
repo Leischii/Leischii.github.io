@@ -369,7 +369,6 @@ const UpdateEmitters = (data, splitKeywords) => {
 
       if (emitter.isSimple) {
         const isSimpleProperty = !!property.simpleValue;
-        // Todo: More rules
 
         let normalProperty;
         let simpleProperty;
@@ -384,7 +383,6 @@ const UpdateEmitters = (data, splitKeywords) => {
               propertyToAddIndex !== -1
                 ? { ...propertiesToAdd[propertyToAddIndex] }
                 : { ...property };
-            console.log('newProperty: ', newProperty);
 
             if (newProperty.upgradeType !== "UNCHANGED") {
               switch (newProperty.upgradeType) {

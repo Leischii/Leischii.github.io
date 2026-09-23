@@ -362,7 +362,6 @@ class MainPage extends Component {
 
             try {
               const test = BinFileReader("listFix", file);
-              console.log(test);
 
               if (fileContentCombined !== -1) {
                 convertedEntry = {

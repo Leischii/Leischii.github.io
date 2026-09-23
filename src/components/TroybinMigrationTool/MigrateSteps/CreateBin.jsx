@@ -32,7 +32,6 @@ const CreateBin = (troybin, defaultFilePath, keywords) => {
         );
 
         emitter.properties.forEach(property => {
-          console.log('property: ', property);
           const isPrimitive = Array.isArray(property.binGroup.parent);
           const finalPropertyName = isPrimitive
             ? pTypeEmitter?.value
