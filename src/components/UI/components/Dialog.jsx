@@ -91,15 +91,6 @@ const DialogComponent = ({
     let dialogText;
 
     switch (control.action) {
-      case "convert":
-        dialogText = [
-          `You are about to convert ${amount} file${
-            amount > 1 ? "s" : ""
-          }. You can use the default settings or set the settings yourself.`,
-          "How do you want to proceed?"
-        ];
-
-        break;
       case "download":
         dialogText = [
           `You are about to download ${amount} file${
@@ -160,9 +151,6 @@ const DialogComponent = ({
     let dialogTitle = "";
 
     switch (control.action) {
-      case "convert":
-        dialogTitle = "Convert Files?";
-        break;
       case "download":
         dialogTitle = "Download Files?";
         break;
@@ -281,16 +269,6 @@ const DialogComponent = ({
         </FormControl>
       ) : null}
       <DialogActions>
-        {control.action === "convert" ? (
-          <Button
-            onClick={() =>
-              handleAccept("convert_default", { action: "", open: false })
-            }
-          >
-            Use Default Settings
-          </Button>
-        ) : null}
-        <div style={{ flex: "1 0 0" }} />
         <Button
           autoFocus={control.action !== "delete"}
           disabled={control.action === "fix" && selectedItems.length === 0}

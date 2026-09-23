@@ -121,7 +121,8 @@ Parent info necessary for generating bin entries
 const distortionDefinition = {
   name: "distortionDefinition",
   members: ["distortion", "distortionMode", "normalMapTexture"],
-  structure: "",
+  propertyType: "distortionDefinition: pointer = VfxDistortionDefinitionData",
+  structure: "ParentObjectProperty",
   order: 79
 };
 
@@ -138,6 +139,14 @@ const fieldCollectionDefinition = {
   order: 24
 };
 
+const filtering = {
+  name: "Filtering",
+  members: ["keywordsRequired", "keywordsExcluded"],
+  propertyType: "Filtering: pointer = VfxEmitterFiltering",
+  structure: "ParentObjectProperty",
+  order: 40
+};
+
 const materialOverrideDefinitions = {
   name: "materialOverrideDefinitions",
   members: ["VfxMaterialOverrideDefinitionData"],
@@ -149,7 +158,7 @@ const SpawnShape = {
   name: "SpawnShape",
   members: ["emitOffset", "emitRotationAngles", "emitRotationAxes"],
   structure: "",
-  order: 50
+  order: 50.1
 };
 
 const textureMultGroup = {
@@ -167,7 +176,8 @@ const textureMultGroup = {
     "birthUVOffsetMult",
     "birthUvRotateRateMult"
   ],
-  structure: "",
+  propertyType: "textureMult: pointer = VfxTextureMultDefinitionData",
+  structure: "ParentObjectProperty",
   order: 223
 };
 
@@ -182,8 +192,9 @@ const LegacySimple = {
     "scaleBias",
     "orientation"
   ],
-  structure: "",
-  order: 214
+  propertyType: "LegacySimple: pointer = VfxEmitterLegacySimple",
+  structure: "parentObjectProperty",
+  order: 216
 };
 
 const primitiveArbitraryQuad = { // eslint-disable-line
@@ -204,6 +215,13 @@ const primitiveAttachedMesh = {
   name: "primitiveAttachedMesh",
   members: ["mAnimationName", "mMesh", "mMeshName", "mMeshSkeletonName"],
   structure: "primitiveAttachedMesh",
+  order: 54
+};
+
+const primitiveAttachedMeshEmpty = { // eslint-disable-line
+  name: "primitiveAttachedMeshEmpty",
+  members: ["mSubmeshesToDraw"],
+  structure: "primitiveAttachedMeshEmpty",
   order: 54
 };
 
@@ -371,7 +389,8 @@ const bindWeight = {
   members: createMembers([timesTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 52
+  order: 50,
+  toFixed: 2
 };
 
 const birthAcceleration = {
@@ -393,7 +412,8 @@ const birthColor = {
   ]),
   propertyType: "ValueColor",
   structure: "SimpleObjectVariableProperty",
-  order: 68
+  order: 68,
+  toFixed: 8
 };
 
 const birthDrag = {
@@ -440,7 +460,8 @@ const birthRotation0 = {
   ]),
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 90
+  order: 90,
+  toFixed: 1
 };
 
 const birthRotation1 = {
@@ -484,7 +505,8 @@ const birthScale0 = {
   ]),
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 150
+  order: 150,
+  toFixed: 1
 };
 
 const birthScale1 = {
@@ -518,7 +540,8 @@ const birthUvScrollRate = {
   members: createMembers([xTableEntries, yTableEntries, timesTableEntries]),
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
-  order: 216
+  order: 213,
+  toFixed: 1
 };
 
 const birthUvScrollRateMult = {
@@ -527,7 +550,8 @@ const birthUvScrollRateMult = {
   propertyType: "ValueVector2",
   structure: "SimpleObjectVariableProperty",
   order: 223.8,
-  parent: textureMultGroup
+  parent: textureMultGroup,
+  toFixed: 1
 };
 
 const birthVelocity = {
@@ -575,7 +599,8 @@ const color = {
   ]),
   propertyType: "ValueColor",
   structure: "SimpleObjectVariableProperty",
-  order: 70
+  order: 70,
+  toFixed: 8
 };
 
 const colorLookUpOffsets = {
@@ -589,7 +614,8 @@ const colorLookUpScales = {
   name: "colorLookUpScales",
   members: [],
   structure: "SimpleProperty",
-  order: 59
+  order: 59,
+  toFixed: 1
 };
 
 const colorLookUpType = {
@@ -597,6 +623,13 @@ const colorLookUpType = {
   members: [],
   structure: "ColorTypeProperty",
   order: 58
+};
+
+const colorRenderFlags = {
+  name: "colorRenderFlags",
+  members: [],
+  structure: "SimpleProperty",
+  order: 60.1
 };
 
 const depthBiasFactors = { // eslint-disable-line
@@ -835,7 +868,7 @@ const isLocalOrientation = {
   name: "isLocalOrientation",
   members: [],
   structure: "SimpleProperty",
-  order: 82
+  order: 94
 };
 
 const isLocalSpace = {
@@ -878,21 +911,24 @@ const keywordsExcluded = {
   name: "keywordsExcluded",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 40
+  order: 40,
+  parent: filtering
 };
 
 const keywordsRequired = {
   name: "keywordsRequired",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 41
+  order: 41,
+  parent: filtering
 };
 
 const lifetime = {
   name: "lifetime",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 18
+  order: 18,
+  toFixed: 2
 };
 
 const mAnimationName = {
@@ -1002,6 +1038,14 @@ const mSmoothingMode = { // eslint-disable-line
   parent: [primitiveArbitraryTrail, primitiveTrail]
 };
 
+const mSubmeshesToDraw = {
+  name: "mSubmeshesToDraw",
+  members: [],
+  structure: "SimpleObjectProperty",
+  order: 54.1,
+  parent: [primitiveAttachedMeshEmpty]
+};
+
 const normalMapTexture = {
   name: "normalMapTexture",
   members: [],
@@ -1067,21 +1111,23 @@ const particleLifetime = {
   members: createMembers([xTableEntries, timesTableEntries]),
   propertyType: "ValueFloat",
   structure: "SimpleObjectVariableProperty",
-  order: 10
+  order: 10,
+  toFixed: 2
 };
 
 const particleLinger = {
   name: "particleLinger",
   members: [],
   structure: "SimpleObjectProperty",
-  order: 15
+  order: 15,
+  toFixed: 2
 };
 
 const pass = {
   name: "pass",
   members: [],
   structure: "SimpleProperty",
-  order: 73
+  order: 57
 };
 
 const period = {
@@ -1122,11 +1168,12 @@ const priority = {
 const FlexShapeDefinition = {
   name: "FlexShapeDefinition",
   members: [
-    "scaleEmitOffsetByBoundObjectSize",
-    "scaleBirthScaleByBoundObjectSize"
+    "scaleBirthScaleByBoundObjectSize",
+    "scaleEmitOffsetByBoundObjectSize"
   ],
   structure: "MultConstantValueProperty",
-  order: 53
+  order: 53,
+  toFixed: 3
 };
 
 const radius = {
@@ -1163,7 +1210,7 @@ const rotation0 = {
   members: createMembers([timesTableEntries]),
   propertyType: "IntegratedValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 94
+  order: 95
 };
 
 const scale0 = {
@@ -1176,7 +1223,8 @@ const scale0 = {
   ]),
   propertyType: "ValueVector3",
   structure: "SimpleObjectVariableProperty",
-  order: 155
+  order: 155,
+  toFixed: 2
 };
 
 const scale1 = {
@@ -1207,7 +1255,8 @@ const sliceTechniqueRange = {
   name: "sliceTechniqueRange",
   members: [],
   structure: "SimpleProperty",
-  order: 61
+  order: 61,
+  toFixed: 2
 };
 
 const softParticleParams = {
@@ -1288,7 +1337,7 @@ const texDiv = {
   name: "texDiv",
   members: [],
   structure: "SimpleProperty",
-  order: 213
+  order: 214
 };
 
 const texDivMult = {
@@ -1325,7 +1374,8 @@ const timeBeforeFirstEmission = {
   name: "timeBeforeFirstEmission",
   members: [],
   structure: "SimpleProperty",
-  order: 3
+  order: 3,
+  toFixed: 2
 };
 
 const transitionSample = {
@@ -3334,7 +3384,8 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "f32",
       defaultValue: 0,
-      simpleValue: ["TWO_DOUBLE", "vec2", "", particleBind]
+      simpleValue: ["TWO_DOUBLE", "vec2", "", particleBind],
+      upgradeType: "TWO_DOUBLE_TO_ONE"
     },
     {
       troybinName: "p-bindtoemitter1",
@@ -3809,7 +3860,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life2",
@@ -3824,7 +3876,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life3",
@@ -3839,7 +3892,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life4",
@@ -3854,7 +3908,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life5",
@@ -3869,7 +3924,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life6",
@@ -3884,7 +3940,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life7",
@@ -3899,7 +3956,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life8",
@@ -3914,7 +3972,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-life9",
@@ -3929,7 +3988,8 @@ const Values = {
         "f32",
         particleLifetime,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP1",
@@ -3944,7 +4004,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP2",
@@ -3959,7 +4020,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP3",
@@ -3974,7 +4036,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP4",
@@ -3989,7 +4052,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP5",
@@ -4004,7 +4068,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP6",
@@ -4019,7 +4084,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP7",
@@ -4034,7 +4100,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP8",
@@ -4049,7 +4116,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-lifeP9",
@@ -4064,7 +4132,8 @@ const Values = {
         "f32",
         particleLifetime,
         "timesTable9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-linger",
@@ -4943,7 +5012,8 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "vec3",
       defaultValue: "{ 0, 0, 0 }",
-      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", birthRotation1]
+      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", birthRotation1],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-quadrotXP1",
@@ -4958,7 +5028,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP2",
@@ -4973,7 +5044,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP3",
@@ -4988,7 +5060,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP4",
@@ -5003,7 +5076,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP5",
@@ -5018,7 +5092,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP6",
@@ -5033,7 +5108,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP7",
@@ -5048,7 +5124,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP8",
@@ -5063,7 +5140,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotXP9",
@@ -5078,7 +5156,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP1",
@@ -5093,7 +5172,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP2",
@@ -5108,7 +5188,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP3",
@@ -5123,7 +5204,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP4",
@@ -5138,7 +5220,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP5",
@@ -5153,7 +5236,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP6",
@@ -5168,7 +5252,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP7",
@@ -5183,7 +5268,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP8",
@@ -5198,7 +5284,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotYP9",
@@ -5213,7 +5300,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableY9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP1",
@@ -5228,7 +5316,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP2",
@@ -5243,7 +5332,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP3",
@@ -5258,7 +5348,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP4",
@@ -5273,7 +5364,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP5",
@@ -5288,7 +5380,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP6",
@@ -5303,7 +5396,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP7",
@@ -5318,7 +5412,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP8",
@@ -5333,7 +5428,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotZP9",
@@ -5348,7 +5444,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableZ9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrot1",
@@ -5363,7 +5460,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrot2",
@@ -5378,7 +5476,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP1",
@@ -5393,7 +5492,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP2",
@@ -5408,7 +5508,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP3",
@@ -5423,7 +5524,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP4",
@@ -5438,7 +5540,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP5",
@@ -5453,7 +5556,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP6",
@@ -5468,7 +5572,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP7",
@@ -5483,7 +5588,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP8",
@@ -5498,7 +5604,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-quadrotP9",
@@ -5513,7 +5620,8 @@ const Values = {
         "f32",
         birthRotation1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-randomstartframe",
@@ -5552,7 +5660,8 @@ const Values = {
         "embed = ValueFloat",
         "f32",
         birthRotationalVelocity1
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvelXP1",
@@ -5567,7 +5676,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP2",
@@ -5582,7 +5692,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP3",
@@ -5597,7 +5708,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP4",
@@ -5612,7 +5724,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP5",
@@ -5627,7 +5740,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP6",
@@ -5642,7 +5756,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP7",
@@ -5657,7 +5772,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP8",
@@ -5672,7 +5788,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelXP9",
@@ -5687,7 +5804,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP1",
@@ -5702,7 +5820,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP2",
@@ -5717,7 +5836,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP3",
@@ -5732,7 +5852,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP4",
@@ -5747,7 +5868,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP5",
@@ -5762,7 +5884,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP6",
@@ -5777,7 +5900,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP7",
@@ -5792,7 +5916,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP8",
@@ -5807,7 +5932,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelYP9",
@@ -5822,7 +5948,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableY9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP1",
@@ -5837,7 +5964,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP2",
@@ -5852,7 +5980,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP3",
@@ -5867,7 +5996,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP4",
@@ -5882,7 +6012,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP5",
@@ -5897,7 +6028,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP6",
@@ -5912,7 +6044,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP7",
@@ -5927,7 +6060,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP8",
@@ -5942,7 +6076,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelZP9",
@@ -5957,7 +6092,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableZ9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvel1",
@@ -5972,7 +6108,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable1"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel2",
@@ -5987,7 +6124,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable2"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel3",
@@ -6002,7 +6140,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable3"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel4",
@@ -6017,7 +6156,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable4"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel5",
@@ -6032,7 +6172,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable5"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel6",
@@ -6047,7 +6188,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable6"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel7",
@@ -6062,7 +6204,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable7"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel8",
@@ -6077,7 +6220,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable8"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvel9",
@@ -6092,7 +6236,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "timesTable9"
-      ]
+      ],
+      upgradeType: "FILL_ZERO"
     },
     {
       troybinName: "p-rotvelP1",
@@ -6107,7 +6252,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP2",
@@ -6122,7 +6268,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP3",
@@ -6137,7 +6284,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP4",
@@ -6152,7 +6300,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP5",
@@ -6167,7 +6316,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP6",
@@ -6182,7 +6332,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP7",
@@ -6197,7 +6348,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP8",
@@ -6212,7 +6364,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-rotvelP9",
@@ -6227,7 +6380,8 @@ const Values = {
         "f32",
         birthRotationalVelocity1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scale",
@@ -6237,7 +6391,8 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "vec3",
       defaultValue: "{ 1, 1, 1 }",
-      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", birthScale1]
+      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", birthScale1],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scalebias",
@@ -6246,7 +6401,8 @@ const Values = {
       binGroupType: "vec2",
       binPropertyName: "",
       binPropertyType: "",
-      simpleValue: ["TWO_DOUBLE", "vec2", "", scaleBias1]
+      simpleValue: ["TWO_DOUBLE", "vec2", "", scaleBias1],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP1",
@@ -6261,7 +6417,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP2",
@@ -6276,7 +6433,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP3",
@@ -6291,7 +6449,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP4",
@@ -6306,7 +6465,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP5",
@@ -6321,7 +6481,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP6",
@@ -6336,7 +6497,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP7",
@@ -6351,7 +6513,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP8",
@@ -6366,7 +6529,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleXP9",
@@ -6381,7 +6545,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP1",
@@ -6396,7 +6561,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP2",
@@ -6411,7 +6577,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP3",
@@ -6426,7 +6593,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP4",
@@ -6441,7 +6609,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP5",
@@ -6456,7 +6625,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP6",
@@ -6471,7 +6641,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP7",
@@ -6486,7 +6657,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP8",
@@ -6501,7 +6673,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleYP9",
@@ -6516,7 +6689,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableY9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP1",
@@ -6531,7 +6705,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP2",
@@ -6546,7 +6721,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP3",
@@ -6561,7 +6737,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP4",
@@ -6576,7 +6753,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP5",
@@ -6591,7 +6769,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP6",
@@ -6606,7 +6785,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP7",
@@ -6621,7 +6801,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP8",
@@ -6636,7 +6817,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleZP9",
@@ -6651,7 +6833,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableZ9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-scaleP1",
@@ -6666,7 +6849,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP2",
@@ -6681,7 +6865,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP3",
@@ -6696,7 +6881,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP4",
@@ -6711,7 +6897,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP5",
@@ -6726,7 +6913,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP6",
@@ -6741,7 +6929,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP7",
@@ -6756,7 +6945,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP8",
@@ -6771,7 +6961,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scaleP9",
@@ -6786,7 +6977,8 @@ const Values = {
         "f32",
         birthScale1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale1",
@@ -6801,7 +6993,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable1"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale2",
@@ -6816,7 +7009,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable2"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale3",
@@ -6831,7 +7025,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable3"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale4",
@@ -6846,7 +7041,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable4"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale5",
@@ -6861,7 +7057,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable5"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale6",
@@ -6876,7 +7073,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable6"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale7",
@@ -6891,7 +7089,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable7"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale8",
@@ -6906,7 +7105,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable8"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-scale9",
@@ -6921,7 +7121,8 @@ const Values = {
         "f32",
         birthScale1,
         "timesTable9"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-shadow",
@@ -7053,7 +7254,8 @@ const Values = {
       binGroup: birthUvScrollRate,
       binGroupType: "embed = ValueVector2",
       binPropertyName: "constantValue",
-      binPropertyType: "vec2"
+      binPropertyType: "vec2",
+      defaultValue: "{ 0, 0 }"
     },
     {
       troybinName: "p-uvscroll-rgb-clamp",
@@ -8722,7 +8924,8 @@ const Values = {
       binPropertyName: "constantValue",
       binPropertyType: "vec3",
       defaultValue: "{ 1, 1, 1 }",
-      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", scale1]
+      simpleValue: ["ONE_DOUBLE", "embed = ValueFloat", "f32", scale1],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscaleXP1",
@@ -8737,7 +8940,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP2",
@@ -8752,7 +8956,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP3",
@@ -8767,7 +8972,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP4",
@@ -8782,7 +8988,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP5",
@@ -8797,7 +9004,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP6",
@@ -8812,7 +9020,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP7",
@@ -8827,7 +9036,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP8",
@@ -8842,7 +9052,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleXP9",
@@ -8857,7 +9068,8 @@ const Values = {
         "f32",
         scale1,
         "probTableX9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP1",
@@ -8872,7 +9084,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP2",
@@ -8887,7 +9100,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP3",
@@ -8902,7 +9116,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP4",
@@ -8917,7 +9132,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP5",
@@ -8932,7 +9148,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP6",
@@ -8947,7 +9164,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP7",
@@ -8962,7 +9180,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP8",
@@ -8977,7 +9196,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleYP9",
@@ -8992,7 +9212,8 @@ const Values = {
         "f32",
         scale1,
         "probTableY9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP1",
@@ -9007,7 +9228,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ1"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP2",
@@ -9022,7 +9244,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ2"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP3",
@@ -9037,7 +9260,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ3"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP4",
@@ -9052,7 +9276,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ4"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP5",
@@ -9067,7 +9292,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ5"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP6",
@@ -9082,7 +9308,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ6"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP7",
@@ -9097,7 +9324,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ7"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP8",
@@ -9112,7 +9340,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ8"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscaleZP9",
@@ -9127,7 +9356,8 @@ const Values = {
         "f32",
         scale1,
         "probTableZ9"
-      ]
+      ],
+      upgradeType: "UNCHANGED"
     },
     {
       troybinName: "p-xscale1",
@@ -9142,7 +9372,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable1"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale2",
@@ -9157,7 +9388,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable2"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale3",
@@ -9172,7 +9404,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable3"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale4",
@@ -9187,7 +9420,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable4"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale5",
@@ -9202,7 +9436,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable5"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale6",
@@ -9217,7 +9452,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable6"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale7",
@@ -9232,7 +9468,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable7"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale8",
@@ -9247,7 +9484,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable8"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale9",
@@ -9262,7 +9500,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable9"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "p-xscale10",
@@ -9277,7 +9516,8 @@ const Values = {
         "f32",
         scale1,
         "timesTable10"
-      ]
+      ],
+      upgradeType: "MULTIPLY"
     },
     {
       troybinName: "Particle-Acceleration",
@@ -9921,7 +10161,7 @@ const Values = {
       troybinName: "MaterialOverrideTexture",
       troybinType: "STRING_PATH",
       binGroup: baseTexture,
-      binGroupType: "string",
+      binGroupType: "file",
       binPropertyName: "",
       binPropertyType: ""
     },
@@ -9955,6 +10195,22 @@ const Values = {
       troybinType: "STRING_NO_PATH",
       binGroup: soundOnCreateName,
       binGroupType: "string",
+      binPropertyName: "",
+      binPropertyType: ""
+    },
+    {
+      troybinName: "submesh-list",
+      troybinType: "STRINGS_NO_PATH",
+      binGroup: mSubmeshesToDraw,
+      binGroupType: "list[hash]",
+      binPropertyName: "",
+      binPropertyType: ""
+    },
+    {
+      troybinName: "teamcolor-correction",
+      troybinType: "ONE_DOUBLE",
+      binGroup: colorRenderFlags,
+      binGroupType: "u8",
       binPropertyName: "",
       binPropertyType: ""
     },

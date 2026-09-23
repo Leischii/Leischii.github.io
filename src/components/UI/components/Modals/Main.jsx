@@ -1,44 +1,219 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-import CloseIcon from "@mui/icons-material/Close";
-
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
+import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import Divider from "@mui/material/Divider";
-import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Grid from "@mui/material/Grid";
+import FormGroup from "@mui/material/FormGroup";
 import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
+import CloseIcon from "@mui/icons-material/Close";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+
 const defaultSettings = {
-  assetsPath: "Assets/Particles",
+  assetsPath: "ASSETS/Particles",
   filePath: "Shared/Particles",
   namesOnly: false,
   settingsPreset: "Default",
+  splitKeywords: false,
   updateFileTypes: true
 };
 
 const settingsPresets = [
-  {
-    value: "Default",
-    label: "Default Settings"
-  },
-  {
-    value: "Custom",
-    label: "Custom Settings"
-  }
+  { value: "Default", label: "Default Settings" },
+  { value: "Custom", label: "Custom Settings" }
 ];
+
+const modalStyles = {
+  dialog: { flexGrow: 1 },
+  header: {
+    backgroundColor: "rgb(90, 90, 90)",
+    p: 1,
+    pl: 2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  content: {
+    display: "flex",
+    flexDirection: { xs: "column", md: "row" },
+    p: 0,
+    minHeight: "400px"
+  },
+  leftSection: {
+    flex: 1.5,
+    p: 2,
+    borderRight: { md: "1px solid rgb(210, 210, 210)" }
+  },
+  rightSection: {
+    flex: 1,
+    backgroundColor: "rgb(110, 110, 110)",
+    p: 2,
+    display: "flex",
+    flexDirection: "column",
+    gap: 2
+  },
+  footer: {
+    p: 2,
+    display: "flex",
+    flexDirection: { xs: "column", sm: "row" },
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 2,
+    borderTop: "1px solid rgb(210, 210, 210)"
+  }
+};
+
+const SettingsForm = ({
+  settingsPreset,
+  assetsPath,
+  filePath,
+  namesOnly,
+  updateFileTypes,
+  splitKeywords,
+  onChange
+}) => (
+  <Box sx={modalStyles.leftSection}>
+    <TextField
+      fullWidth
+      select
+      label="Settings To Use"
+      value={settingsPreset}
+      onChange={e => onChange(e, "settingsPreset")}
+      helperText="Please select what settings to use"
+      sx={{ mb: 2 }}
+    >
+      {settingsPresets.map(opt => (
+        <MenuItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </MenuItem>
+      ))}
+    </TextField>
+    <Divider sx={{ my: 2 }} />
+    <Tooltip
+      title="Set the path to use for assets. This should be the folder where all files are that are used in this vfx. An example could be 'ASSETS/Characters/Kalista/Skins/Base/Particles'"
+      arrow
+      placement="left"
+    >
+      <TextField
+        disabled={settingsPreset !== "Custom"}
+        fullWidth
+        label="Default Assets Path"
+        value={assetsPath}
+        onChange={e => onChange(e, "assetsPath")}
+        sx={{ mb: 2 }}
+      />
+    </Tooltip>
+    <Tooltip
+      title="Set the path to the bin file. An example could be 'Characters/Kalista/Skins/Skin0/Particles'"
+      arrow
+      placement="left"
+    >
+      <TextField
+        disabled={settingsPreset !== "Custom"}
+        fullWidth
+        label="Default File Path"
+        value={filePath}
+        onChange={e => onChange(e, "filePath")}
+        sx={{ mb: 2 }}
+      />
+    </Tooltip>
+    <FormGroup sx={{ pl: 1 }}>
+      <Tooltip
+        title="Only show property names in 'Unknown Hashes' section"
+        arrow
+        placement="left"
+      >
+        <FormControlLabel
+          disabled={settingsPreset !== "Custom"}
+          label='Only Show Names In "Unknown Hashes"'
+          control={
+            <Checkbox
+              checked={namesOnly}
+              onChange={e => onChange(e, "namesOnly")}
+            />
+          }
+        />
+      </Tooltip>
+      <Tooltip
+        title="Update file types mentioned in troybin league can no longer use. An example of this would be changing all '.dds' to '.tex'"
+        arrow
+        placement="left"
+      >
+        <FormControlLabel
+          disabled={settingsPreset !== "Custom"}
+          label="Update File Types"
+          control={
+            <Checkbox
+              checked={updateFileTypes}
+              onChange={e => onChange(e, "updateFileTypes")}
+            />
+          }
+        />
+      </Tooltip>
+      <Tooltip
+        title="Split troybins files using 'keywordsRequired' or 'keywordsExcluded' into their own VfxSystemDefinitionData entries"
+        arrow
+        placement="left"
+      >
+        <FormControlLabel
+          disabled={settingsPreset !== "Custom"}
+          label="Split Troybins Using Keywords"
+          control={
+            <Checkbox
+              checked={splitKeywords}
+              onChange={e => onChange(e, "splitKeywords")}
+            />
+          }
+        />
+      </Tooltip>
+    </FormGroup>
+  </Box>
+);
+
+const InfoPanel = ({ selectedFiles }) => (
+  <Box sx={modalStyles.rightSection}>
+    <Typography variant="h6" align="center" sx={{ color: "#fff" }}>
+      Selected Files ({selectedFiles.length})
+    </Typography>
+    <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", my: 1 }} />
+    <List
+      sx={{
+        maxHeight: 250,
+        overflow: "auto",
+        bgcolor: "rgba(0, 0, 0, 0.1)",
+        borderRadius: 1,
+        p: 0
+      }}
+    >
+      {selectedFiles.map((file, idx) => (
+        <ListItem
+          key={idx} // eslint-disable-line
+          divider={idx < selectedFiles.length - 1}
+          sx={{ py: 1 }}
+        >
+          <ListItemText
+            primary={file?.fileName || `File ${idx + 1}`}
+            primaryTypographyProps={{
+              style: { color: "#fff", fontSize: "0.875rem" }
+            }}
+          />
+        </ListItem>
+      ))}
+    </List>
+  </Box>
+);
 
 const ConvertModal = ({
   loading,
@@ -48,132 +223,42 @@ const ConvertModal = ({
   startConverting
 }) => {
   const [assetsPath, setAssetsPath] = useState(defaultSettings.assetsPath);
-  const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [filePath, setFilePath] = useState(defaultSettings.filePath);
-  const [fileSettings, setFileSettings] = useState([]);
   const [namesOnly, setNamesOnly] = useState(defaultSettings.namesOnly);
-  const [settingsPreset, setSettingsPreset] = useState("Custom");
+  const [settingsPreset, setSettingsPreset] = useState("Default");
+  const [splitKeywords, setSplitKeywords] = useState(false);
   const [updateFileTypes, setUpdateFileTypes] = useState(
     defaultSettings.updateFileTypes
   );
 
-  const handleSetDefaultValues = settings => {
-    setAssetsPath(settings.assetsPath);
-    setFilePath(settings.filePath);
-    setNamesOnly(settings.namesOnly);
-    setSettingsPreset(settings.settingsPreset);
-    setUpdateFileTypes(settings.updateFileTypes);
+  const handleStartConvert = () => {
+    startConverting({
+      assetsPath,
+      filePath,
+      namesOnly,
+      settingsPreset,
+      splitKeywords,
+      updateFileTypes
+    });
   };
 
   const handleChangeInput = (event, type) => {
-    switch (type) {
-      case "assetsPath":
-        setAssetsPath(event.target.value);
-        break;
-      case "filePath":
-        setFilePath(event.target.value);
-        break;
-      case "namesOnly":
-        setNamesOnly(event.target.checked);
-        break;
-      case "settingsPreset":
-        if (event.target.value === "Default") {
-          handleSetDefaultValues(defaultSettings);
-        } else {
-          setSettingsPreset(event.target.value);
-        }
-        break;
-      case "updateFileTypes":
-        setUpdateFileTypes(event.target.checked);
-        break;
-      default:
-        break;
-    }
-  };
+    if (type === "assetsPath") setAssetsPath(event.target.value);
+    if (type === "filePath") setFilePath(event.target.value);
+    if (type === "namesOnly") setNamesOnly(event.target.checked);
+    if (type === "updateFileTypes") setUpdateFileTypes(event.target.checked);
+    if (type === "splitKeywords") setSplitKeywords(event.target.checked);
+    if (type === "settingsPreset") {
+      setSettingsPreset(event.target.value);
 
-  const handleClickBack = () => {
-    if (currentFileIndex > 0) {
-      const newIndex = currentFileIndex - 1;
-      const settings = fileSettings[newIndex];
-
-      handleSetDefaultValues(settings);
-      setCurrentFileIndex(newIndex);
-    }
-  };
-
-  const handleClickNext = (isConvertStep, applyToAll = false) => {
-    const newSettings = [...fileSettings];
-    const isNewEntry =
-      newSettings.findIndex(entry => entry.index === currentFileIndex) === -1;
-
-    if (applyToAll) {
-      for (let i = 0; i < selectedFiles.length; i += 1) {
-        if (!newSettings[i]) {
-          const currentSettingsEntry = {
-            assetsPath,
-            filePath,
-            index: i,
-            namesOnly,
-            settingsPreset,
-            updateFileTypes
-          };
-
-          newSettings.push(currentSettingsEntry);
-        }
-      }
-
-      setFileSettings(newSettings);
-    } else {
-      const settingsEntry = {
-        assetsPath,
-        filePath,
-        index: currentFileIndex,
-        namesOnly,
-        settingsPreset,
-        updateFileTypes
-      };
-
-      if (isNewEntry) {
-        newSettings.push(settingsEntry);
-        setFileSettings(newSettings);
-      } else {
-        newSettings[currentFileIndex] = settingsEntry;
-        setFileSettings(newSettings);
+      if (event.target.value === "Default") {
+        setAssetsPath(defaultSettings.assetsPath);
+        setFilePath(defaultSettings.filePath);
+        setNamesOnly(defaultSettings.namesOnly);
+        setSplitKeywords(defaultSettings.splitKeywords);
+        setUpdateFileTypes(defaultSettings.updateFileTypes);
       }
     }
-
-    if (isConvertStep) {
-      startConverting(newSettings);
-
-      handleSetDefaultValues(defaultSettings);
-      setCurrentFileIndex(0);
-    } else {
-      const newIndex = currentFileIndex + 1;
-      const nextSettings = newSettings[newIndex];
-
-      if (nextSettings !== undefined) {
-        handleSetDefaultValues(nextSettings);
-      } else {
-        handleSetDefaultValues(defaultSettings);
-      }
-
-      setCurrentFileIndex(newIndex);
-    }
-  };
-
-  const isConvertReady = currentIndex => {
-    const currentSetting = fileSettings.filter(
-      setting => setting.index === currentIndex
-    );
-    const lastToAdd =
-      currentSetting.length === 0 &&
-      fileSettings.length === selectedFiles.length - 1;
-
-    if (lastToAdd) {
-      return true;
-    }
-
-    return false;
   };
 
   return (
@@ -182,315 +267,83 @@ const ConvertModal = ({
       maxWidth="md"
       open={showModal !== ""}
       onClose={() => onClose("")}
-      sx={{ flexGrow: 1 }}
+      sx={modalStyles.dialog}
     >
-      <DialogContent sx={{ padding: 0 }}>
-        <Grid
-          container
-          direction="row"
-          sx={{
-            backgroundColor: "rgb(90, 90, 90)",
-            height: "10%",
-            padding: 1,
-            paddingLeft: 2,
-            alignItems: "center"
-          }}
+      <Box sx={modalStyles.header}>
+        <Typography variant="h5">Convert Files</Typography>
+        <IconButton
+          color="inherit"
+          onClick={() => onClose("")}
+          aria-label="Close"
         >
-          <Grid item xs={11.5}>
-            <Typography variant="h5">Convert Files</Typography>
-          </Grid>
-          <Grid item xs={0.5}>
-            <IconButton
-              align="center"
-              aria-label="Close"
-              color="inherit"
-              edge="start"
-              onClick={() => onClose("")}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Grid container direction="row" spacing={1} sx={{ height: "70%" }}>
-          <Grid item xs={7.5}>
-            <Grid container sx={{ padding: 1 }}>
-              <Grid item xs={12} sx={{ paddingTop: 3 }}>
-                <TextField
-                  fullWidth
-                  helperText="Please select what settings to use"
-                  id="settingsPreset"
-                  label="Settings To Use"
-                  margin="dense"
-                  onChange={event => handleChangeInput(event, "settingsPreset")}
-                  select
-                  style={{ marginBottom: 2 }}
-                  value={settingsPreset}
-                  variant="outlined"
-                >
-                  {settingsPresets.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
-                <TextField
-                  disabled={settingsPreset !== "Custom"}
-                  fullWidth
-                  margin="dense"
-                  variant="outlined"
-                  label="Default Assets Path"
-                  id="defaultAssetsPath"
-                  value={assetsPath}
-                  onChange={event => handleChangeInput(event, "assetsPath")}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ paddingBottom: "2%" }}>
-                <TextField
-                  disabled={settingsPreset !== "Custom"}
-                  fullWidth
-                  margin="dense"
-                  variant="outlined"
-                  label="Default File Path"
-                  id="defaultFilePath"
-                  value={filePath}
-                  onChange={event => handleChangeInput(event, "filePath")}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ paddingBottom: "30%" }}>
-                <FormGroup sx={{ paddingLeft: 1 }}>
-                  <FormControlLabel
-                    disabled={settingsPreset !== "Custom"}
-                    control={
-                      <Checkbox
-                        checked={namesOnly}
-                        onChange={event =>
-                          handleChangeInput(event, "namesOnly")
-                        }
-                      />
-                    }
-                    id="namesOnly"
-                    label='Only Show Property Names In "Unknown Hashes" Section'
-                  />
-                  <FormControlLabel
-                    disabled={settingsPreset !== "Custom"}
-                    control={
-                      <Checkbox
-                        checked={updateFileTypes}
-                        onChange={event =>
-                          handleChangeInput(event, "updateFileTypes")
-                        }
-                      />
-                    }
-                    id="updateFileTypes"
-                    label="Update File Types Used In Properties With Assets"
-                  />
-                </FormGroup>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={4.5}>
-            <Divider />
-            <Grid
-              align="center"
-              item
-              sx={{
-                backgroundColor: "rgb(120, 120, 120)",
-                height: "10%"
-              }}
-              xs={12}
-            >
-              <Typography variant="h5">General Information</Typography>
-            </Grid>
-            <Divider />
-            <Grid container item sx={{ paddingTop: "4%" }} xs={12}>
-              <Grid item xs={9}>
-                <Typography
-                  sx={{
-                    padding: "2px",
-                    pl: 2,
-                    textDecoration: "underline"
-                  }}
-                >
-                  Action:
-                </Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography sx={{ padding: "2px", marginLeft: "14px" }}>
-                  Convert
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container item sx={{ paddingTop: "1%" }} xs={12}>
-              <Grid item xs={10}>
-                <Typography
-                  sx={{
-                    padding: "2px",
-                    pl: 2,
-                    textDecoration: "underline"
-                  }}
-                >
-                  File Amount:
-                </Typography>
-              </Grid>
-              <Grid item xs={2}>
-                <Typography
-                  sx={{
-                    float: "right"
-                  }}
-                >
-                  {selectedFiles.length}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container item xs={6} />
-            <Divider />
-            <Grid
-              item
-              sx={{
-                backgroundColor: "rgb(120, 120, 120)",
-                paddingTop: "1%"
-              }}
-              xs={12}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  pl: 2
-                }}
-              >
-                Current File:
-              </Typography>
-            </Grid>
-            <Divider />
-            <Grid container item sx={{ paddingTop: "4%" }} xs={6}>
-              <Grid item xs={10}>
-                <Typography
-                  sx={{
-                    padding: "2px",
-                    pl: 2,
-                    textDecoration: "underline"
-                  }}
-                >
-                  Position:
-                </Typography>
-              </Grid>
-              <Grid item xs={2}>
-                <Typography
-                  sx={{
-                    padding: "2px",
-                    marginLeft: "6px"
-                  }}
-                >
-                  {`${currentFileIndex + 1} / ${selectedFiles.length}`}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container item sx={{ paddingTop: "1%" }} xs={6}>
-              <Grid item xs={12}>
-                <Typography
-                  sx={{
-                    padding: "2px",
-                    pl: 2,
-                    textDecoration: "underline"
-                  }}
-                >
-                  Name:
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container item xs={6}>
-              <Grid item xs={12}>
-                <Tooltip
-                  arrow
-                  placement="right"
-                  title={selectedFiles[currentFileIndex]?.fileName || "Empty"}
-                >
-                  <Typography
-                    sx={{
-                      maxWidth: 340,
-                      overflowX: "hidden",
-                      padding: "2px",
-                      pl: 2,
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    {selectedFiles[currentFileIndex]?.fileName || "Empty"}
-                  </Typography>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid container direction="row" spacing={1} sx={{ height: "20%" }}>
-          <Grid item xs={7.5} />
-          <Grid item xs={4.5}>
-            <Grid align="center" item xs={12}>
-              <Button
-                disabled={currentFileIndex === 0}
-                onClick={handleClickBack}
-                startIcon={<ArrowBackIcon />}
-                variant="outlined"
-                sx={{ margin: "12px 16px 12px 16px" }}
-              >
-                <Typography>Back</Typography>
-              </Button>
-              <Tooltip
-                arrow
-                placement="top"
-                title="Applies the current settings to all files left and starts the converting process"
-              >
-                <Button
-                  onClick={() => handleClickNext(true, true)}
-                  variant="outlined"
-                  sx={{ margin: "12px 16px 12px 16px" }}
-                >
-                  <Typography>All</Typography>
-                </Button>
-              </Tooltip>
-              <Button
-                disabled={currentFileIndex === selectedFiles.length - 1}
-                onClick={() => handleClickNext(false)}
-                endIcon={<ArrowForwardIcon />}
-                variant="contained"
-                sx={{ margin: "12px 16px 12px 16px" }}
-              >
-                <Typography>Next</Typography>
-              </Button>
-            </Grid>
-            <Grid align="center" item xs={12}>
-              <Button
-                disabled={loading || !isConvertReady(currentFileIndex)}
-                onClick={() => handleClickNext(true)}
-                startIcon={
-                  loading ? <CircularProgress size={20} /> : <AutoFixHighIcon />
-                }
-                sx={{ backgroundColor: "rgb(60, 60, 60)", width: "90%" }}
-                variant="outlined"
-              >
-                <Typography>
-                  {loading ? "Converting..." : "Start Converting"}
-                </Typography>
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <DialogContent sx={modalStyles.content}>
+        <SettingsForm
+          settingsPreset={settingsPreset}
+          assetsPath={assetsPath}
+          filePath={filePath}
+          namesOnly={namesOnly}
+          updateFileTypes={updateFileTypes}
+          splitKeywords={splitKeywords}
+          onChange={handleChangeInput}
+        />
+        <InfoPanel selectedFiles={selectedFiles} currentFileIndex={0} />
       </DialogContent>
+      <Box sx={modalStyles.footer}>
+        <Button
+          variant="contained"
+          onClick={handleStartConvert}
+          disabled={loading || selectedFiles.length === 0}
+          startIcon={
+            loading ? <CircularProgress size={20} /> : <RotateRightIcon />
+          }
+          sx={{ width: { xs: "100%", sm: "200px" } }}
+        >
+          {loading ? "Converting..." : "Convert"}
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => onClose("")}
+          disabled={loading}
+          sx={{ width: { xs: "100%", sm: "auto" } }}
+        >
+          Cancel
+        </Button>
+      </Box>
     </Dialog>
   );
 };
 
-export default ConvertModal;
+SettingsForm.propTypes = {
+  settingsPreset: PropTypes.string.isRequired,
+  assetsPath: PropTypes.string.isRequired,
+  filePath: PropTypes.string.isRequired,
+  namesOnly: PropTypes.bool.isRequired,
+  updateFileTypes: PropTypes.bool.isRequired,
+  splitKeywords: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired
+};
+
+InfoPanel.propTypes = {
+  selectedFiles: PropTypes.arrayOf(
+    PropTypes.shape({
+      fileName: PropTypes.string
+    })
+  ).isRequired
+};
 
 ConvertModal.propTypes = {
   loading: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  selectedFiles: PropTypes.any.isRequired, // eslint-disable-line
+  selectedFiles: PropTypes.arrayOf(
+    PropTypes.shape({
+      fileName: PropTypes.string
+    })
+  ).isRequired,
   showModal: PropTypes.string.isRequired,
   startConverting: PropTypes.func.isRequired
 };
+
+export default ConvertModal;

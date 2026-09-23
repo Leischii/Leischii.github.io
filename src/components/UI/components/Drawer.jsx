@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
 
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -10,17 +9,17 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
-const DrawerHeader = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 2px;
-  justify-content: flex-end;
-`;
-
 const DrawerComponent = ({ handleChange, isOpen }) => {
   return (
     <Drawer anchor="bottom" onClose={handleChange} open={isOpen !== 0}>
-      <DrawerHeader>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "2px",
+          justifyContent: "flex-end"
+        }}
+      >
         <Alert variant="outlined" severity="error" sx={{ flexGrow: 1, mr: 1 }}>
           <Typography>{`${isOpen} file${
             isOpen > 1 ? "s" : ""
@@ -36,7 +35,7 @@ const DrawerComponent = ({ handleChange, isOpen }) => {
             <CloseIcon />
           </IconButton>
         </Tooltip>
-      </DrawerHeader>
+      </div>
     </Drawer>
   );
 };

@@ -25,7 +25,7 @@ const CheckValueType = value => {
   return valueType;
 };
 
-const UpdateEmitters = data => {
+const UpdateEmitters = (data, splitKeywords) => {
   function getMultiName(nameProp) {
     let hasNumber;
 
@@ -64,6 +64,10 @@ const UpdateEmitters = data => {
   troybinData.forEach(emit => {
     // Needed since values get lost for some reason otherwise
     const emitter = JSON.parse(JSON.stringify(emit));
+    const emitterChecks = {
+      disabled: false,
+      particleColorTexture: false
+    };
 
     const propertiesToAdd = [];
     const propertiesToRemove = [];
@@ -77,11 +81,20 @@ const UpdateEmitters = data => {
 
     let hasLinger = false;
 
+    const upgradeSimpleEmitter = !emitter.properties.filter(
+      prop => prop.simpleEmitter && !prop.upgradeType
+    ).length;
+
     emitter.properties.forEach(prop => {
       // Needed since values get lost for some reason otherwise
       const property = JSON.parse(JSON.stringify(prop));
 
       switch (property.binGroup.name) {
+        case "disabled":
+        case "particleColorTexture": {
+          emitterChecks[property.binGroup.name] = true;
+          break;
+        }
         case "lifetime": {
           if (property.value === -1) {
             const hasTableEntries =
@@ -152,19 +165,21 @@ const UpdateEmitters = data => {
         }
         case "keywordsExcluded":
         case "keywordsRequired": {
-          if (!updatedEmitter.keywords[property.binGroup.name]) {
-            updatedEmitter.keywords[property.binGroup.name] = [];
-          }
-
-          property.value.forEach(keyword => {
-            updatedEmitter.keywords[property.binGroup.name].push(keyword);
-
-            if (!keywords.includes(keyword)) {
-              keywords.push(keyword);
+          if (splitKeywords) {
+            if (!updatedEmitter.keywords[property.binGroup.name]) {
+              updatedEmitter.keywords[property.binGroup.name] = [];
             }
-          });
 
-          propertiesToRemove.push(property.troybinName);
+            property.value.forEach(keyword => {
+              updatedEmitter.keywords[property.binGroup.name].push(keyword);
+
+              if (!keywords.includes(keyword)) {
+                keywords.push(keyword);
+              }
+            });
+
+            propertiesToRemove.push(property.troybinName);
+          }
           break;
         }
         default:
@@ -353,190 +368,280 @@ const UpdateEmitters = data => {
       }
 
       if (emitter.isSimple) {
-        // Todo: More rules
         const isSimpleProperty = !!property.simpleValue;
+        // Todo: More rules
 
         let normalProperty;
         let simpleProperty;
 
         if (isSimpleProperty) {
-          // Special case: swap probTable/timeTable for particleLifetime if both present and simple emitter
-          const isLifetime = property.binGroup.name === "particleLifetime";
-          const lifetimeHasBothTables =
-            isLifetime &&
-            emitter.properties.findIndex(
-              currProp => currProp.troybinName === "p-lifeP1"
-            ) !== -1 &&
-            emitter.properties.findIndex(
-              currProp => currProp.troybinName === "p-life1"
-            ) !== -1;
+          if (upgradeSimpleEmitter) {
+            const propertyToAddIndex = propertiesToAdd.findIndex(
+              propertyToAdd =>
+                propertyToAdd.troybinName === property.troybinName
+            );
+            const newProperty =
+              propertyToAddIndex !== -1
+                ? { ...propertiesToAdd[propertyToAddIndex] }
+                : { ...property };
+            console.log('newProperty: ', newProperty);
 
-          if (!isLifetime || lifetimeHasBothTables) {
-            if (
-              property.binPropertyName === "constantValue" ||
-              property.binGroup.name === "scaleBias"
-            ) {
-              let nValue;
-              let sValue;
-
-              let nBinType = property.binPropertyType;
-              const sBinType = property.simpleValue[2];
-
-              const valueType = CheckValueType(property.value);
-
-              if (valueType === property.troybinType) {
-                if (property.binGroup.name === "scaleBias") {
-                  nValue = property.value;
-                  sValue = property.value;
-                } else {
-                  // Case: Value is normal Property
-                  nValue = property.value;
-                  sValue = property.value[0]; // eslint-disable-line
-
-                  if (property.value[0] === 0) {
-                    if (property.value[1] !== 0) {
-                      sValue = property.value[1]; // eslint-disable-line
-                    } else if (property.value[2] !== 0) {
-                      sValue = property.value[2]; // eslint-disable-line
-                    }
-                  }
-                }
-              } else if (
-                property.binGroup.name === "birthRotationalVelocity0" ||
-                property.binGroup.name === "birthRotation0"
-              ) {
-                nValue = [property.value, 0, 0];
-                sValue = property.value;
-              } else if (property.binGroup.name === "bindWeight") {
-                nValue = property.value;
-                sValue = [property.value, property.value];
-              } else {
-                // Case: Value is simple Property
-                nValue = [property.value, property.value, property.value];
-                sValue = property.value;
-
-                nBinType = "vec3";
-              }
-
-              normalProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.troybinType,
-                binGroup: property.binGroup,
-                binGroupType: property.binGroupType,
-                binPropertyName: property.binPropertyName,
-                binPropertyType: nBinType,
-                value: nValue
-              };
-              simpleProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.simpleValue[0],
-                binGroup: property.simpleValue[3],
-                binGroupType: property.simpleValue[1],
-                binPropertyName:
-                  property.binGroup.name === "bindWeight"
-                    ? ""
-                    : property.binPropertyName,
-                binPropertyType: sBinType,
-                value: sValue
-              };
-            } else {
-              let complexValue = property.value;
-              let simpleValue = property.value;
-
-              if (
-                property.simpleValue[4].includes("timesTable") &&
-                property.binGroup.name !== "particleLifetime"
-              ) {
-                complexValue = [
-                  property.value[0],
-                  property.value[1],
-                  property.value[1],
-                  property.value[1]
-                ];
-              }
-
-              normalProperty = {
-                troybinName: property.troybinName,
-                troybinType: property.simpleValue[0],
-                binGroup: property.binGroup,
-                binGroupType: property.binGroupType,
-                binPropertyName: property.simpleValue[4],
-                binPropertyType: property.simpleValue[4].includes("timesTable")
-                  ? property.binPropertyType
-                  : property.simpleValue[2],
-                value: complexValue
-              };
-
-              if (property.binGroup.name !== property.simpleValue[3].name) {
-                if (
-                  property.simpleValue[4].includes("timesTable") &&
-                  property.binGroup.name !== "particleLifetime"
-                ) {
-                  let constValueName = property.troybinName.slice(
-                    0,
-                    property.troybinName.length - 1
-                  );
-
-                  if (constValueName[constValueName.length] === "P") {
-                    constValueName = constValueName.slice(
-                      0,
-                      property.troybinName.length - 1
+            if (newProperty.upgradeType !== "UNCHANGED") {
+              switch (newProperty.upgradeType) {
+                case "TWO_DOUBLE_TO_ONE": {
+                  if (
+                    newProperty.value === "1" ||
+                    newProperty.value === 1 ||
+                    newProperty.value === "1.0" ||
+                    newProperty.value.split(" ")[0] === "1.0" ||
+                    newProperty.value.split(" ")[0] === 1 ||
+                    newProperty.value.split(" ")[1] === 1 ||
+                    newProperty.value.split(" ")[1] === "1.0"
+                  ) {
+                    newProperty.value = 1;
+                  } else if (
+                    newProperty.value === "0" ||
+                    newProperty.value === 0 ||
+                    newProperty.value === "0.0"
+                  ) {
+                    newProperty.value = 0;
+                  } else {
+                    console.warn(
+                      "Error: Unexpected value for 'TWO_DOUBLE_TO_ONE', got: ",
+                      newProperty.value
                     );
                   }
 
-                  const constValuePropertyIndex = emitter.properties.findIndex(
-                    currProp => currProp.troybinName === constValueName
-                  );
+                  break;
+                }
+                case "FILL_ZERO":
+                case "MULTIPLY": {
+                  const isMultiply = newProperty.upgradeType === "MULTIPLY";
+                  const amountValues = Array.isArray(newProperty.value)
+                    ? newProperty.value.length
+                    : 1;
 
-                  if (constValuePropertyIndex !== -1) {
-                    const constValueProperty =
-                      emitter.properties[constValuePropertyIndex];
-
-                    simpleValue = [
-                      property.value[0],
-                      property.value[1] * constValueProperty.value
+                  if (amountValues === 1) {
+                    newProperty.value = [
+                      newProperty.value,
+                      isMultiply ? newProperty.value : 0,
+                      isMultiply ? newProperty.value : 0
                     ];
+                  } else if (amountValues === 2) {
+                    newProperty.value = [
+                      newProperty.value[0],
+                      newProperty.value[1],
+                      isMultiply ? newProperty.value[1] : 0,
+                      isMultiply ? newProperty.value[1] : 0
+                    ];
+                  } else {
+                    console.warn(
+                      "Error: Unexpected value length, expected 1 or 2, got: ",
+                      amountValues
+                    );
                   }
+                  break;
+                }
+                default:
+                  break;
+              }
+
+              if (
+                propertiesToRemove.findIndex(
+                  removedTroybinName =>
+                    removedTroybinName === newProperty.troybinName
+                ) === -1
+              ) {
+                propertiesToRemove.push(newProperty.troybinName);
+              }
+
+              if (propertyToAddIndex !== -1) {
+                propertiesToAdd[propertyToAddIndex] = newProperty;
+              } else {
+                propertiesToAdd.push(newProperty);
+              }
+            }
+          } else {
+            // Special case: swap probTable/timeTable for particleLifetime if both present and simple emitter
+            const isLifetime = property.binGroup.name === "particleLifetime";
+            const lifetimeHasBothTables =
+              isLifetime &&
+              emitter.properties.findIndex(
+                currProp => currProp.troybinName === "p-lifeP1"
+              ) !== -1 &&
+              emitter.properties.findIndex(
+                currProp => currProp.troybinName === "p-life1"
+              ) !== -1;
+
+            if (!isLifetime || lifetimeHasBothTables) {
+              if (
+                property.binPropertyName === "constantValue" ||
+                property.binGroup.name === "scaleBias"
+              ) {
+                let nValue;
+                let sValue;
+
+                let nBinType = property.binPropertyType;
+                const sBinType = property.simpleValue[2];
+
+                const valueType = CheckValueType(property.value);
+
+                if (valueType === property.troybinType) {
+                  if (property.binGroup.name === "scaleBias") {
+                    nValue = property.value;
+                    sValue = property.value;
+                  } else {
+                    // Case: Value is normal Property
+                    nValue = property.value;
+                    sValue = property.value[0]; // eslint-disable-line
+
+                    if (property.value[0] === 0) {
+                      if (property.value[1] !== 0) {
+                        sValue = property.value[1]; // eslint-disable-line
+                      } else if (property.value[2] !== 0) {
+                        sValue = property.value[2]; // eslint-disable-line
+                      }
+                    }
+                  }
+                } else if (
+                  property.binGroup.name === "birthRotationalVelocity0" ||
+                  property.binGroup.name === "birthRotation0"
+                ) {
+                  nValue = [property.value, 0, 0];
+                  sValue = property.value;
+                } else if (property.binGroup.name === "bindWeight") {
+                  nValue = property.value;
+                  sValue = [property.value, property.value];
+                } else {
+                  // Case: Value is simple Property
+                  nValue = [property.value, property.value, property.value];
+                  sValue = property.value;
+
+                  nBinType = "vec3";
                 }
 
+                normalProperty = {
+                  troybinName: property.troybinName,
+                  troybinType: property.troybinType,
+                  binGroup: property.binGroup,
+                  binGroupType: property.binGroupType,
+                  binPropertyName: property.binPropertyName,
+                  binPropertyType: nBinType,
+                  value: nValue
+                };
                 simpleProperty = {
                   troybinName: property.troybinName,
                   troybinType: property.simpleValue[0],
                   binGroup: property.simpleValue[3],
                   binGroupType: property.simpleValue[1],
-                  binPropertyName: property.simpleValue[4],
-                  binPropertyType: property.simpleValue[2],
-                  value: simpleValue
+                  binPropertyName:
+                    property.binGroup.name === "bindWeight"
+                      ? ""
+                      : property.binPropertyName,
+                  binPropertyType: sBinType,
+                  value: sValue
                 };
               } else {
-                simpleProperty = undefined;
+                let complexValue = property.value;
+                let simpleValue = property.value;
+
+                if (
+                  property.simpleValue[4].includes("timesTable") &&
+                  property.binGroup.name !== "particleLifetime"
+                ) {
+                  complexValue = [
+                    property.value[0],
+                    property.value[1],
+                    property.value[1],
+                    property.value[1]
+                  ];
+                }
+
+                normalProperty = {
+                  troybinName: property.troybinName,
+                  troybinType: property.simpleValue[0],
+                  binGroup: property.binGroup,
+                  binGroupType: property.binGroupType,
+                  binPropertyName: property.simpleValue[4],
+                  binPropertyType: property.simpleValue[4].includes(
+                    "timesTable"
+                  )
+                    ? property.binPropertyType
+                    : property.simpleValue[2],
+                  value: complexValue
+                };
+
+                if (property.binGroup.name !== property.simpleValue[3].name) {
+                  if (
+                    property.simpleValue[4].includes("timesTable") &&
+                    property.binGroup.name !== "particleLifetime"
+                  ) {
+                    let constValueName = property.troybinName.slice(
+                      0,
+                      property.troybinName.length - 1
+                    );
+
+                    if (constValueName[constValueName.length] === "P") {
+                      constValueName = constValueName.slice(
+                        0,
+                        property.troybinName.length - 1
+                      );
+                    }
+
+                    const constValuePropertyIndex = emitter.properties.findIndex(
+                      currProp => currProp.troybinName === constValueName
+                    );
+
+                    if (constValuePropertyIndex !== -1) {
+                      const constValueProperty =
+                        emitter.properties[constValuePropertyIndex];
+
+                      simpleValue = [
+                        property.value[0],
+                        property.value[1] * constValueProperty.value
+                      ];
+                    }
+                  }
+
+                  simpleProperty = {
+                    troybinName: property.troybinName,
+                    troybinType: property.simpleValue[0],
+                    binGroup: property.simpleValue[3],
+                    binGroupType: property.simpleValue[1],
+                    binPropertyName: property.simpleValue[4],
+                    binPropertyType: property.simpleValue[2],
+                    value: simpleValue
+                  };
+                } else {
+                  simpleProperty = undefined;
+                }
               }
-            }
 
-            if (simpleProperty !== undefined) {
-              // The original version of these is skipped in simple emitters
-              const normalPropertiesToSkip = [
-                "birthScale",
-                "scale",
-                "birthRotation",
-                "birthRotationalVelocity",
-                "particleBind",
-                "scaleBias",
-                "orientation"
-              ];
+              if (simpleProperty !== undefined) {
+                // The original version of these is skipped in simple emitters
+                const normalPropertiesToSkip = [
+                  "birthScale",
+                  "scale",
+                  "birthRotation",
+                  "birthRotationalVelocity",
+                  "particleBind",
+                  "scaleBias",
+                  "orientation"
+                ];
 
-              if (
-                !normalPropertiesToSkip.includes(simpleProperty.binGroup.name)
-              ) {
+                if (
+                  !normalPropertiesToSkip.includes(simpleProperty.binGroup.name)
+                ) {
+                  propertiesToAdd.push(normalProperty);
+                }
+
+                propertiesToAdd.push(simpleProperty);
+              } else {
                 propertiesToAdd.push(normalProperty);
               }
 
-              propertiesToAdd.push(simpleProperty);
-            } else {
-              propertiesToAdd.push(normalProperty);
+              propertiesToRemove.push(normalProperty.troybinName);
             }
-
-            propertiesToRemove.push(normalProperty.troybinName);
           }
         }
       } else {
@@ -587,9 +692,14 @@ const UpdateEmitters = data => {
                 const newTimesTableEntryValue = [timesTableEntry.value[0]];
 
                 for (let k = 1; k < 4; k += 1) {
-                  newTimesTableEntryValue.push(
-                    timesTableEntry.value[k] * property.value[k - 1]
-                  );
+                  let newValue =
+                    timesTableEntry.value[k] * property.value[k - 1];
+
+                  if (newValue === 0 && property.value[k - 1] < 0) {
+                    newValue = "-0";
+                  }
+
+                  newTimesTableEntryValue.push(newValue);
                 }
 
                 const newTimesTableEntry = timesTableEntry;
@@ -601,15 +711,104 @@ const UpdateEmitters = data => {
           }
         }
       }
+
+      if (property.binGroup.toFixed) {
+        let valueChanged = false;
+        const propertyToAddIndex = propertiesToAdd.findIndex(
+          propertyToAdd => propertyToAdd.troybinName === property.troybinName
+        );
+        const newProperty =
+          propertyToAddIndex !== -1
+            ? { ...propertiesToAdd[propertyToAddIndex] }
+            : { ...property };
+
+        if (Array.isArray(newProperty.value)) {
+          newProperty.value.forEach((valuePart, index) => {
+            if (typeof valuePart === "number") {
+              const numberParts = valuePart.toString().split(".");
+
+              if (
+                numberParts.length === 2 &&
+                numberParts[1].length > property.binGroup.toFixed
+              ) {
+                newProperty.value[index] = valuePart.toFixed(
+                  property.binGroup.toFixed
+                );
+
+                let count = property.binGroup.toFixed - 1;
+
+                while (
+                  count !== 0 &&
+                  newProperty.value[index].toString().split(".")[1][count] ===
+                    "0"
+                ) {
+                  newProperty.value[index] = parseFloat(
+                    newProperty.value[index]
+                  ).toFixed(count);
+
+                  count -= 1;
+                }
+
+                valueChanged = true;
+              }
+            }
+          });
+        } else if (typeof newProperty.value === "number") {
+          const numberParts = newProperty.value.toString().split(".");
+
+          if (
+            numberParts.length === 2 &&
+            numberParts[1].length > property.binGroup.toFixed
+          ) {
+            newProperty.value = newProperty.value.toFixed(
+              property.binGroup.toFixed
+            );
+
+            let count = property.binGroup.toFixed - 1;
+
+            while (newProperty.value.toString().split(".")[1][count] === "0") {
+              newProperty.value = parseFloat(newProperty.value).toFixed(count);
+
+              count -= 1;
+            }
+
+            valueChanged = true;
+          }
+        }
+
+        if (valueChanged) {
+          if (
+            propertiesToRemove.findIndex(
+              removedTroybinName =>
+                removedTroybinName === newProperty.troybinName
+            ) === -1
+          ) {
+            propertiesToRemove.push(newProperty.troybinName);
+          }
+
+          if (propertyToAddIndex !== -1) {
+            propertiesToAdd[propertyToAddIndex] = newProperty;
+          } else {
+            propertiesToAdd.push(newProperty);
+          }
+        }
+      }
     });
 
     // Linger default value is 10 + particleLifeTime unless stated otherwise.
     // Simple Emitters are also an exception to this rule
     if (!hasLinger && !emitter.isSimple) {
+      const propertyToAddIndex = propertiesToAdd.findIndex(
+        propertyToAdd => propertyToAdd.troybinName === "p-life"
+      );
       const pIndex = emitter.properties.findIndex(
         property => property.troybinName === "p-life"
       );
-      const plifetimeVal = pIndex === -1 ? 0 : emitter.properties[pIndex].value;
+      const plifetimeVal = parseFloat(
+        propertiesToAdd[propertyToAddIndex]?.value ||
+          emitter.properties[pIndex]?.value ||
+          0
+      );
 
       // TODO: Link linger property instead
       const lingerProperty = {
@@ -619,7 +818,8 @@ const UpdateEmitters = data => {
           name: "particleLinger",
           members: [],
           structure: "SimpleObjectProperty",
-          order: 15
+          order: 15,
+          toFixed: 2
         },
         binGroupType: "option[f32]",
         binPropertyName: "constantValue",
@@ -639,7 +839,8 @@ const UpdateEmitters = data => {
             name: "particleLinger",
             members: [],
             structure: "SimpleObjectProperty",
-            order: 15
+            order: 15,
+            toFixed: 2
           },
           binGroupType: "option[f32]",
           binPropertyName: "constantValue",
@@ -668,6 +869,26 @@ const UpdateEmitters = data => {
       propertiesToAdd.push(meshRenderFlagsProperty);
     }
 
+    if (!emitterChecks.particleColorTexture) {
+      // Add default color texture to emitter
+      const colorTexture = {
+        troybinName: "p-rgba",
+        troybinType: "STRING_PATH",
+        binGroup: {
+          name: "particleColorTexture",
+          members: [],
+          structure: "SimpleProperty",
+          order: 55
+        },
+        binGroupType: "string",
+        binPropertyName: "",
+        binPropertyType: "",
+        value: '"ASSETS/Particles/DefaultColorOverlifetime.tex"'
+      };
+
+      propertiesToAdd.push(colorTexture);
+    }
+
     emitter.properties.forEach(property => {
       const removeEntry = !!propertiesToRemove.find(
         element => element === property.troybinName
@@ -682,28 +903,34 @@ const UpdateEmitters = data => {
       updatedEmitter.properties.push(addProperty);
     });
 
-    emitters.push(JSON.parse(JSON.stringify(updatedEmitter)));
+    if (updatedEmitter.isSimple && upgradeSimpleEmitter) {
+      updatedEmitter.isSimple = false;
+    }
 
-    // Create a copy of the emitter if used multiple times
-    if (emitter.isMultiUseEntry) {
-      const { emitterName, number } = getMultiName(emitter.name);
-      let emitterNameNumber = number;
+    if (!emitterChecks.disabled) {
+      emitters.push(JSON.parse(JSON.stringify(updatedEmitter)));
 
-      for (let i = 0; i < emitter.isMultiUseEntry.length; i += 1) {
-        const newEmitterName = `"${emitterName + emitterNameNumber}"`;
-        const updatedProperties = getNewProperties(
-          updatedEmitter.properties,
-          newEmitterName
-        );
+      // Create a copy of the emitter if used multiple times
+      if (emitter.isMultiUseEntry) {
+        const { emitterName, number } = getMultiName(emitter.name);
+        let emitterNameNumber = number;
 
-        const multiEmitter = {
-          name: newEmitterName,
-          properties: updatedProperties,
-          order: emitter.isMultiUseEntry[i]
-        };
+        for (let i = 0; i < emitter.isMultiUseEntry.length; i += 1) {
+          const newEmitterName = `"${emitterName + emitterNameNumber}"`;
+          const updatedProperties = getNewProperties(
+            updatedEmitter.properties,
+            newEmitterName
+          );
 
-        emitters.push(multiEmitter);
-        emitterNameNumber += 1;
+          const multiEmitter = {
+            name: newEmitterName,
+            properties: updatedProperties,
+            order: emitter.isMultiUseEntry[i]
+          };
+
+          emitters.push(multiEmitter);
+          emitterNameNumber += 1;
+        }
       }
     }
   });

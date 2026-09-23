@@ -8,7 +8,8 @@ export default function GetTheme(props) {
           body {
             background: linear-gradient(290deg, hsl(${
               props.backGroundColorValue
-            }, 60%, 55%), hsl(${props.backGroundColorValue - 305}, 64%, 50%))
+            }, 60%, 55%), hsl(${props.backGroundColorValue - 305}, 64%, 50%));
+            height: 100vh
           }
         `
       }

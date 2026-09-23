@@ -8,6 +8,7 @@ const MigrateConvertedTroybin = (
   defaultFilePath,
   file,
   namesOnly,
+  splitKeywords,
   updateFileTypes
 ) => {
   const troybinStructure = ReadTroybin(
@@ -19,7 +20,8 @@ const MigrateConvertedTroybin = (
   );
 
   const { updatedEmitters, keywords } = UpdateEmitters(
-    troybinStructure.emitters
+    troybinStructure.emitters,
+    splitKeywords
   );
 
   const updatedTroybin = {

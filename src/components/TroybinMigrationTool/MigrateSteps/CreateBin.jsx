@@ -27,11 +27,18 @@ const CreateBin = (troybin, defaultFilePath, keywords) => {
         const alreadyAdded = [];
         const binEmitters = [];
 
+        const pTypeEmitter = emitter.properties.find(
+          prop => prop.troybinName === "p-type"
+        );
+
         emitter.properties.forEach(property => {
-          const finalPropertyName =
-            property.binGroup.parent?.parent?.name ||
-            property.binGroup.parent?.name ||
-            property.binGroup.name;
+          console.log('property: ', property);
+          const isPrimitive = Array.isArray(property.binGroup.parent);
+          const finalPropertyName = isPrimitive
+            ? pTypeEmitter?.value
+            : property.binGroup.parent?.parent?.name ||
+              property.binGroup.parent?.name ||
+              property.binGroup.name;
 
           if (
             alreadyAdded.findIndex(entry => entry === finalPropertyName) === -1
@@ -234,6 +241,12 @@ const CreateBin = (troybin, defaultFilePath, keywords) => {
                     members: parentPropertyParts,
                     order: parent.order
                   };
+
+                  // Needed for properties using 'parentObjectStructure'
+                  if (parent.structure) {
+                    finalProperty.structure = parent.structure;
+                    finalProperty.propertyType = parent.propertyType;
+                  }
                 } else {
                   finalProperty = {
                     name: parent.name,
@@ -303,6 +316,25 @@ const CreateBin = (troybin, defaultFilePath, keywords) => {
               order: 303
             },
             binGroupType: "string",
+            binPropertyName: "",
+            binPropertyType: "",
+            value: `\"${defaultFilePath}/${entryName}\"` // eslint-disable-line
+          }
+        ]
+      },
+      {
+        name: "objectPath",
+        members: [
+          {
+            troybinName: "",
+            troybinType: "STRING_PATH",
+            binGroup: {
+              name: "objectPath",
+              members: [],
+              structure: "SimpleProperty",
+              order: 308
+            },
+            binGroupType: "hash",
             binPropertyName: "",
             binPropertyType: "",
             value: `\"${defaultFilePath}/${entryName}\"` // eslint-disable-line

@@ -195,7 +195,7 @@ const particleChanges131Fix = [
       "0x38123c47",
       "emitterUvScrollRateMult"
     ],
-    newString: "textureMult: pointer = 0xb097c1bd"
+    newString: "textureMult: pointer = VfxTextureMultDefinitionData"
   },
   {
     type: "VfxSystemDefinitionData",

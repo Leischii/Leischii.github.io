@@ -129,6 +129,8 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
         formatedValue = "primitivePlanarProjection";
       } else if (values === "8") {
         formatedValue = "primitiveAttachedMesh";
+      } else if (values === "11") {
+        formatedValue = "primitiveAttachedMeshEmpty";
       } else {
         formatedValue = invalidValue;
       }
@@ -172,7 +174,9 @@ export function FormatValue(values, type, defaultAssetsPath, updateFileTypes) {
       formatedValue = `\"${defaultAssetsPath}/${values.replace("\"", "")}`; // eslint-disable-line
 
       if (updateFileTypes) {
-        formatedValue = formatedValue.replace(".tga", ".dds");
+        formatedValue = formatedValue
+          .replace(".tga", ".tex")
+          .replace(".dds", ".tex");
       }
       break;
     case "STRING_NO_EXT":

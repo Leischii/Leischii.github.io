@@ -19,7 +19,6 @@ const FileListItem = ({
   clickFile,
   clickFileActive,
   file,
-  filter,
   getTypeName,
   selectedFiles
 }) => {
@@ -88,7 +87,7 @@ const FileListItem = ({
                   {file.fileName}
                 </Typography>
               }
-              secondary={filter ? null : getTypeName(file.fileType)}
+              secondary={getTypeName(file.fileType)}
             />
           </Tooltip>
         </ListItemButton>
@@ -109,7 +108,6 @@ FileListItem.propTypes = {
     fileName: PropTypes.string.isRequired,
     fileType: PropTypes.string.isRequired
   }).isRequired,
-  filter: PropTypes.number.isRequired,
   getTypeName: PropTypes.func.isRequired,
   selectedFiles: PropTypes.arrayOf(PropTypes.string).isRequired
 };

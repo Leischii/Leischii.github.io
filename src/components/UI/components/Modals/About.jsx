@@ -21,17 +21,15 @@ const style = {
 };
 
 const AboutModal = ({ onClose, open }) => {
-  const isOpen = open === "about";
-
   return (
     <Modal
-      open={isOpen}
+      open={open}
       onClose={() => onClose("")}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}
     >
-      <Fade in={isOpen}>
+      <Fade in={open}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h4" component="h2">
             Troygrade
@@ -95,5 +93,5 @@ export default React.memo(AboutModal);
 
 AboutModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  open: PropTypes.string.isRequired
+  open: PropTypes.bool.isRequired
 };

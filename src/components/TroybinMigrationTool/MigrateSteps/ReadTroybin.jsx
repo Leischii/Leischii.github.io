@@ -336,6 +336,7 @@ const ReadTroybin = (
             binPropertyType: assignedProperty.binPropertyType,
             defaultValue: assignedProperty.defaultValue,
             simpleValue: assignedProperty.simpleValue || undefined,
+            upgradeType: assignedProperty.upgradeType || undefined,
             value: formatedValue,
             definitionId: assignedProperty.definitionId || undefined
           })

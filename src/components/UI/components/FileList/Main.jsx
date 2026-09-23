@@ -35,7 +35,6 @@ const FileList = ({
   clickFileActive,
   dataSource,
   filesLength,
-  filter,
   loadFile,
   selectAll,
   selectedFiles
@@ -117,7 +116,6 @@ const FileList = ({
                     fileName: fileEntry.fileName,
                     fileType: fileEntry.type
                   }}
-                  filter={filter}
                   getTypeName={type => getTypeName(type)}
                   key={fileEntry.id}
                   selectedFiles={selectedFiles}
@@ -147,7 +145,6 @@ FileList.propTypes = {
     }).isRequired
   ).isRequired,
   filesLength: PropTypes.number.isRequired,
-  filter: PropTypes.number.isRequired,
   loadFile: PropTypes.func.isRequired,
   selectAll: PropTypes.func.isRequired,
   selectedFiles: PropTypes.arrayOf(PropTypes.string).isRequired

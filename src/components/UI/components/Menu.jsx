@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import MenuIcon from "@mui/icons-material/Menu";
 
+import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -12,6 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 
 const MenuComponent = ({
   changeShowMenu,
+  icon,
   menuDisabled,
   menuSettings,
   showMenu
@@ -20,18 +22,18 @@ const MenuComponent = ({
     <div>
       <IconButton
         color="inherit"
-        disabled={menuDisabled}
+        disabled={menuDisabled || false}
         onClick={e =>
           changeShowMenu({ anchor: e.currentTarget, menu: menuSettings.menu })
         }
         size="large"
       >
-        <MenuIcon />
+        {icon || <MenuIcon />}
       </IconButton>
       <Menu
         anchorEl={showMenu.anchor}
         anchorOrigin={{
-          horizontal: "right",
+          horizontal: "left",
           vertical: "bottom"
         }}
         id="menu-appbar"
@@ -39,7 +41,7 @@ const MenuComponent = ({
         open={showMenu.menu === menuSettings.menu}
         onClose={() => changeShowMenu({ anchor: null, menu: "" })}
         transformOrigin={{
-          horizontal: "right",
+          horizontal: "left",
           vertical: "top"
         }}
       >
@@ -52,7 +54,20 @@ const MenuComponent = ({
               placement="right"
             >
               <MenuItem disabled={option.disabled} onClick={option.onClickFunc}>
-                <ListItemIcon>{option.icon}</ListItemIcon>
+                <ListItemIcon>
+                  {typeof option.icon === "boolean" ? (
+                    <Checkbox
+                      checked={option.icon}
+                      sx={{
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        paddingLeft: 0
+                      }}
+                    />
+                  ) : (
+                    option.icon
+                  )}
+                </ListItemIcon>
                 <ListItemText>{option.text}</ListItemText>
               </MenuItem>
             </Tooltip>
@@ -67,14 +82,17 @@ export default React.memo(MenuComponent);
 
 MenuComponent.propTypes = {
   changeShowMenu: PropTypes.func.isRequired,
-  menuDisabled: PropTypes.bool.isRequired,
+  menuDisabled: PropTypes.bool, // eslint-disable-line
   menuSettings: PropTypes.shape({
     menu: PropTypes.string.isRequired,
     options: PropTypes.arrayOf(
       PropTypes.shape({
-        desc: PropTypes.string.isRequired,
+        desc: PropTypes.string,
         disabled: PropTypes.bool,
-        icon: PropTypes.element.isRequired,
+        icon: PropTypes.oneOfType([ // eslint-disable-line
+          PropTypes.element,
+          PropTypes.bool
+        ]).isRequired,
         order: PropTypes.number.isRequired,
         onClickFunc: PropTypes.func.isRequired,
         text: PropTypes.string.isRequired
@@ -84,5 +102,6 @@ MenuComponent.propTypes = {
   showMenu: PropTypes.shape({
     anchor: PropTypes.any, // eslint-disable-line
     menu: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  icon: PropTypes.element // eslint-disable-line
 };

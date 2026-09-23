@@ -1,91 +1,95 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import InfoIcon from "@mui/icons-material/Info";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import SpeakerNotesIcon from "@mui/icons-material/SpeakerNotes";
 
 import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
+import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
-import MenuComponent from "./Menu";
-
-const AppBarComponent = ({
-  changeShowMenu,
-  clickAboutButton,
-  clickThemeButton,
-  lightMode,
-  menuDisabled,
-  showMenu
-}) => {
+const AppBarComponent = ({ clickToolbarButton, showMenu }) => {
   return (
-    <AppBar position="static">
-      <Toolbar sx={{ height: 78 }}>
-        <Card
-          sx={{
-            flexGrow: 1,
-            maxWidth: 60,
-            mr: 2
-          }}
-        >
-          <CardMedia
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{
+        backgroundColor: "#161b22",
+        borderBottom: "1px solid #30363d"
+      }}
+    >
+      <Toolbar sx={{ height: 78, justifyContent: "space-between" }}>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Box
             component="img"
-            image="heimerdinger_passive.png"
+            src="heimerdinger_passive.png"
             alt="heimerdinger_passive"
+            sx={{
+              width: 45,
+              height: 45,
+              borderRadius: 1,
+              objectFit: "cover"
+            }}
           />
-        </Card>
-        <Typography
-          variant="h3"
-          component="div"
-          noWrap
+          <Typography
+            variant="h5"
+            fontWeight="700"
+            letterSpacing="-0.5px"
+            sx={{ display: { xs: "none", md: "block" } }}
+          >
+            Troygrade
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          spacing={1}
+          component="nav"
           sx={{
-            mr: 4,
-            display: {
-              xs: "none",
-              md: "flex"
-            }
+            pointerEvents: "auto",
+            opacity: 1
           }}
         >
-          Troygrade
-        </Typography>
-        <Box sx={{ display: { md: "flex", xs: "none" }, flexGrow: 2 }} />
-        <MenuComponent
-          changeShowMenu={e => changeShowMenu(e)}
-          menuDisabled={menuDisabled}
-          menuSettings={{
-            menu: "Appbar",
-            options: [
-              {
-                desc: "View Changelog",
-                disabled: true,
-                icon: <SpeakerNotesIcon />,
-                onClickFunc: () => changeShowMenu({ anchor: null, menu: "" }),
-                order: 1,
-                text: "Changelog"
-              },
-              {
-                desc: "Change Between Darkmode And Lightmode",
-                icon: lightMode ? <DarkModeIcon /> : <LightModeIcon />,
-                onClickFunc: () => clickThemeButton(),
-                order: 2,
-                text: lightMode ? "Darkmode" : "LightMode"
-              },
-              {
-                desc: "Show About Information",
-                icon: <InfoIcon />,
-                onClickFunc: () => clickAboutButton("about"),
-                order: 3,
-                text: "About"
-              }
-            ]
-          }}
-          showMenu={showMenu}
-        />
+          <Tooltip title="View Changelog" arrow>
+            <Button
+              variant="text"
+              startIcon={<SpeakerNotesIcon />}
+              onClick={() => clickToolbarButton("changelog")}
+              sx={{
+                color: showMenu === "changelog" ? "#58a6ff" : "#8b949e",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": {
+                  color: "#58a6ff",
+                  backgroundColor: "rgba(88, 166, 255, 0.1)"
+                }
+              }}
+            >
+              Changelog
+            </Button>
+          </Tooltip>
+          <Tooltip title="Show About Information" arrow>
+            <Button
+              variant="text"
+              startIcon={<InfoIcon />}
+              onClick={() => clickToolbarButton("about")}
+              sx={{
+                color: showMenu === "about" ? "#58a6ff" : "#8b949e",
+                fontWeight: 600,
+                textTransform: "none",
+                "&:hover": {
+                  color: "#58a6ff",
+                  backgroundColor: "rgba(88, 166, 255, 0.1)"
+                }
+              }}
+            >
+              About
+            </Button>
+          </Tooltip>
+        </Stack>
       </Toolbar>
     </AppBar>
   );
@@ -94,13 +98,6 @@ const AppBarComponent = ({
 export default React.memo(AppBarComponent);
 
 AppBarComponent.propTypes = {
-  changeShowMenu: PropTypes.func.isRequired,
-  clickAboutButton: PropTypes.func.isRequired,
-  clickThemeButton: PropTypes.func.isRequired,
-  lightMode: PropTypes.bool.isRequired,
-  menuDisabled: PropTypes.bool.isRequired,
-  showMenu: PropTypes.shape({
-    anchor: PropTypes.any, // eslint-disable-line
-    menu: PropTypes.string.isRequired
-  }).isRequired
+  clickToolbarButton: PropTypes.func.isRequired,
+  showMenu: PropTypes.string.isRequired
 };

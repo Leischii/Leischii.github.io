@@ -3,25 +3,24 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import BrowserUpdatedIcon from "@mui/icons-material/BrowserUpdated";
 import BuildIcon from "@mui/icons-material/Build";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import SearchIcon from "@mui/icons-material/Search";
 
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -38,6 +37,7 @@ import BinFileReader from "../BinFileReader/Main";
 import ConvertTroybin from "../TroybinConverter/Main";
 import MigrateConvertedTroybin from "../TroybinMigrationTool/Main";
 import AboutModal from "./components/Modals/About";
+import ChangelogModal from "./components/Modals/Changelog";
 
 function getButtonsDisabled(selectedFilesFull) {
   let hasTroybins = false;
@@ -73,10 +73,7 @@ function getButtonsDisabled(selectedFilesFull) {
 }
 
 function getDataSource(files, filter, search) {
-  const filterOptions = ["ALL", "CONV_TROYBIN", "MIG_BIN", "CONV_BIN"];
-  const dataWithFilter = files.filter(
-    file => file.type === filterOptions[filter] || filter === 0
-  );
+  const dataWithFilter = files.filter(file => filter[file.type]);
 
   if (search !== "") {
     return dataWithFilter.filter(file =>
@@ -128,14 +125,18 @@ class MainPage extends Component {
       failedConverts: [],
       fileContentDirty: "",
       files: [],
-      fileSettings: [],
-      filter: 0,
+      fileSettings: {},
+      filter: {
+        CONV_TROYBIN: true,
+        MIG_BIN: true,
+        CONV_BIN: true
+      },
       fixesToApply: [],
       loading: false,
       search: "",
       selectedFiles: [],
       showEditor: false,
-      showInfoModal: "",
+      showToolbarModal: "",
       showMenu: {
         anchor: null,
         menu: ""
@@ -145,34 +146,8 @@ class MainPage extends Component {
   }
 
   handleChangeDialogAccept(action, value) {
-    const { selectedFiles } = this.state;
     this.setState({ dialogOpen: value }, () => {
-      const settings = [];
-
       switch (action) {
-        case "convert":
-          this.setState({ showModal: "convert" });
-          break;
-        case "convert_default":
-          for (let i = 0; i < selectedFiles.length; i += 1) {
-            const setting = {
-              assetsPath: "Data/Particles",
-              filePath: "Data/Particles",
-              namesOnly: false,
-              settingsPreset: "Default",
-              updateFileTypes: true
-            };
-
-            settings.push(setting);
-          }
-
-          this.setState(
-            {
-              fileSettings: settings
-            },
-            () => this.handleConvertFiles()
-          );
-          break;
         case "download":
           this.handleDownloadFiles();
           break;
@@ -240,8 +215,12 @@ class MainPage extends Component {
     }
   }
 
-  handleChangeFilter(filter) {
-    this.setState({ filter, selectedFiles: [] });
+  handleChangeFilter(targetFilter) {
+    const { filter } = this.state;
+    const newFilter = { ...filter };
+    newFilter[targetFilter] = !newFilter[targetFilter];
+
+    this.setState({ filter: newFilter, selectedFiles: [] });
   }
 
   handleChangeLoading(val) {
@@ -260,8 +239,8 @@ class MainPage extends Component {
     this.setState({ fixesToApply: val });
   }
 
-  handleChangeShowInfoModal(value) {
-    this.setState({ showInfoModal: value });
+  handleChangeOpenToolbarModal(value) {
+    this.setState({ showToolbarModal: value });
     this.handleChangeShowMenu({ anchor: null, menu: "" });
   }
 
@@ -447,11 +426,12 @@ class MainPage extends Component {
 
             try {
               const fileContentConverted = MigrateConvertedTroybin(
-                fileSettings[j].assetsPath,
-                fileSettings[j].filePath,
+                fileSettings.assetsPath,
+                fileSettings.filePath,
                 file,
-                fileSettings[j].namesOnly,
-                fileSettings[j].updateFileTypes
+                fileSettings.namesOnly,
+                fileSettings.splitKeywords,
+                fileSettings.updateFileTypes
               );
 
               if (fileContentConverted !== -1) {
@@ -527,7 +507,7 @@ class MainPage extends Component {
       {
         failedConverts: failedFiles,
         files: filesNew,
-        fileSettings: [],
+        fileSettings: {},
         loading: false,
         selectedFiles: [],
         showModal: ""
@@ -674,8 +654,6 @@ class MainPage extends Component {
             this.setState({
               files: updatedFiles
             });
-
-            this.handleChangeFilter(0);
           }
 
           if (fileInput.length === 1) {
@@ -761,11 +739,11 @@ class MainPage extends Component {
       search,
       selectedFiles,
       showEditor,
-      showInfoModal,
+      showToolbarModal,
       showMenu,
       showModal
     } = this.state;
-    const { lightMode, theme } = this.props;
+    const { /* lightMode, */ theme } = this.props;
     const dataSource = getDataSource(files, filter, search);
     const selectedFilesFull = getSelectedFiles(files, selectedFiles);
     const selectedFilesInfo = getButtonsDisabled(selectedFilesFull);
@@ -774,17 +752,13 @@ class MainPage extends Component {
       <>
         <Box sx={{ flexGrow: 1 }}>
           <AppBarComponent
-            changeShowMenu={event => this.handleChangeShowMenu(event)}
-            clickAboutButton={val => this.handleChangeShowInfoModal(val)}
-            clickThemeButton={() => this.handleChangeTheme()}
-            menuDisabled={false}
-            lightMode={lightMode}
-            showMenu={showMenu}
+            clickToolbarButton={val => this.handleChangeOpenToolbarModal(val)}
+            showMenu={showToolbarModal}
           />
         </Box>
         <Container maxWidth="xl" sx={{ mb: 28, mt: 9 }}>
           <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={6} sx={{ maxHeight: 720 }}>
+            <Grid container spacing={6} sx={{ maxHeight: 850 }}>
               <Grid item xs={3}>
                 <Box
                   sx={{
@@ -795,7 +769,7 @@ class MainPage extends Component {
                 >
                   <Box
                     sx={{
-                      height: 100 / 720,
+                      height: 100 / 850,
                       maxHeight: 100,
                       width: "100%"
                     }}
@@ -830,6 +804,7 @@ class MainPage extends Component {
                     <Box
                       sx={{
                         display: "flex",
+                        flexDirection: "row",
                         alignItems: "center",
                         height: "40%",
                         maxWidth: 380,
@@ -839,134 +814,166 @@ class MainPage extends Component {
                         },
                         "& hr": {
                           mx: 0.5
+                        },
+                        "& button": {
+                          padding: 0
+                        },
+                        "& label": {
+                          padding: 0
                         }
                       }}
                     >
-                      <Stack
-                        direction="row"
-                        justifyContent="center"
-                        alignItems="center"
-                        spacing={1}
-                        sx={{
-                          width: "100%"
-                        }}
-                      >
-                        <Box sx={{ width: "20%" }}>
-                          <Tooltip title="Add" arrow placement="top">
-                            <IconButton
-                              variant="contained"
-                              component="label"
-                              size="small"
-                              color="inherit"
-                            >
-                              <input
-                                disabled={files.length === 20}
-                                type="file"
-                                accept=".txt, .troybin"
-                                multiple
-                                onChange={e =>
-                                  this.handleLoadFiles(e.target.files)
+                      <Tooltip title="Filters" arrow placement="top">
+                        <span>
+                          <MenuComponent
+                            changeShowMenu={e => this.handleChangeShowMenu(e)}
+                            menuSettings={{
+                              menu: "filters",
+                              options: [
+                                {
+                                  icon: filter.CONV_TROYBIN,
+                                  onClickFunc: () =>
+                                    this.handleChangeFilter("CONV_TROYBIN"),
+                                  order: 1,
+                                  text: "Troybin (Converted)"
+                                },
+                                {
+                                  icon: filter.MIG_BIN,
+                                  onClickFunc: () =>
+                                    this.handleChangeFilter("MIG_BIN"),
+                                  order: 2,
+                                  text: "Bin (Migrated)"
+                                },
+                                {
+                                  icon: filter.CONV_BIN,
+                                  onClickFunc: () =>
+                                    this.handleChangeFilter("CONV_BIN"),
+                                  order: 3,
+                                  text: "Bin (Converted)"
                                 }
-                                hidden
-                              />
-                              <AddIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                        <Box sx={{ width: "60%" }} />
-                        <Box sx={{ width: "20%" }}>
-                          <Tooltip title="Actions" arrow placement="top">
-                            <span>
-                              <MenuComponent
-                                changeShowMenu={e =>
-                                  this.handleChangeShowMenu(e)
+                              ]
+                            }}
+                            showMenu={showMenu}
+                            icon={<FilterAltIcon />}
+                          />
+                        </span>
+                      </Tooltip>
+                      <Tooltip title="Add" arrow placement="top">
+                        <IconButton
+                          variant="contained"
+                          component="label"
+                          size="small"
+                          color="inherit"
+                          sx={{ marginLeft: "auto" }}
+                        >
+                          <input
+                            type="file"
+                            accept=".txt, .troybin"
+                            multiple
+                            onChange={e => this.handleLoadFiles(e.target.files)}
+                            hidden
+                          />
+                          <AddIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Convert" arrow placement="top">
+                        <span>
+                          <IconButton
+                            variant="contained"
+                            component="label"
+                            size="small"
+                            color="inherit"
+                            disabled={
+                              selectedFilesInfo.amount === 0 ||
+                              !selectedFilesInfo.hasTroybins
+                            }
+                            onClick={() =>
+                              this.setState({
+                                showModal: "convert",
+                                showMenu: {
+                                  anchor: null,
+                                  menu: ""
                                 }
-                                menuDisabled={selectedFiles.length === 0}
-                                menuSettings={{
-                                  menu: "List",
-                                  options: [
-                                    {
-                                      desc: "Download selected files",
-                                      disabled: selectedFilesInfo.amount === 0,
-                                      icon: <BrowserUpdatedIcon />,
-                                      onClickFunc: () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "download",
-                                          open: true
-                                        }),
-                                      order: 1,
-                                      text: "Download"
-                                    },
-                                    {
-                                      desc:
-                                        "Convert selected troybin particles to bin particles",
-                                      disabled:
-                                        selectedFilesInfo.amount === 0 ||
-                                        selectedFilesInfo.hasTroybins === false,
-                                      icon: <AutoFixHighIcon />,
-                                      onClickFunc: () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "convert",
-                                          open: true
-                                        }),
-                                      order: 2,
-                                      text: "Convert"
-                                    },
-                                    {
-                                      desc:
-                                        "Apply fixes to selected outdated files",
-                                      disabled:
-                                        selectedFilesInfo.amount === 0 ||
-                                        selectedFilesInfo.hasBins === false,
-                                      icon: <BuildIcon />,
-                                      onClickFunc: () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "fix",
-                                          open: true
-                                        }),
-                                      order: 3,
-                                      text: "Apply Bin Fixes"
-                                    },
-                                    {
-                                      desc: "Combine selected files",
-                                      disabled: true,
-                                      icon: <CompareArrowsIcon />,
-                                      onClickFunc: () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "combine",
-                                          open: true
-                                        }),
-                                      order: 4,
-                                      text: "Combine"
-                                    },
-                                    {
-                                      desc: "Delete selected files",
-                                      disabled: selectedFilesInfo.amount === 0,
-                                      icon: <DeleteIcon />,
-                                      onClickFunc: () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "delete",
-                                          open: true
-                                        }),
-                                      order: 5,
-                                      text: "Delete"
-                                    }
-                                  ]
-                                }}
-                                showMenu={showMenu}
-                              />
-                            </span>
-                          </Tooltip>
-                        </Box>
-                      </Stack>
+                              })
+                            }
+                          >
+                            <RotateRightIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                      <Tooltip title="Actions" arrow placement="top">
+                        <span>
+                          <MenuComponent
+                            changeShowMenu={e => this.handleChangeShowMenu(e)}
+                            menuDisabled={selectedFiles.length === 0}
+                            menuSettings={{
+                              menu: "actions",
+                              options: [
+                                {
+                                  desc: "Download selected files",
+                                  disabled: selectedFilesInfo.amount === 0,
+                                  icon: <BrowserUpdatedIcon />,
+                                  onClickFunc: () =>
+                                    this.handleChangeDialogVisible({
+                                      action: "download",
+                                      open: true
+                                    }),
+                                  order: 1,
+                                  text: "Download"
+                                },
+                                {
+                                  desc:
+                                    "Apply fixes to selected outdated files",
+                                  disabled:
+                                    selectedFilesInfo.amount === 0 ||
+                                    selectedFilesInfo.hasBins === false,
+                                  icon: <BuildIcon />,
+                                  onClickFunc: () =>
+                                    this.handleChangeDialogVisible({
+                                      action: "fix",
+                                      open: true
+                                    }),
+                                  order: 3,
+                                  text: "Apply Bin Fixes"
+                                },
+                                {
+                                  desc: "Combine selected files",
+                                  disabled: true,
+                                  icon: <CompareArrowsIcon />,
+                                  onClickFunc: () =>
+                                    this.handleChangeDialogVisible({
+                                      action: "combine",
+                                      open: true
+                                    }),
+                                  order: 4,
+                                  text: "Combine"
+                                },
+                                {
+                                  desc: "Delete selected files",
+                                  disabled: selectedFilesInfo.amount === 0,
+                                  icon: <DeleteIcon />,
+                                  onClickFunc: () =>
+                                    this.handleChangeDialogVisible({
+                                      action: "delete",
+                                      open: true
+                                    }),
+                                  order: 5,
+                                  text: "Delete"
+                                }
+                              ]
+                            }}
+                            showMenu={showMenu}
+                          />
+                        </span>
+                      </Tooltip>
                     </Box>
                   </Box>
                   <Divider />
                   <Box
                     sx={{
-                      height: 620 / 720,
+                      height: 750 / 850,
                       width: "100%",
-                      maxHeight: 620
+                      maxHeight: 750
                     }}
                   >
                     <FileList
@@ -978,66 +985,23 @@ class MainPage extends Component {
                       }
                       dataSource={dataSource}
                       filesLength={files.length}
-                      filter={filter}
                       loadFile={filesToLoad =>
                         this.handleLoadFiles(filesToLoad)
                       }
                       selectAll={() => this.handleChangeFilesSelectedAll()}
                       selectedFiles={selectedFiles}
                     />
-                    <Divider />
-                    <BottomNavigation
-                      disabled
-                      showLabels
-                      value={filter}
-                      onChange={(event, newValue) =>
-                        this.handleChangeFilter(newValue)
-                      }
-                      sx={{ width: "100%" }}
-                    >
-                      <Tooltip title="All" arrow>
-                        <BottomNavigationAction
-                          label="All"
-                          sx={{
-                            minWidth: "10px",
-                            overflowX: "hidden"
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="Troybin (Converted)" arrow>
-                        <BottomNavigationAction
-                          label="Troybin (Converted)"
-                          sx={{
-                            minWidth: "10px",
-                            overflowX: "hidden"
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="Bin (Migrated)" arrow>
-                        <BottomNavigationAction
-                          label="Bin (Migrated)"
-                          sx={{
-                            minWidth: "10px",
-                            overflowX: "hidden"
-                          }}
-                        />
-                      </Tooltip>
-                      <Tooltip title="Bin (Converted)" arrow>
-                        <BottomNavigationAction
-                          label="Bin (Converted)"
-                          sx={{
-                            minWidth: "10px",
-                            overflowX: "hidden"
-                          }}
-                        />
-                      </Tooltip>
-                    </BottomNavigation>
-                    <Divider />
                   </Box>
                 </Box>
               </Grid>
               <Grid item xs={9}>
-                <Card sx={{ display: "flex", flexDirection: "column" }}>
+                <Card
+                  sx={{
+                    height: 850,
+                    display: "flex",
+                    flexDirection: "column"
+                  }}
+                >
                   <CardHeader
                     action={
                       <Tooltip title="Actions" arrow placement="top">
@@ -1108,16 +1072,19 @@ class MainPage extends Component {
                                   disabled:
                                     !activeFile ||
                                     activeFile.type !== "CONV_TROYBIN",
-                                  icon: <AutoFixHighIcon />,
+                                  icon: <RotateRightIcon />,
                                   onClickFunc: () => {
                                     this.setState(
                                       {
                                         selectedFiles: [activeFile.id]
                                       },
                                       () =>
-                                        this.handleChangeDialogVisible({
-                                          action: "convert",
-                                          open: true
+                                        this.setState({
+                                          showModal: "convert",
+                                          showMenu: {
+                                            anchor: null,
+                                            menu: ""
+                                          }
                                         })
                                     );
                                   },
@@ -1168,6 +1135,7 @@ class MainPage extends Component {
                               ]
                             }}
                             showMenu={showMenu}
+                            icon={undefined}
                           />
                         </span>
                       </Tooltip>
@@ -1183,14 +1151,23 @@ class MainPage extends Component {
                         : "(Click the Arrow On A File From The List To See Its Content)"
                     }
                   />
-                  <CardMediaComponent
-                    activeFile={activeFile}
-                    fileContentDirty={fileContentDirty}
-                    handleClickImage={event => this.handleClickImage(event)}
-                    handleSaveDirty={event => this.handleSaveDirty(event)}
-                    image={getSplashArt(activeFile)}
-                    showEditor={showEditor}
-                  />
+                  <CardContent
+                    sx={{
+                      flexGrow: 1,
+                      p: 0,
+                      height: "100%",
+                      overflow: "hidden"
+                    }}
+                  >
+                    <CardMediaComponent
+                      activeFile={activeFile}
+                      fileContentDirty={fileContentDirty || ""}
+                      handleClickImage={event => this.handleClickImage(event)}
+                      handleSaveDirty={event => this.handleSaveDirty(event)}
+                      image={getSplashArt(activeFile)}
+                      showEditor={showEditor || false}
+                    />
+                  </CardContent>
                 </Card>
               </Grid>
             </Grid>
@@ -1218,8 +1195,12 @@ class MainPage extends Component {
           onClose={val => this.handleChangeShowModal(val)}
         />
         <AboutModal
-          onClose={val => this.handleChangeShowInfoModal(val)}
-          open={showInfoModal}
+          onClose={val => this.handleChangeOpenToolbarModal(val)}
+          open={showToolbarModal === "about"}
+        />
+        <ChangelogModal
+          onClose={val => this.handleChangeOpenToolbarModal(val)}
+          open={showToolbarModal === "changelog"}
         />
       </>
     );
@@ -1229,7 +1210,7 @@ class MainPage extends Component {
 export default React.memo(MainPage);
 
 MainPage.propTypes = {
-  lightMode: PropTypes.bool.isRequired,
+  // lightMode: PropTypes.bool.isRequired,
   handleChangeTheme: PropTypes.func.isRequired,
   theme: PropTypes.any.isRequired // eslint-disable-line
 };
