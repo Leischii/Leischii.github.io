@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/static/js/main.ee1c8cb3.js",
+    "main.js": "/static/js/main.c1146265.js",
     "static/media/Gangplank_New.png": "/static/media/Gangplank_New.93203b59b04cee14e62e.png",
     "static/media/Ezreal_Old.png": "/static/media/Ezreal_Old.024d106dec975c66d738.png",
     "static/media/Katarina_Old.png": "/static/media/Katarina_Old.382d73f74b776f24ac17.png",
@@ -73,10 +73,11 @@
     "static/media/Alistar_New.png": "/static/media/Alistar_New.87ecce6683c50e7510a7.png",
     "static/media/Akali_New.png": "/static/media/Akali_New.a0d4e31cc9444cf331ee.png",
     "static/media/Ahri_New.png": "/static/media/Ahri_New.5d705e39b99e0ec2a071.png",
+    "static/media/changelog.md": "/static/media/changelog.402eeea9f0d14b45bf94.md",
     "index.html": "/index.html",
-    "main.ee1c8cb3.js.map": "/static/js/main.ee1c8cb3.js.map"
+    "main.c1146265.js.map": "/static/js/main.c1146265.js.map"
   },
   "entrypoints": [
-    "static/js/main.ee1c8cb3.js"
+    "static/js/main.c1146265.js"
   ]
 }
